@@ -5,16 +5,17 @@ import Spinner from '../components/Spinner';
 import ErrorMessage from '../components/ErrorMessage';
 
 const TYPE_LABELS = {
-  strength: 'Password Check',
-  breach: 'Breach Check',
+  strength:  'Password Check',
+  breach:    'Breach Check',
   generated: 'Generated',
 };
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -39,9 +40,24 @@ export default function DashboardPage() {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    const confirmed = window.confirm(
+      'This will permanently delete your account and all your data. This cannot be undone.'
+    );
+    if (!confirmed) return;
+    setDeleting(true);
+    try {
+      await api.delete('/auth/account');
+      logout();
+    } catch {
+      setError('Failed to delete account. Please try again.');
+      setDeleting(false);
+    }
+  };
+
   const counts = {
-    strength: history.filter((h) => h.type === 'strength').length,
-    breach: history.filter((h) => h.type === 'breach').length,
+    strength:  history.filter((h) => h.type === 'strength').length,
+    breach:    history.filter((h) => h.type === 'breach').length,
     generated: history.filter((h) => h.type === 'generated').length,
   };
 
@@ -86,6 +102,14 @@ export default function DashboardPage() {
               ))}
             </ul>
           )}
+
+          <div className="danger-zone">
+            <h3>Danger Zone</h3>
+            <p className="muted">Permanently delete your account and all associated data.</p>
+            <button className="btn-danger-sm" onClick={handleDeleteAccount} disabled={deleting}>
+              {deleting ? 'Deleting...' : 'Delete Account'}
+            </button>
+          </div>
         </>
       )}
     </main>

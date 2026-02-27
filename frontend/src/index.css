@@ -261,6 +261,17 @@ input:focus {
 .badge-breach    { background: rgba(255, 68, 68, 0.15);   color: var(--color-danger); }
 .badge-generated { background: rgba(229, 62, 62, 0.15);   color: var(--color-accent); }
 
+.danger-zone {
+  margin-top: 3rem;
+  padding: 1.25rem;
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  border-radius: var(--radius);
+  background: rgba(255, 68, 68, 0.05);
+}
+
+.danger-zone h3 { color: var(--color-danger); margin-bottom: 0.4rem; }
+.danger-zone .muted { margin-bottom: 1rem; }
+
 /* ─── Password checker ──────────────────────────────────────── */
 .checker-page h2 { margin-bottom: 0.5rem; color: var(--color-accent); }
 .checker-page .muted { margin-bottom: 1.25rem; }

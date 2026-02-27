@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const PasswordCheck = require('../models/PasswordCheck');
 const jwt = require('jsonwebtoken');
 
 const generateToken = (user) =>
@@ -43,4 +44,14 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { register, login };
+const deleteAccount = async (req, res) => {
+  try {
+    await PasswordCheck.deleteMany({ userId: req.user._id });
+    await User.findByIdAndDelete(req.user._id);
+    res.json({ message: 'Account deleted' });
+  } catch {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+module.exports = { register, login, deleteAccount };
