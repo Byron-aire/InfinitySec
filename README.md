@@ -1,4 +1,4 @@
-# SecureCheck
+# InfinitySec
 
 A full-stack MERN web application for personal cybersecurity — password strength checking, data breach detection, secure password generation, and security education.
 
@@ -32,7 +32,7 @@ Edit `backend/.env`:
 
 ```
 PORT=5000
-MONGODB_URI=mongodb://localhost:27017/securecheck
+MONGODB_URI=mongodb://localhost:27017/infinitysec
 JWT_SECRET=<a long random string>
 HIBP_API_KEY=<your HaveIBeenPwned API key>
 ```

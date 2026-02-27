@@ -12,7 +12,7 @@ export default function Navbar() {
 
   return (
     <nav className="navbar">
-      <Link to="/" className="navbar-brand">SecureCheck</Link>
+      <Link to="/" className="navbar-brand">InfinitySec</Link>
       <div className="navbar-links">
         <Link to="/tips">Tips</Link>
         {user ? (

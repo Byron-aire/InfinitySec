@@ -8,9 +8,9 @@ export default function HomePage() {
   return (
     <main className="page home-page">
       <div className="hero">
-        <h1>Your Personal Security Toolkit</h1>
+        <h1>InfinitySec</h1>
         <p className="hero-sub">
-          Check passwords, detect breaches, generate secure credentials, and learn how to stay safe online.
+          Your infinite barrier against the digital world. Check passwords, detect breaches, generate uncrackable credentials — and become untouchable.
         </p>
         <div className="cta">
           <Link to="/register" className="btn-primary">Get Started</Link>
