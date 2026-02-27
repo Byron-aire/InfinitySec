@@ -10,9 +10,14 @@ const getHistory = async (req, res) => {
   }
 };
 
+const VALID_TYPES = ['strength', 'breach', 'generated'];
+
 const saveHistory = async (req, res) => {
   try {
     const { type, input, result } = req.body;
+    if (!type || !VALID_TYPES.includes(type)) {
+      return res.status(400).json({ message: `type must be one of: ${VALID_TYPES.join(', ')}` });
+    }
     const entry = await PasswordCheck.create({ userId: req.user._id, type, input, result });
     res.status(201).json(entry);
   } catch {

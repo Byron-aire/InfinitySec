@@ -18,10 +18,10 @@ export const checkPasswordStrength = (password) => {
     color = 'var(--color-danger)';
   } else if (score < 60) {
     label = 'Fair';
-    color = '#FFA500';
+    color = 'var(--color-fair)';
   } else if (score < 80) {
     label = 'Strong';
-    color = '#28A745';
+    color = 'var(--color-strong)';
   } else {
     label = 'Very Strong';
     color = 'var(--color-accent)';
