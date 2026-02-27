@@ -389,6 +389,27 @@ input:focus {
 /* ─── Tips ──────────────────────────────────────────────────── */
 .tips-page h2 { margin-bottom: 1.25rem; color: var(--color-accent); }
 
+.tips-search-row {
+  position: relative;
+  margin-bottom: 1.25rem;
+}
+
+.tips-search {
+  padding-right: 2.5rem;
+}
+
+.tips-search-clear {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0.2rem 0.5rem;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.tips-result-count { margin-bottom: 1rem; }
+
 .category-filters {
   display: flex;
   gap: 0.6rem;
