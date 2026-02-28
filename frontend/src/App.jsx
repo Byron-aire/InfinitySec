@@ -25,6 +25,7 @@ export default function App() {
   return (
     <>
       <Navbar />
+      <div style={{ flex: 1 }}>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
@@ -39,6 +40,7 @@ export default function App() {
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      </div>
       <footer style={{
         textAlign: 'center',
         padding: '2rem 1rem',
