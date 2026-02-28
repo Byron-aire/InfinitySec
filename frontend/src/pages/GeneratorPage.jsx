@@ -24,6 +24,7 @@ export default function GeneratorPage() {
   const [length, setLength] = useState(16);
   const [options, setOptions] = useState({ upper: true, lower: true, digits: true, symbols: false });
   const [password, setPassword] = useState(() => generatePassword(16, { upper: true, lower: true, digits: true, symbols: false }));
+  const [label, setLabel] = useState('');
   const [copied, setCopied] = useState(false);
   const [saved, setSaved] = useState(false);
   const [savedList, setSavedList] = useState([]);
@@ -59,9 +60,10 @@ export default function GeneratorPage() {
     await api.post('/history', {
       type: 'generated',
       input: null,
-      result: { password, length, options },
+      result: { password, length, options, name: label.trim() || null },
     });
     setSaved(true);
+    setLabel('');
     setTimeout(() => setSaved(false), 2000);
     const { data } = await api.get('/history');
     setSavedList(data.filter((h) => h.type === 'generated'));
@@ -91,14 +93,14 @@ export default function GeneratorPage() {
         </label>
         <div className="checkbox-group">
           {Object.entries({ upper: 'Uppercase', lower: 'Lowercase', digits: 'Numbers', symbols: 'Symbols' }).map(
-            ([key, label]) => (
+            ([key, lbl]) => (
               <label key={key} className="checkbox-label">
                 <input
                   type="checkbox"
                   checked={options[key]}
                   onChange={(e) => setOptions({ ...options, [key]: e.target.checked })}
                 />
-                {label}
+                {lbl}
               </label>
             )
           )}
@@ -115,8 +117,18 @@ export default function GeneratorPage() {
             <button className="btn-secondary" onClick={() => copy(password)}>
               {copied ? 'Copied!' : 'Copy'}
             </button>
+          </div>
+          <div className="save-row">
+            <input
+              type="text"
+              className="label-input"
+              placeholder="Label (e.g. Gmail, Netflix)..."
+              value={label}
+              onChange={(e) => setLabel(e.target.value)}
+              maxLength={40}
+            />
             <button className="btn-primary" onClick={save} disabled={saved || !anySelected}>
-              {saved ? 'Saved!' : 'Save to History'}
+              {saved ? 'Saved!' : 'Save'}
             </button>
           </div>
         </div>
@@ -131,20 +143,27 @@ export default function GeneratorPage() {
         ) : (
           savedList.map((entry) => (
             <div key={entry._id} className="saved-password-item">
-              <code>{entry.result?.password ?? '—'}</code>
-              <span className="saved-password-meta">
-                {new Date(entry.createdAt).toLocaleDateString()}
-              </span>
-              <button
-                className="btn-secondary"
-                style={{ fontSize: '0.8rem', padding: '0.25rem 0.6rem' }}
-                onClick={() => navigator.clipboard.writeText(entry.result?.password ?? '')}
-              >
-                Copy
-              </button>
-              <button className="btn-danger-sm" onClick={() => handleDelete(entry._id)}>
-                Delete
-              </button>
+              <div className="saved-password-info">
+                {entry.result?.name && (
+                  <span className="saved-password-label">{entry.result.name}</span>
+                )}
+                <code>{entry.result?.password ?? '—'}</code>
+              </div>
+              <div className="saved-password-actions">
+                <span className="saved-password-meta">
+                  {new Date(entry.createdAt).toLocaleDateString()}
+                </span>
+                <button
+                  className="btn-secondary"
+                  style={{ fontSize: '0.8rem', padding: '0.25rem 0.6rem' }}
+                  onClick={() => navigator.clipboard.writeText(entry.result?.password ?? '')}
+                >
+                  Copy
+                </button>
+                <button className="btn-danger-sm" onClick={() => handleDelete(entry._id)}>
+                  Delete
+                </button>
+              </div>
             </div>
           ))
         )}
