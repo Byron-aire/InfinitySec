@@ -20,7 +20,7 @@ app.use(helmet());
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.json({ message: 'SecureCheck API running', version: '1.0.0' });
+  res.json({ message: 'InfinitySec API running', version: '1.1.0' });
 });
 
 app.use('/api/auth',    authRoutes);

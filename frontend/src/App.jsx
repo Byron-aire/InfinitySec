@@ -9,6 +9,7 @@ import PasswordCheckerPage from './pages/PasswordCheckerPage';
 import BreachCheckerPage from './pages/BreachCheckerPage';
 import GeneratorPage from './pages/GeneratorPage';
 import TipsPage from './pages/TipsPage';
+import PrivacyPage from './pages/PrivacyPage';
 
 function NotFoundPage() {
   return (
@@ -35,8 +36,19 @@ export default function App() {
           <Route path="/breach" element={<BreachCheckerPage />} />
           <Route path="/generator" element={<GeneratorPage />} />
         </Route>
+        <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      <footer style={{
+        textAlign: 'center',
+        padding: '2rem 1rem',
+        borderTop: '1px solid #1C1C1C',
+        marginTop: '3rem',
+      }}>
+        <p style={{ color: 'var(--color-muted)', fontSize: '0.85rem' }}>
+          © 2026 InfinitySec · <Link to="/privacy" style={{ color: 'var(--color-muted)' }}>Privacy Policy</Link>
+        </p>
+      </footer>
     </>
   );
 }

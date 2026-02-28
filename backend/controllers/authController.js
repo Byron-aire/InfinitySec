@@ -54,4 +54,22 @@ const deleteAccount = async (req, res) => {
   }
 };
 
-module.exports = { register, login, deleteAccount };
+const exportData = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select('-password');
+    const history = await PasswordCheck.find({ userId: req.user._id }).sort({ createdAt: -1 });
+    res.json({
+      exportedAt: new Date().toISOString(),
+      account: {
+        username: user.username,
+        email: user.email,
+        createdAt: user.createdAt,
+      },
+      history,
+    });
+  } catch {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+module.exports = { register, login, deleteAccount, exportData };
