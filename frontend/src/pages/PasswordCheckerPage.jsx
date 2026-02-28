@@ -48,7 +48,7 @@ export default function PasswordCheckerPage() {
           </p>
           <ul className="feedback-list">
             {result.feedback.map(({ criterion, met }) => (
-              <li key={criterion} style={{ color: met ? 'var(--color-accent)' : 'var(--color-muted)' }}>
+              <li key={criterion} style={{ color: met ? 'var(--color-safe)' : 'var(--color-muted)' }}>
                 {met ? '✓' : '✗'} {criterion}
               </li>
             ))}

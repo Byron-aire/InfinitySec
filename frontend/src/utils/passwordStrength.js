@@ -24,7 +24,7 @@ export const checkPasswordStrength = (password) => {
     color = 'var(--color-strong)';
   } else {
     label = 'Very Strong';
-    color = 'var(--color-accent)';
+    color = 'var(--color-very-strong)';
   }
 
   const feedback = [
