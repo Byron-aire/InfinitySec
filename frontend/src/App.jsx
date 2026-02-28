@@ -42,13 +42,20 @@ export default function App() {
       </Routes>
       </div>
       <footer style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
         textAlign: 'center',
-        padding: '2rem 1rem',
+        padding: '0.6rem 1rem',
         borderTop: '1px solid #1C1C1C',
-        marginTop: '3rem',
+        background: '#0A0A0A',
+        zIndex: 99,
       }}>
-        <p style={{ color: 'var(--color-muted)', fontSize: '0.85rem' }}>
-          © 2026 InfinitySec · <Link to="/privacy" style={{ color: 'var(--color-muted)' }}>Privacy Policy</Link>
+        <p style={{ color: 'var(--color-muted)', fontSize: '0.8rem' }}>
+          © 2026 InfinitySec ·{' '}
+          <Link to="/privacy" style={{ color: 'var(--color-muted)' }}>Privacy Policy</Link>
+          {' '}· The S in IoT stands for Security.
         </p>
       </footer>
     </>
