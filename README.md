@@ -142,4 +142,4 @@ Protected routes require `Authorization: Bearer <token>`.
 
 ---
 
-*Built by Byron Aire · Griffith College Cork · BSc Web Technologies 2026*
+*Built by Byron Gift Ochieng Makasembo · Griffith College Cork · 2026*
