@@ -132,13 +132,15 @@ Protected routes require `Authorization: Bearer <token>`.
 
 ## Roadmap
 
+The web app is the primary, always-accessible version. The mobile app (v3.0) is a second frontend on the same API — no backend changes required. Mobile unlocks push notifications, biometric unlock, and secure on-device storage.
+
 | Version | Status | What's planned |
 |---------|--------|----------------|
 | v1.0 | ✅ Done | Core MERN app — all 6 features, local only |
-| v1.5 | ✅ Live | Security hardening, GDPR controls, Gojo UI rebrand, deployed to Vercel + Railway + Atlas |
-| v2.0 | 🔲 Summer 2026 | URL/phishing scanner, SSL checker, dark web monitoring, 2FA checklist, session management |
-| v2.5 | 🔲 Sept 2026 | AI security assistant (Claude), domain security score, weekly digest emails, threat feed |
-| v3.0 | 🔲 2027 | React Native mobile app (Expo) with biometric unlock and remote wipe |
+| v1.5 | ✅ Live | Security hardening, GDPR controls, Gojo UI, deployed to Vercel + Railway + Atlas |
+| v2.0 | 🔲 Summer 2026 | URL/phishing scanner, SSL checker, dark web monitoring, 2FA checklist, IoT security checklist, phishing awareness quiz, session management |
+| v2.5 | 🔲 Sept 2026 | AI assistant (Claude), security score, threat feed, phishing/smishing analyzer, weekly digest |
+| v3.0 | 🔲 2027 | React Native (Expo) — same backend, biometric unlock, push notifications, remote wipe |
 
 ---
 
