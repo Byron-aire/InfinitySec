@@ -65,7 +65,7 @@ Demo login: `demo@infinitysec.io` / `Demo1234!`
 ### 1. Clone and install
 
 ```bash
-git clone https://github.com/Byron-aire/securecheck.git
+git clone https://github.com/Byron-aire/infinitysec.git
 cd securecheck
 
 cd backend && npm install
