@@ -1,13 +1,38 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from '../utils/api';
 import ErrorMessage from '../components/ErrorMessage';
-import Spinner from '../components/Spinner';
+
+const SCAN_MESSAGES = [
+  'Initialising breach database connection...',
+  'Querying HaveIBeenPwned API...',
+  'Scanning 12 billion records...',
+  'Cross-referencing breach datasets...',
+  'Analysing exposure vectors...',
+  'Compiling threat intelligence...',
+];
 
 export default function BreachCheckerPage() {
   const [email, setEmail] = useState('');
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [scanMsg, setScanMsg] = useState('');
+  const scanRef = useRef(null);
+
+  useEffect(() => {
+    if (loading) {
+      let i = 0;
+      setScanMsg(SCAN_MESSAGES[0]);
+      scanRef.current = setInterval(() => {
+        i = (i + 1) % SCAN_MESSAGES.length;
+        setScanMsg(SCAN_MESSAGES[i]);
+      }, 700);
+    } else {
+      clearInterval(scanRef.current);
+      setScanMsg('');
+    }
+    return () => clearInterval(scanRef.current);
+  }, [loading]);
 
   const handleCheck = async (e) => {
     e.preventDefault();
@@ -47,16 +72,24 @@ export default function BreachCheckerPage() {
           onChange={(e) => setEmail(e.target.value)}
         />
         <button type="submit" className="btn-primary" disabled={loading}>
-          {loading ? <Spinner /> : 'Check Now'}
+          {loading ? 'Scanning...' : 'Check Now'}
         </button>
       </form>
       <ErrorMessage message={error} />
+      {loading && (
+        <div className="scan-display">
+          <div className="scan-line">
+            <span>{scanMsg}</span>
+            <span className="scan-cursor">█</span>
+          </div>
+        </div>
+      )}
       {result && (
         <div className={`breach-result ${result.breached ? 'breached' : 'safe'}`}>
           {result.breached ? (
             <>
               <h3 style={{ color: 'var(--color-danger)' }}>
-                Breached — found in {result.count} site(s)
+                ⚠ Breached — found in {result.count} site{result.count !== 1 ? 's' : ''}
               </h3>
               <ul>
                 {result.breaches.map((b) => (
@@ -67,7 +100,7 @@ export default function BreachCheckerPage() {
               </ul>
             </>
           ) : (
-            <h3 style={{ color: 'var(--color-safe)' }}>No breaches found</h3>
+            <h3 style={{ color: 'var(--color-safe)' }}>✓ No breaches found</h3>
           )}
         </div>
       )}

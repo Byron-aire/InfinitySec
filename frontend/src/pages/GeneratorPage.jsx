@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from '../utils/api';
 import Spinner from '../components/Spinner';
 
@@ -8,6 +8,8 @@ const CHARS = {
   digits:  '0123456789',
   symbols: '!@#$%^&*()-_=+[]{}|;:,.<>?',
 };
+
+const SCRAMBLE_POOL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
 
 function generatePassword(length, options) {
   const pool = Object.entries(options)
@@ -23,12 +25,14 @@ function generatePassword(length, options) {
 export default function GeneratorPage() {
   const [length, setLength] = useState(16);
   const [options, setOptions] = useState({ upper: true, lower: true, digits: true, symbols: false });
-  const [password, setPassword] = useState(() => generatePassword(16, { upper: true, lower: true, digits: true, symbols: false }));
+  const [password, setPassword] = useState('');
+  const [displayPw, setDisplayPw] = useState('');
   const [label, setLabel] = useState('');
   const [copied, setCopied] = useState(false);
   const [saved, setSaved] = useState(false);
   const [savedList, setSavedList] = useState([]);
   const [loadingList, setLoadingList] = useState(true);
+  const scrambleRef = useRef(null);
 
   const anySelected = Object.values(options).some(Boolean);
 
@@ -42,10 +46,40 @@ export default function GeneratorPage() {
       }
     };
     fetchSaved();
+    // Generate initial password
+    const pw = generatePassword(16, { upper: true, lower: true, digits: true, symbols: false });
+    setPassword(pw);
+    setDisplayPw(pw);
   }, []);
 
+  const runScramble = (target) => {
+    let frame = 0;
+    const totalFrames = 14;
+    clearInterval(scrambleRef.current);
+    scrambleRef.current = setInterval(() => {
+      frame++;
+      if (frame >= totalFrames) {
+        clearInterval(scrambleRef.current);
+        setDisplayPw(target);
+        return;
+      }
+      const revealCount = Math.floor((frame / totalFrames) * target.length);
+      const scrambled = target
+        .split('')
+        .map((ch, i) =>
+          i < revealCount
+            ? ch
+            : SCRAMBLE_POOL[Math.floor(Math.random() * SCRAMBLE_POOL.length)]
+        )
+        .join('');
+      setDisplayPw(scrambled);
+    }, 40);
+  };
+
   const generate = () => {
-    setPassword(generatePassword(length, options));
+    const pw = generatePassword(length, options);
+    setPassword(pw);
+    runScramble(pw);
     setCopied(false);
     setSaved(false);
   };
@@ -110,9 +144,9 @@ export default function GeneratorPage() {
         </button>
       </div>
 
-      {password && (
+      {displayPw && (
         <div className="generated-password">
-          <code className="password-output">{password}</code>
+          <code className="password-output">{displayPw}</code>
           <div className="password-actions">
             <button className="btn-secondary" onClick={() => copy(password)}>
               {copied ? 'Copied!' : 'Copy'}

@@ -10,12 +10,29 @@ const TYPE_LABELS = {
   generated: 'Generated',
 };
 
+function useCountUp(target, active) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    if (!active || target === 0) { setValue(target); return; }
+    let current = 0;
+    const step = Math.max(1, Math.ceil(target / 20));
+    const timer = setInterval(() => {
+      current = Math.min(current + step, target);
+      setValue(current);
+      if (current >= target) clearInterval(timer);
+    }, 30);
+    return () => clearInterval(timer);
+  }, [target, active]);
+  return value;
+}
+
 export default function DashboardPage() {
   const { user, logout } = useAuth();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [deleting, setDeleting] = useState(false);
+  const [animating, setAnimating] = useState(false);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -26,6 +43,8 @@ export default function DashboardPage() {
         setError('Failed to load history');
       } finally {
         setLoading(false);
+        // Slight delay so numbers animate in after cards appear
+        setTimeout(() => setAnimating(true), 150);
       }
     };
     fetchHistory();
@@ -61,6 +80,10 @@ export default function DashboardPage() {
     generated: history.filter((h) => h.type === 'generated').length,
   };
 
+  const strengthCount  = useCountUp(counts.strength,  animating);
+  const breachCount    = useCountUp(counts.breach,     animating);
+  const generatedCount = useCountUp(counts.generated,  animating);
+
   return (
     <main className="page dashboard-page">
       <h2>Welcome back, {user?.username}</h2>
@@ -71,15 +94,15 @@ export default function DashboardPage() {
         <>
           <div className="stat-cards">
             <div className="stat-card">
-              <span className="stat-value">{counts.strength}</span>
+              <span className="stat-value">{strengthCount}</span>
               <span className="stat-label">Strength Checks</span>
             </div>
             <div className="stat-card">
-              <span className="stat-value">{counts.breach}</span>
+              <span className="stat-value">{breachCount}</span>
               <span className="stat-label">Breach Checks</span>
             </div>
             <div className="stat-card">
-              <span className="stat-value">{counts.generated}</span>
+              <span className="stat-value">{generatedCount}</span>
               <span className="stat-label">Passwords Generated</span>
             </div>
           </div>
