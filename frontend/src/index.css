@@ -858,6 +858,89 @@ input:focus {
 
 .ssl-field span:last-child { font-size: 0.95rem; }
 
+/* ─── Convergence (URL scanner) ────────────────────────────── */
+.convergence-page h2 { margin-bottom: 0.5rem; color: var(--color-accent); }
+
+.convergence-form {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.convergence-input {
+  flex: 1;
+  min-width: 220px;
+  font-family: 'Source Code Pro', monospace;
+}
+
+.convergence-result {
+  margin-top: 1.25rem;
+  background: var(--color-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid;
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  animation: reveal 0.35s ease both;
+}
+
+.convergence-result--safe   { border-color: var(--color-safe); }
+.convergence-result--threat { border-color: var(--color-danger); }
+
+.convergence-result-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.convergence-status-badge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.2rem 0.7rem;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.convergence-url {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  word-break: break-all;
+}
+
+.convergence-safe-msg {
+  color: var(--color-muted);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.convergence-threat-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.convergence-threat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.95rem;
+}
+
+.convergence-threat-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-danger);
+  flex-shrink: 0;
+}
+
 /* ─── Navbar hamburger (hidden on desktop) ──────────────────── */
 .navbar-hamburger {
   display: none;
@@ -1021,5 +1104,15 @@ input:focus {
   /* SSL grid — single column */
   .ssl-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  /* Convergence form — stack */
+  .convergence-form {
+    flex-direction: column;
+  }
+
+  .convergence-input {
+    min-width: unset;
+    width: 100%;
   }
 }

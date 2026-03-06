@@ -12,6 +12,7 @@ import TipsPage from './pages/TipsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import TwoFAPage from './pages/TwoFAPage';
 import SSLCheckerPage from './pages/SSLCheckerPage';
+import ConvergencePage from './pages/ConvergencePage';
 
 function NotFoundPage() {
   return (
@@ -40,6 +41,7 @@ export default function App() {
           <Route path="/generator" element={<GeneratorPage />} />
           <Route path="/barrier" element={<TwoFAPage />} />
           <Route path="/ssl" element={<SSLCheckerPage />} />
+          <Route path="/convergence" element={<ConvergencePage />} />
         </Route>
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="*" element={<NotFoundPage />} />

@@ -43,6 +43,10 @@ export default function HomePage() {
           <h3>SSL Checker</h3>
           <p>Inspect any domain&apos;s SSL certificate — expiry, issuer, and validity.</p>
         </Link>
+        <Link to="/convergence" className="feature-card">
+          <h3>Convergence</h3>
+          <p>Scan any URL for malware, phishing, and unwanted software.</p>
+        </Link>
       </div>
     </main>
   );

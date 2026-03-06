@@ -8,7 +8,8 @@ const authRoutes    = require('./routes/auth');
 const historyRoutes = require('./routes/history');
 const breachRoutes  = require('./routes/breach');
 const tipsRoutes    = require('./routes/tips');
-const sslRoutes     = require('./routes/ssl');
+const sslRoutes          = require('./routes/ssl');
+const convergenceRoutes  = require('./routes/convergence');
 
 const app = express();
 
@@ -28,7 +29,8 @@ app.use('/api/auth',    authRoutes);
 app.use('/api/history', historyRoutes);
 app.use('/api/breach',  breachRoutes);
 app.use('/api/tips',    tipsRoutes);
-app.use('/api/ssl',     sslRoutes);
+app.use('/api/ssl',          sslRoutes);
+app.use('/api/convergence', convergenceRoutes);
 
 const PORT = process.env.PORT || 5001;
 
