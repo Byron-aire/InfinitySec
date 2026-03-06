@@ -681,3 +681,144 @@ input:focus {
 
 .tip-card h3 { font-size: 1rem; margin-bottom: 0.5rem; }
 .tip-card p { color: var(--color-muted); font-size: 0.9rem; line-height: 1.55; }
+
+/* ─── Navbar hamburger (hidden on desktop) ──────────────────── */
+.navbar-hamburger {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--color-text);
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  line-height: 1;
+  z-index: 101;
+}
+
+/* ─── Mobile breakpoint ─────────────────────────────────────── */
+@media (max-width: 640px) {
+
+  /* Navbar */
+  .navbar {
+    flex-wrap: wrap;
+    padding: 0 1rem;
+    height: auto;
+    min-height: 60px;
+    position: relative;
+  }
+
+  .navbar-brand {
+    padding: 1rem 0;
+  }
+
+  .navbar-hamburger {
+    display: flex;
+    align-items: center;
+    padding: 1rem 0;
+  }
+
+  .navbar-links {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    gap: 0;
+    padding: 0.5rem 0 1rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .navbar-links--open {
+    display: flex;
+  }
+
+  .navbar-links a,
+  .navbar-links .btn-ghost {
+    padding: 0.65rem 0;
+    font-size: 1rem;
+    border-radius: 0;
+    width: 100%;
+    text-align: left;
+  }
+
+  .navbar-links .btn-primary {
+    margin-top: 0.5rem;
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Hero */
+  .hero {
+    padding: 2.5rem 1rem 2rem;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  .hero-sub {
+    font-size: 0.95rem;
+  }
+
+  /* Page */
+  .page {
+    margin: 1.5rem auto;
+    padding: 0 1rem;
+  }
+
+  /* Stat cards — 2 columns on mobile */
+  .stat-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* History items — stack label/text above the delete button */
+  .history-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  /* Generator save row — stack on narrow screens */
+  .save-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .save-row .label-input {
+    width: 100%;
+  }
+
+  /* Password actions — wrap */
+  .password-actions {
+    flex-wrap: wrap;
+  }
+
+  /* Saved password item — stack info + actions */
+  .saved-password-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .saved-password-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  /* Auth page — full width with padding */
+  .auth-page {
+    width: 100%;
+  }
+
+  /* Tips grid — single column */
+  .tips-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Breach form — stack vertically */
+  .breach-form {
+    flex-direction: column;
+  }
+
+  .breach-form input {
+    min-width: unset;
+    width: 100%;
+  }
+}
