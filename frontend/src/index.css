@@ -682,6 +682,182 @@ input:focus {
 .tip-card h3 { font-size: 1rem; margin-bottom: 0.5rem; }
 .tip-card p { color: var(--color-muted); font-size: 0.9rem; line-height: 1.55; }
 
+/* ─── The Barrier (2FA checklist) ──────────────────────────── */
+.barrier-page h2 { margin-bottom: 0.5rem; color: var(--color-accent); }
+
+.barrier-progress-card {
+  background: var(--color-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.barrier-progress-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.barrier-progress-label { color: var(--color-muted); font-size: 1rem; }
+.barrier-pct { font-size: 1.1rem; font-weight: 700; }
+
+.barrier-bar-track {
+  height: 6px;
+  background: var(--color-border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.barrier-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.barrier-tip {
+  background: rgba(59, 130, 246, 0.06);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: var(--radius);
+  padding: 0.75rem 1rem;
+  font-size: 0.88rem;
+  color: var(--color-muted);
+  margin-bottom: 2rem;
+  line-height: 1.55;
+}
+
+.barrier-category { margin-bottom: 1.75rem; }
+
+.barrier-category-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+  margin-bottom: 0.6rem;
+}
+
+.barrier-list { display: flex; flex-direction: column; gap: 0.45rem; }
+
+.barrier-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--color-card);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.65rem 1rem;
+  cursor: pointer;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  user-select: none;
+}
+
+.barrier-item:hover { border-color: rgba(59, 130, 246, 0.3); }
+
+.barrier-item--checked {
+  border-color: rgba(34, 197, 94, 0.35);
+  background: rgba(34, 197, 94, 0.04);
+}
+
+.barrier-item input[type="checkbox"] {
+  accent-color: var(--color-safe);
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.barrier-name {
+  flex: 1;
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.barrier-item--checked .barrier-name { color: var(--color-muted); text-decoration: line-through; }
+
+.barrier-methods { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+
+.barrier-method-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+/* ─── SSL Checker ───────────────────────────────────────────── */
+.ssl-page h2 { margin-bottom: 0.5rem; color: var(--color-accent); }
+
+.ssl-form {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.ssl-input { flex: 1; min-width: 200px; font-family: 'Source Code Pro', monospace; }
+
+.ssl-result {
+  background: var(--color-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid;
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  animation: reveal 0.35s ease both;
+}
+
+.ssl-result-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.ssl-domain {
+  font-family: 'Source Code Pro', monospace;
+  font-size: 1.05rem;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.ssl-status-badge {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.2rem 0.65rem;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ssl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.ssl-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ssl-field-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-muted);
+}
+
+.ssl-field span:last-child { font-size: 0.95rem; }
+
 /* ─── Navbar hamburger (hidden on desktop) ──────────────────── */
 .navbar-hamburger {
   display: none;
@@ -820,5 +996,30 @@ input:focus {
   .breach-form input {
     min-width: unset;
     width: 100%;
+  }
+
+  /* Barrier — method badges wrap cleanly */
+  .barrier-item {
+    flex-wrap: wrap;
+  }
+
+  .barrier-methods {
+    width: 100%;
+    margin-left: 1.75rem;
+  }
+
+  /* SSL form — stack */
+  .ssl-form {
+    flex-direction: column;
+  }
+
+  .ssl-input {
+    min-width: unset;
+    width: 100%;
+  }
+
+  /* SSL grid — single column */
+  .ssl-grid {
+    grid-template-columns: 1fr 1fr;
   }
 }

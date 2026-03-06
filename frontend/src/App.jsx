@@ -10,6 +10,8 @@ import BreachCheckerPage from './pages/BreachCheckerPage';
 import GeneratorPage from './pages/GeneratorPage';
 import TipsPage from './pages/TipsPage';
 import PrivacyPage from './pages/PrivacyPage';
+import TwoFAPage from './pages/TwoFAPage';
+import SSLCheckerPage from './pages/SSLCheckerPage';
 
 function NotFoundPage() {
   return (
@@ -36,6 +38,8 @@ export default function App() {
           <Route path="/checker" element={<PasswordCheckerPage />} />
           <Route path="/breach" element={<BreachCheckerPage />} />
           <Route path="/generator" element={<GeneratorPage />} />
+          <Route path="/barrier" element={<TwoFAPage />} />
+          <Route path="/ssl" element={<SSLCheckerPage />} />
         </Route>
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="*" element={<NotFoundPage />} />

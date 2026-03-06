@@ -35,6 +35,14 @@ export default function HomePage() {
           <h3>Security Tips</h3>
           <p>Browse expert advice on passwords, phishing, and privacy.</p>
         </Link>
+        <Link to="/barrier" className="feature-card">
+          <h3>The Barrier — 2FA</h3>
+          <p>Track which of your 27 accounts have two-factor authentication enabled.</p>
+        </Link>
+        <Link to="/ssl" className="feature-card">
+          <h3>SSL Checker</h3>
+          <p>Inspect any domain&apos;s SSL certificate — expiry, issuer, and validity.</p>
+        </Link>
       </div>
     </main>
   );

@@ -8,6 +8,7 @@ const authRoutes    = require('./routes/auth');
 const historyRoutes = require('./routes/history');
 const breachRoutes  = require('./routes/breach');
 const tipsRoutes    = require('./routes/tips');
+const sslRoutes     = require('./routes/ssl');
 
 const app = express();
 
@@ -20,13 +21,14 @@ app.use(helmet());
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.json({ message: 'InfinitySec API running', version: '1.1.0' });
+  res.json({ message: 'InfinitySec API running', version: '2.0.0' });
 });
 
 app.use('/api/auth',    authRoutes);
 app.use('/api/history', historyRoutes);
 app.use('/api/breach',  breachRoutes);
 app.use('/api/tips',    tipsRoutes);
+app.use('/api/ssl',     sslRoutes);
 
 const PORT = process.env.PORT || 5001;
 

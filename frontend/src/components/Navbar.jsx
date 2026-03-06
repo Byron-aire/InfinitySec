@@ -36,6 +36,8 @@ export default function Navbar() {
             <Link to="/checker" onClick={close}>Password</Link>
             <Link to="/breach" onClick={close}>Breach</Link>
             <Link to="/generator" onClick={close}>Generator</Link>
+            <Link to="/barrier" onClick={close}>2FA</Link>
+            <Link to="/ssl" onClick={close}>SSL</Link>
             <button onClick={handleLogout} className="btn-ghost">Logout</button>
           </>
         ) : (
