@@ -39,6 +39,8 @@ export default function Navbar() {
             <Link to="/barrier" onClick={close}>2FA</Link>
             <Link to="/ssl" onClick={close}>SSL</Link>
             <Link to="/convergence" onClick={close}>Scan</Link>
+            <Link to="/voidwatch"  onClick={close}>Watch</Link>
+            <Link to="/sessions"   onClick={close}>Sessions</Link>
             <button onClick={handleLogout} className="btn-ghost">Logout</button>
           </>
         ) : (

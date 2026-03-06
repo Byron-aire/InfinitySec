@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 const generateToken = (user) =>
   jwt.sign(
-    { _id: user._id, username: user.username, email: user.email },
+    { _id: user._id, username: user.username, email: user.email, tokenVersion: user.tokenVersion },
     process.env.JWT_SECRET,
     { expiresIn: '7d' }
   );
@@ -37,8 +37,33 @@ const login = async (req, res) => {
     if (!user || !(await user.comparePassword(password))) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
+    const ip = req.ip || 'unknown';
+    const userAgent = req.headers['user-agent'] || 'unknown';
+    user.sessions.push({ ip, userAgent });
+    if (user.sessions.length > 10) user.sessions = user.sessions.slice(-10);
+    await user.save();
     const token = generateToken(user);
     res.json({ token, user: { _id: user._id, username: user.username, email: user.email } });
+  } catch {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+const getSessions = async (req, res) => {
+  try {
+    res.json({ sessions: req.user.sessions || [] });
+  } catch {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+const logoutAll = async (req, res) => {
+  try {
+    await User.findByIdAndUpdate(req.user._id, {
+      $inc: { tokenVersion: 1 },
+      $set:  { sessions: [] },
+    });
+    res.json({ message: 'All sessions revoked' });
   } catch {
     res.status(500).json({ message: 'Server error' });
   }
@@ -72,4 +97,4 @@ const exportData = async (req, res) => {
   }
 };
 
-module.exports = { register, login, deleteAccount, exportData };
+module.exports = { register, login, deleteAccount, exportData, getSessions, logoutAll };

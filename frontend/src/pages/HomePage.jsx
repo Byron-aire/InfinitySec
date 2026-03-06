@@ -47,6 +47,14 @@ export default function HomePage() {
           <h3>Convergence</h3>
           <p>Scan any URL for malware, phishing, and unwanted software.</p>
         </Link>
+        <Link to="/voidwatch" className="feature-card">
+          <h3>Void Watch</h3>
+          <p>Automatic weekly breach monitoring — get emailed if your data surfaces.</p>
+        </Link>
+        <Link to="/sessions" className="feature-card">
+          <h3>Sessions</h3>
+          <p>View every active session and sign out everywhere with one click.</p>
+        </Link>
       </div>
     </main>
   );

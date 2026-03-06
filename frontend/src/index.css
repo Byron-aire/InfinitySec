@@ -858,6 +858,139 @@ input:focus {
 
 .ssl-field span:last-child { font-size: 0.95rem; }
 
+/* ─── Sessions ──────────────────────────────────────────────── */
+.sessions-page h2 { margin-bottom: 0.5rem; color: var(--color-accent); }
+
+.sessions-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+
+.sessions-item {
+  background: var(--color-card);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  transition: border-color var(--transition);
+}
+
+.sessions-item--current { border-color: rgba(59, 130, 246, 0.4); }
+
+.sessions-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.3rem;
+}
+
+.sessions-device { font-weight: 600; font-size: 0.95rem; }
+
+.sessions-current-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.1rem 0.5rem;
+  border-radius: 4px;
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--color-accent);
+}
+
+.sessions-detail {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  flex-wrap: wrap;
+}
+
+/* ─── Void Watch ─────────────────────────────────────────────── */
+.voidwatch-page h2 { margin-bottom: 0.5rem; color: var(--color-accent); }
+
+.voidwatch-status-card {
+  background: var(--color-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition: border-color var(--transition);
+}
+
+.voidwatch-status-card--active { border-color: rgba(34, 197, 94, 0.4); }
+
+.voidwatch-status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.voidwatch-status-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-muted);
+  margin-bottom: 0.25rem;
+}
+
+.voidwatch-status-value { font-size: 1.25rem; font-weight: 700; }
+
+.voidwatch-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-muted);
+  flex-shrink: 0;
+}
+
+.voidwatch-indicator--on {
+  background: var(--color-safe);
+  box-shadow: 0 0 10px var(--color-safe);
+  animation: voidwatch-pulse 2s ease-in-out infinite;
+}
+
+@keyframes voidwatch-pulse {
+  0%, 100% { box-shadow: 0 0 6px var(--color-safe); }
+  50%       { box-shadow: 0 0 18px var(--color-safe), 0 0 30px rgba(34, 197, 94, 0.3); }
+}
+
+.voidwatch-detail-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.voidwatch-field { display: flex; flex-direction: column; gap: 0.2rem; }
+.voidwatch-field-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-muted);
+}
+.voidwatch-field span:last-child { font-size: 0.9rem; }
+
+.voidwatch-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.voidwatch-info-card {
+  background: var(--color-card);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+
+.voidwatch-info-card h4 { font-size: 0.9rem; margin-bottom: 0.4rem; color: var(--color-accent); }
+.voidwatch-info-card p  { font-size: 0.85rem; color: var(--color-muted); line-height: 1.55; }
+
 /* ─── Convergence (URL scanner) ────────────────────────────── */
 .convergence-page h2 { margin-bottom: 0.5rem; color: var(--color-accent); }
 
@@ -1114,5 +1247,16 @@ input:focus {
   .convergence-input {
     min-width: unset;
     width: 100%;
+  }
+
+  /* Void Watch info grid — single column */
+  .voidwatch-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Sessions detail — stack */
+  .sessions-detail {
+    flex-direction: column;
+    gap: 0.2rem;
   }
 }

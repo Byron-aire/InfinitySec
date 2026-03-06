@@ -10,6 +10,9 @@ const breachRoutes  = require('./routes/breach');
 const tipsRoutes    = require('./routes/tips');
 const sslRoutes          = require('./routes/ssl');
 const convergenceRoutes  = require('./routes/convergence');
+const voidWatchRoutes    = require('./routes/voidWatch');
+
+require('./jobs/digestCron');
 
 const app = express();
 
@@ -31,6 +34,7 @@ app.use('/api/breach',  breachRoutes);
 app.use('/api/tips',    tipsRoutes);
 app.use('/api/ssl',          sslRoutes);
 app.use('/api/convergence', convergenceRoutes);
+app.use('/api/voidwatch',   voidWatchRoutes);
 
 const PORT = process.env.PORT || 5001;
 

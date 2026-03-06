@@ -13,6 +13,8 @@ import PrivacyPage from './pages/PrivacyPage';
 import TwoFAPage from './pages/TwoFAPage';
 import SSLCheckerPage from './pages/SSLCheckerPage';
 import ConvergencePage from './pages/ConvergencePage';
+import SessionsPage from './pages/SessionsPage';
+import VoidWatchPage from './pages/VoidWatchPage';
 
 function NotFoundPage() {
   return (
@@ -42,6 +44,8 @@ export default function App() {
           <Route path="/barrier" element={<TwoFAPage />} />
           <Route path="/ssl" element={<SSLCheckerPage />} />
           <Route path="/convergence" element={<ConvergencePage />} />
+          <Route path="/sessions"   element={<SessionsPage />} />
+          <Route path="/voidwatch"  element={<VoidWatchPage />} />
         </Route>
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="*" element={<NotFoundPage />} />
