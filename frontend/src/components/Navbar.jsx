@@ -41,6 +41,7 @@ export default function Navbar() {
             <Link to="/convergence" onClick={close}>Scan</Link>
             <Link to="/voidwatch"  onClick={close}>Watch</Link>
             <Link to="/sessions"   onClick={close}>Sessions</Link>
+            <Link to="/account"    onClick={close}>Account</Link>
             <button onClick={handleLogout} className="btn-ghost">Logout</button>
           </>
         ) : (

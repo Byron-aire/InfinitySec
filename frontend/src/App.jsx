@@ -15,6 +15,7 @@ import SSLCheckerPage from './pages/SSLCheckerPage';
 import ConvergencePage from './pages/ConvergencePage';
 import SessionsPage from './pages/SessionsPage';
 import VoidWatchPage from './pages/VoidWatchPage';
+import AccountPage from './pages/AccountPage';
 
 function NotFoundPage() {
   return (
@@ -46,6 +47,7 @@ export default function App() {
           <Route path="/convergence" element={<ConvergencePage />} />
           <Route path="/sessions"   element={<SessionsPage />} />
           <Route path="/voidwatch"  element={<VoidWatchPage />} />
+          <Route path="/account"    element={<AccountPage />} />
         </Route>
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="*" element={<NotFoundPage />} />

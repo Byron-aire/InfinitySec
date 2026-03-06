@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const PasswordCheck = require('../models/PasswordCheck');
 const jwt = require('jsonwebtoken');
+const { sendMail } = require('../utils/mailer');
 
 const generateToken = (user) =>
   jwt.sign(
@@ -39,9 +40,27 @@ const login = async (req, res) => {
     }
     const ip = req.ip || 'unknown';
     const userAgent = req.headers['user-agent'] || 'unknown';
+    const isNewIP = user.sessions.length > 0 && user.sessions.every(s => s.ip !== ip);
     user.sessions.push({ ip, userAgent });
     if (user.sessions.length > 10) user.sessions = user.sessions.slice(-10);
     await user.save();
+    if (isNewIP) {
+      sendMail({
+        to: user.email,
+        subject: 'New sign-in to InfinitySec',
+        text: [
+          `A new sign-in was detected on your InfinitySec account.`,
+          ``,
+          `IP address: ${ip}`,
+          `Browser:    ${userAgent.substring(0, 100)}`,
+          `Time:       ${new Date().toUTCString()}`,
+          ``,
+          `If this wasn't you, go to /sessions and click "Sign out everywhere" immediately.`,
+          ``,
+          `— InfinitySec`,
+        ].join('\n'),
+      }).catch(() => {});
+    }
     const token = generateToken(user);
     res.json({ token, user: { _id: user._id, username: user.username, email: user.email } });
   } catch {
@@ -97,4 +116,38 @@ const exportData = async (req, res) => {
   }
 };
 
-module.exports = { register, login, deleteAccount, exportData, getSessions, logoutAll };
+const getAccountSummary = async (req, res) => {
+  try {
+    const [strengthCount, breachCount, generatedCount] = await Promise.all([
+      PasswordCheck.countDocuments({ userId: req.user._id, type: 'strength' }),
+      PasswordCheck.countDocuments({ userId: req.user._id, type: 'breach' }),
+      PasswordCheck.countDocuments({ userId: req.user._id, type: 'generated' }),
+    ]);
+    const sessions = req.user.sessions || [];
+    res.json({
+      account: {
+        username:  req.user.username,
+        email:     req.user.email,
+        createdAt: req.user.createdAt,
+      },
+      history: {
+        total:     strengthCount + breachCount + generatedCount,
+        strength:  strengthCount,
+        breach:    breachCount,
+        generated: generatedCount,
+      },
+      sessions: {
+        count:     sessions.length,
+        lastLogin: sessions.length > 0 ? sessions[sessions.length - 1].createdAt : null,
+      },
+      monitoring: {
+        enabled:      req.user.monitoring.enabled,
+        subscribedAt: req.user.monitoring.subscribedAt,
+      },
+    });
+  } catch {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+module.exports = { register, login, deleteAccount, exportData, getSessions, logoutAll, getAccountSummary };
