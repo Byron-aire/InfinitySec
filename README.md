@@ -1,6 +1,6 @@
 # InfinitySec
 
-> A personal cybersecurity toolkit — check password strength, scan for data breaches, generate secure passwords, and stay sharp with security tips.
+> A personal cybersecurity toolkit — check passwords, scan for breaches, inspect SSL certs, scan URLs for threats, monitor your email weekly, and stay sharp with security tips.
 
 **[Live Demo →](https://securecheck-nu.vercel.app)**
 &nbsp;&nbsp;|&nbsp;&nbsp;
@@ -17,7 +17,12 @@ Demo login: `demo@infinitysec.io` / `Demo1234!`
 | **Password Generator** | Cryptographically secure (`crypto.getRandomValues()`), configurable length (8–64 chars), character sets, copy to clipboard, save with a custom label. |
 | **Security Tips** | 24 tips across Passwords, Phishing, Privacy, and AI categories. Keyword search + category filter. |
 | **Dashboard** | Check history, stat counts, recent activity. |
-| **GDPR Controls** | Export your full data as JSON, or permanently delete your account and all associated data in one click. |
+| **The Barrier** | 2FA readiness checklist for 27 platforms across 6 categories. Tracks which accounts have App, SMS, or Hardware key 2FA enabled. Progress saved per user. |
+| **SSL Checker** | Inspect any domain's SSL certificate — validity, days until expiry, issuer, and dates. Colour-coded status. |
+| **Convergence** | URL scanner backed by Google Safe Browsing API. Checks for malware, phishing, and unwanted software server-side. |
+| **Void Watch** | Weekly automated breach monitoring. Subscribes your email to a cron job that checks HaveIBeenPwned every Monday and emails you if new breaches are found. |
+| **Sessions** | View every device that has logged into your account. Panic button invalidates all active tokens instantly via `tokenVersion`. |
+| **Privacy Dashboard** | Full data transparency — see exactly what's stored, download your data as JSON, manage sessions, delete your account. |
 
 ---
 
@@ -37,8 +42,9 @@ Demo login: `demo@infinitysec.io` / `Demo1234!`
 | Backend | Node.js 20, Express 4, Mongoose 8 |
 | Database | MongoDB Atlas (M0 free tier) |
 | Auth | bcryptjs, jsonwebtoken (7-day expiry) |
-| Security | helmet, express-rate-limit, CORS locked to origin |
-| External API | HaveIBeenPwned v3 |
+| Security | helmet, express-rate-limit, CORS locked to origin, tokenVersion session invalidation |
+| External APIs | HaveIBeenPwned v3, Google Safe Browsing v4 |
+| Email | nodemailer (SMTP), node-cron (weekly digest) |
 | Deployment | Vercel (frontend) + Railway (backend) |
 
 ---
@@ -47,8 +53,11 @@ Demo login: `demo@infinitysec.io` / `Demo1234!`
 
 - Strength analysis is entirely client-side — passwords are never transmitted
 - Breach check emails are never stored — only the anonymised result is saved to history
+- URL scanning is server-side only — Google Safe Browsing key never exposed to the client
 - HTTP security headers via `helmet` (XSS protection, HSTS, CSP)
-- Rate limiting: 20 req / 15 min on auth routes, 30 req / hr on breach checks
+- Rate limiting: 20 req / 15 min on auth routes, 30 req / hr on breach and SSL checks, 50 req / hr on URL scans
+- Session invalidation via `tokenVersion` — panic button revokes all active tokens instantly
+- Login alerts sent by email when a sign-in is detected from a new IP address
 - CORS locked to the production frontend origin in deployment
 - All secrets via environment variables — never hardcoded, never logged
 
@@ -85,7 +94,16 @@ PORT=5001
 MONGODB_URI=mongodb://localhost:27017/infinitysec
 JWT_SECRET=<a long random string>
 HIBP_API_KEY=<your HaveIBeenPwned API key>
+GOOGLE_SAFE_BROWSING_KEY=<your Google Safe Browsing API key>
+SMTP_HOST=<smtp host>
+SMTP_PORT=587
+SMTP_USER=<smtp username>
+SMTP_PASS=<smtp password or app password>
+SMTP_FROM=InfinitySec <noreply@yourdomain.com>
+CLIENT_ORIGIN=http://localhost:5173
 ```
+
+> `HIBP_API_KEY`, `GOOGLE_SAFE_BROWSING_KEY`, and SMTP vars are optional for local dev — the features degrade gracefully without them.
 
 > Port 5001 is used locally to avoid a conflict with macOS AirPlay Receiver on port 5000.
 
@@ -119,12 +137,19 @@ The Vite dev server proxies `/api` requests to the backend — no CORS config ne
 | POST | `/api/auth/login` | No | Login, receive JWT |
 | DELETE | `/api/auth/account` | Yes | Delete account and all data |
 | GET | `/api/auth/export` | Yes | Export account + full history as JSON |
+| GET | `/api/auth/sessions` | Yes | List active sessions |
+| DELETE | `/api/auth/sessions` | Yes | Panic button — revoke all sessions |
+| GET | `/api/auth/account-summary` | Yes | Account + data summary for privacy dashboard |
 | GET | `/api/history` | Yes | Get check history |
 | POST | `/api/history` | Yes | Save a check result |
 | DELETE | `/api/history/:id` | Yes | Delete one history entry |
 | POST | `/api/breach/check` | No | Check email against HIBP |
 | GET | `/api/tips` | No | All tips (optional `?category=`) |
 | GET | `/api/tips/:id` | No | Single tip |
+| POST | `/api/ssl/check` | No | Inspect SSL cert for a domain |
+| POST | `/api/convergence/check` | No | Scan URL via Google Safe Browsing |
+| GET | `/api/voidwatch/status` | Yes | Get monitoring subscription status |
+| POST | `/api/voidwatch/toggle` | Yes | Enable/disable weekly monitoring |
 
 Protected routes require `Authorization: Bearer <token>`.
 
@@ -134,12 +159,12 @@ Protected routes require `Authorization: Bearer <token>`.
 
 The web app is the primary, always-accessible version. The mobile app (v3.0) is a second frontend on the same API — no backend changes required. Mobile unlocks push notifications, biometric unlock, and secure on-device storage.
 
-| Version | Status | What's planned |
-|---------|--------|----------------|
+| Version | Status | What's included |
+|---------|--------|-----------------|
 | v1.0 | ✅ Done | Core MERN app — all 6 features, local only |
-| v1.5 | ✅ Live | Security hardening, GDPR controls, Gojo UI, deployed to Vercel + Railway + Atlas |
-| v2.0 | 🔲 Summer 2026 | URL/phishing scanner, SSL checker, dark web monitoring, 2FA checklist, IoT security checklist, phishing awareness quiz, session management |
-| v2.5 | 🔲 Sept 2026 | AI assistant (Claude), security score, threat feed, phishing/smishing analyzer, weekly digest |
+| v1.5 | ✅ Done | Security hardening, GDPR controls, Gojo UI, deployed to Vercel + Railway + Atlas |
+| v2.0 | ✅ Live | 2FA checklist, SSL checker, URL scanner, Void Watch, session management, login alerts, privacy dashboard |
+| v2.5 | 🔲 Aug–Nov 2026 | AI assistant (Claude / Six Eyes), security score, threat feed, phishing analyzer, weekly digest |
 | v3.0 | 🔲 2027 | React Native (Expo) — same backend, biometric unlock, push notifications, remote wipe |
 
 ---
