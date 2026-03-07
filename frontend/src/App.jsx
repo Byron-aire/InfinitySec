@@ -1,5 +1,7 @@
+import { useState, useEffect } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import CommandPalette from './components/CommandPalette';
 import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -28,9 +30,23 @@ function NotFoundPage() {
 }
 
 export default function App() {
+  const [cmdOpen, setCmdOpen] = useState(false);
+
+  useEffect(() => {
+    const handler = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setCmdOpen(o => !o);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
   return (
     <>
-      <Navbar />
+      <Navbar onOpenPalette={() => setCmdOpen(true)} />
+      <CommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} />
       <div style={{ flex: 1 }}>
       <Routes>
         <Route path="/" element={<HomePage />} />
