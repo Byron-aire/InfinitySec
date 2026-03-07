@@ -149,33 +149,6 @@ code, .password-output {
 .navbar-links a { color: var(--color-text); font-size: 0.9rem; }
 .navbar-links a:hover { color: var(--color-accent); text-decoration: none; }
 
-.navbar-account-link {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-}
-
-.navbar-account-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-accent), var(--color-blue));
-  color: #fff;
-  font-size: 0.75rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: box-shadow var(--transition), transform var(--transition);
-}
-
-.navbar-account-link:hover .navbar-account-avatar {
-  box-shadow: 0 0 14px rgba(59, 130, 246, 0.5);
-  transform: scale(1.08);
-  text-decoration: none;
-}
-
 /* ─── Buttons ───────────────────────────────────────────────── */
 .btn-primary, .btn-secondary, .btn-ghost, .btn-danger-sm {
   cursor: pointer;
