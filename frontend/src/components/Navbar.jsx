@@ -37,12 +37,16 @@ export default function Navbar({ onOpenPalette }) {
         {user ? (
           <>
             <Link to="/dashboard" onClick={close}>Dashboard</Link>
+            <Link to="/account" className="navbar-account-link" onClick={close} title="Privacy &amp; Account">
+              <span className="navbar-account-avatar">{user.username?.[0]?.toUpperCase() || '?'}</span>
+            </Link>
             <button
               className="cmd-trigger-mobile"
               onClick={() => { close(); onOpenPalette(); }}
             >
               All tools ⌘K
             </button>
+            <Link to="/account" onClick={close}>Account &amp; Privacy</Link>
             <button onClick={handleLogout} className="btn-ghost">Logout</button>
           </>
         ) : (

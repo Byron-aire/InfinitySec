@@ -21,6 +21,7 @@ const TOOLS = [
   { path: '/convergence', icon: '🔍',  label: 'Convergence' },
   { path: '/voidwatch',   icon: '👁',  label: 'Void Watch' },
   { path: '/sessions',    icon: '💻',  label: 'Sessions' },
+  { path: '/account',    icon: '🛡',  label: 'Privacy' },
 ];
 
 function useCountUp(target, active) {
