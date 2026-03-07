@@ -1,6 +1,6 @@
 # InfinitySec
 
-> A personal cybersecurity toolkit — check passwords, scan for breaches, inspect SSL certs, scan URLs for threats, monitor your email weekly, and stay sharp with security tips.
+> A personal cybersecurity toolkit — check passwords, scan for breaches, inspect SSL certs, scan URLs for threats, monitor your email weekly, and stay sharp with live security news and expert tips.
 
 **[Live Demo →](https://securecheck-nu.vercel.app)**
 &nbsp;&nbsp;|&nbsp;&nbsp;
@@ -13,12 +13,12 @@ Demo login: `demo@infinitysec.io` / `Demo1234!`
 | Feature | Description |
 |---------|-------------|
 | **Password Checker** | Live strength analysis as you type — circular gauge, score 0–100, criteria breakdown. Runs entirely in the browser. Your password is never sent anywhere. |
-| **Breach Checker** | Checks your email against the HaveIBeenPwned database server-side. Your email is never stored. |
+| **Breach Checker** | Checks your email against the HaveIBeenPwned database server-side. Dramatic safe/breached result states. Your email is never stored. |
 | **Password Generator** | Cryptographically secure (`crypto.getRandomValues()`), configurable length (8–64 chars), character sets, copy to clipboard, save with a custom label. |
-| **Security Tips** | 24 tips across Passwords, Phishing, Privacy, and AI categories. Keyword search + category filter. |
-| **Dashboard** | Check history, stat counts, recent activity. |
+| **Security Learning Hub** | 56 expert tips across 6 categories (Passwords, Phishing, Privacy, AI, Network, Devices) — expandable cards, featured tip, stats bar, keyword search, category filter. Plus a live **Security Feed** tab pulling from Krebs on Security, The Hacker News, Troy Hunt, and SANS ISC — cached and refreshed hourly. |
+| **Dashboard** | Color-coded stat cards (purple/red/cyan per type), quick-access tools grid, check history, recent activity. |
 | **The Barrier** | 2FA readiness checklist for 27 platforms across 6 categories. Tracks which accounts have App, SMS, or Hardware key 2FA enabled. Progress saved per user. |
-| **SSL Checker** | Inspect any domain's SSL certificate — validity, days until expiry, issuer, and dates. Colour-coded status. |
+| **SSL Checker** | Inspect any domain's SSL certificate — validity, days until expiry (with lifetime progress bar), issuer, and dates. Colour-coded status. |
 | **Convergence** | URL scanner backed by Google Safe Browsing API. Checks for malware, phishing, and unwanted software server-side. |
 | **Void Watch** | Weekly automated breach monitoring. Subscribes your email to a cron job that checks HaveIBeenPwned every Monday and emails you if new breaches are found. |
 | **Sessions** | View every device that has logged into your account. Panic button invalidates all active tokens instantly via `tokenVersion`. |
@@ -45,6 +45,7 @@ Demo login: `demo@infinitysec.io` / `Demo1234!`
 | Security | helmet, express-rate-limit, CORS locked to origin, tokenVersion session invalidation |
 | External APIs | HaveIBeenPwned v3, Google Safe Browsing v4 |
 | Email | nodemailer (SMTP), node-cron (weekly digest) |
+| RSS | rss-parser — Krebs on Security, The Hacker News, Troy Hunt, SANS ISC |
 | Deployment | Vercel (frontend) + Railway (backend) |
 
 ---
@@ -54,6 +55,7 @@ Demo login: `demo@infinitysec.io` / `Demo1234!`
 - Strength analysis is entirely client-side — passwords are never transmitted
 - Breach check emails are never stored — only the anonymised result is saved to history
 - URL scanning is server-side only — Google Safe Browsing key never exposed to the client
+- RSS news feed is fetched server-side and cached — no external calls from the browser
 - HTTP security headers via `helmet` (XSS protection, HSTS, CSP)
 - Rate limiting: 20 req / 15 min on auth routes, 30 req / hr on breach and SSL checks, 50 req / hr on URL scans
 - Session invalidation via `tokenVersion` — panic button revokes all active tokens instantly
@@ -113,7 +115,7 @@ CLIENT_ORIGIN=http://localhost:5173
 cd backend && node seed.js
 ```
 
-Inserts 24 security tips across 4 categories.
+Inserts 56 security tips across 6 categories (Passwords, Phishing, Privacy, AI, Network, Devices).
 
 ### 4. Start development servers
 
@@ -146,6 +148,7 @@ The Vite dev server proxies `/api` requests to the backend — no CORS config ne
 | POST | `/api/breach/check` | No | Check email against HIBP |
 | GET | `/api/tips` | No | All tips (optional `?category=`) |
 | GET | `/api/tips/:id` | No | Single tip |
+| GET | `/api/news` | No | Live security news from RSS feeds (1hr cache) |
 | POST | `/api/ssl/check` | No | Inspect SSL cert for a domain |
 | POST | `/api/convergence/check` | No | Scan URL via Google Safe Browsing |
 | GET | `/api/voidwatch/status` | Yes | Get monitoring subscription status |
@@ -163,7 +166,7 @@ The web app is the primary, always-accessible version. The mobile app (v3.0) is 
 |---------|--------|-----------------|
 | v1.0 | ✅ Done | Core MERN app — all 6 features, local only |
 | v1.5 | ✅ Done | Security hardening, GDPR controls, Gojo UI, deployed to Vercel + Railway + Atlas |
-| v2.0 | ✅ Live | 2FA checklist, SSL checker, URL scanner, Void Watch, session management, login alerts, privacy dashboard |
+| v2.0 | ✅ Live | 2FA checklist, SSL checker, URL scanner, Void Watch, session management, login alerts, privacy dashboard, design overhaul, security learning hub with live RSS feed |
 | v2.5 | 🔲 Aug–Nov 2026 | AI assistant (Claude / Six Eyes), security score, threat feed, phishing analyzer, weekly digest |
 | v3.0 | 🔲 2027 | React Native (Expo) — same backend, biometric unlock, push notifications, remote wipe |
 
