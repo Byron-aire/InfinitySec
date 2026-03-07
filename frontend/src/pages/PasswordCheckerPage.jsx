@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { checkPasswordStrength } from '../utils/passwordStrength';
 import api from '../utils/api';
 import Reveal from '../components/Reveal';
+import Spinner from '../components/Spinner';
 
 function CircularGauge({ score, color }) {
   const r = 56, cx = 70, cy = 70;
@@ -19,12 +20,7 @@ function CircularGauge({ score, color }) {
           </feMerge>
         </filter>
       </defs>
-      <circle
-        cx={cx} cy={cy} r={r}
-        fill="none"
-        stroke="rgba(26, 26, 62, 0.9)"
-        strokeWidth="8"
-      />
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(26, 26, 62, 0.9)" strokeWidth="8" />
       <circle
         cx={cx} cy={cy} r={r}
         fill="none"
@@ -56,9 +52,17 @@ export default function PasswordCheckerPage() {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [saved, setSaved] = useState(false);
+  const [savedList, setSavedList] = useState([]);
+  const [loadingList, setLoadingList] = useState(true);
 
   const result = password ? checkPasswordStrength(password) : null;
   const isPerfect = result?.score === 100;
+
+  useEffect(() => {
+    api.get('/history')
+      .then(({ data }) => setSavedList(data.filter(h => h.type === 'strength' && h.result?.password)))
+      .finally(() => setLoadingList(false));
+  }, []);
 
   const handleSave = async () => {
     if (!result) return;
@@ -71,7 +75,16 @@ export default function PasswordCheckerPage() {
     });
     setSaved(true);
     setName('');
+    if (isPerfect) {
+      const { data } = await api.get('/history');
+      setSavedList(data.filter(h => h.type === 'strength' && h.result?.password));
+    }
     setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleDelete = async (id) => {
+    await api.delete(`/history/${id}`);
+    setSavedList(prev => prev.filter(h => h._id !== id));
   };
 
   return (
@@ -85,11 +98,9 @@ export default function PasswordCheckerPage() {
         className="password-input"
         placeholder="Type a password to check..."
         value={password}
-        onChange={(e) => {
-          setPassword(e.target.value);
-          setSaved(false);
-        }}
+        onChange={(e) => { setPassword(e.target.value); setSaved(false); }}
       />
+
       {result && (
         <Reveal>
           <div className="strength-result">
@@ -132,6 +143,41 @@ export default function PasswordCheckerPage() {
           </div>
         </Reveal>
       )}
+
+      <div className="saved-passwords">
+        <h3>Saved Passwords</h3>
+        {loadingList ? (
+          <Spinner />
+        ) : savedList.length === 0 ? (
+          <p className="muted">No passwords saved yet. Reach 100% strength to save one.</p>
+        ) : (
+          savedList.map((entry) => (
+            <div key={entry._id} className="saved-password-item">
+              <div className="saved-password-info">
+                {entry.result?.name && (
+                  <span className="saved-password-label">{entry.result.name}</span>
+                )}
+                <code>{entry.result?.password ?? '—'}</code>
+                <span className="saved-password-meta">
+                  {new Date(entry.createdAt).toLocaleDateString()}
+                </span>
+              </div>
+              <div className="saved-password-actions">
+                <button
+                  className="btn-secondary"
+                  style={{ fontSize: '0.8rem', padding: '0.25rem 0.6rem' }}
+                  onClick={() => navigator.clipboard.writeText(entry.result?.password ?? '')}
+                >
+                  Copy
+                </button>
+                <button className="btn-danger-sm" onClick={() => handleDelete(entry._id)}>
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
     </main>
   );
 }
