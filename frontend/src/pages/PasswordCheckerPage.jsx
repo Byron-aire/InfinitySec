@@ -65,20 +65,16 @@ export default function PasswordCheckerPage() {
   }, []);
 
   const handleSave = async () => {
-    if (!result) return;
+    if (!isPerfect) return;
     await api.post('/history', {
       type: 'strength',
       input: null,
-      result: isPerfect
-        ? { score: result.score, label: result.label, password, name: name.trim() || 'Untitled' }
-        : { score: result.score, label: result.label },
+      result: { score: 100, label: result.label, password, name: name.trim() || 'Untitled' },
     });
     setSaved(true);
     setName('');
-    if (isPerfect) {
-      const { data } = await api.get('/history');
-      setSavedList(data.filter(h => h.type === 'strength' && h.result?.password));
-    }
+    const { data } = await api.get('/history');
+    setSavedList(data.filter(h => h.type === 'strength' && h.result?.password));
     setTimeout(() => setSaved(false), 2000);
   };
 
@@ -116,7 +112,7 @@ export default function PasswordCheckerPage() {
               ))}
             </ul>
 
-            {isPerfect ? (
+            {isPerfect && (
               <div className="checker-save-section">
                 <p className="checker-save-hint">
                   This password is perfect — save it to your vault with a label.
@@ -135,10 +131,6 @@ export default function PasswordCheckerPage() {
                   </button>
                 </div>
               </div>
-            ) : (
-              <button className="btn-primary" onClick={handleSave} disabled={saved}>
-                {saved ? 'Saved!' : 'Save to History'}
-              </button>
             )}
           </div>
         </Reveal>
