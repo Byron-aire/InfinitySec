@@ -13,15 +13,15 @@ const TYPE_LABELS = {
 };
 
 const TOOLS = [
-  { path: '/checker',     icon: '🔑', label: 'Password Checker' },
-  { path: '/breach',      icon: '🛡',  label: 'Breach Checker' },
-  { path: '/generator',   icon: '⚡',  label: 'Generator' },
-  { path: '/barrier',     icon: '🔒',  label: 'The Barrier' },
-  { path: '/ssl',         icon: '🌐',  label: 'SSL Checker' },
-  { path: '/convergence', icon: '🔍',  label: 'Convergence' },
-  { path: '/voidwatch',   icon: '👁',  label: 'Void Watch' },
-  { path: '/sessions',    icon: '💻',  label: 'Sessions' },
-  { path: '/account',    icon: '🛡',  label: 'Privacy' },
+  { path: '/checker',     label: 'Password Checker' },
+  { path: '/breach',      label: 'Breach Checker' },
+  { path: '/generator',   label: 'Generator' },
+  { path: '/barrier',     label: 'The Barrier' },
+  { path: '/ssl',         label: 'SSL Checker' },
+  { path: '/convergence', label: 'Convergence' },
+  { path: '/voidwatch',   label: 'Void Watch' },
+  { path: '/sessions',    label: 'Sessions' },
+  { path: '/account',     label: 'Privacy' },
 ];
 
 function useCountUp(target, active) {
@@ -127,7 +127,6 @@ export default function DashboardPage() {
             <div className="tools-grid">
               {TOOLS.map((t) => (
                 <Link key={t.path} to={t.path} className="tool-chip">
-                  <span className="tool-chip-icon">{t.icon}</span>
                   {t.label}
                 </Link>
               ))}

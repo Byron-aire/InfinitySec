@@ -54,18 +54,23 @@ function CircularGauge({ score, color }) {
 
 export default function PasswordCheckerPage() {
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
   const [saved, setSaved] = useState(false);
 
   const result = password ? checkPasswordStrength(password) : null;
+  const isPerfect = result?.score === 100;
 
   const handleSave = async () => {
     if (!result) return;
     await api.post('/history', {
       type: 'strength',
       input: null,
-      result: { score: result.score, label: result.label },
+      result: isPerfect
+        ? { score: result.score, label: result.label, password, name: name.trim() || 'Untitled' }
+        : { score: result.score, label: result.label },
     });
     setSaved(true);
+    setName('');
     setTimeout(() => setSaved(false), 2000);
   };
 
@@ -87,22 +92,44 @@ export default function PasswordCheckerPage() {
       />
       {result && (
         <Reveal>
-        <div className="strength-result">
-          <div className="gauge-wrapper">
-            <CircularGauge score={result.score} color={result.color} />
-            <p className="gauge-label" style={{ color: result.color }}>{result.label}</p>
+          <div className="strength-result">
+            <div className="gauge-wrapper">
+              <CircularGauge score={result.score} color={result.color} />
+              <p className="gauge-label" style={{ color: result.color }}>{result.label}</p>
+            </div>
+            <ul className="feedback-list">
+              {result.feedback.map(({ criterion, met }) => (
+                <li key={criterion} style={{ color: met ? 'var(--color-safe)' : 'var(--color-muted)' }}>
+                  {met ? '✓' : '✗'} {criterion}
+                </li>
+              ))}
+            </ul>
+
+            {isPerfect ? (
+              <div className="checker-save-section">
+                <p className="checker-save-hint">
+                  This password is perfect — save it to your vault with a label.
+                </p>
+                <div className="save-row">
+                  <input
+                    type="text"
+                    className="label-input"
+                    placeholder="Label (e.g. Gmail, Netflix)"
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                    maxLength={40}
+                  />
+                  <button className="btn-primary" onClick={handleSave} disabled={saved}>
+                    {saved ? 'Saved!' : 'Save Password'}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button className="btn-primary" onClick={handleSave} disabled={saved}>
+                {saved ? 'Saved!' : 'Save to History'}
+              </button>
+            )}
           </div>
-          <ul className="feedback-list">
-            {result.feedback.map(({ criterion, met }) => (
-              <li key={criterion} style={{ color: met ? 'var(--color-safe)' : 'var(--color-muted)' }}>
-                {met ? '✓' : '✗'} {criterion}
-              </li>
-            ))}
-          </ul>
-          <button className="btn-primary" onClick={handleSave} disabled={saved}>
-            {saved ? 'Saved!' : 'Save to History'}
-          </button>
-        </div>
         </Reveal>
       )}
     </main>
