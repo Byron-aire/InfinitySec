@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import api from '../utils/api';
+import Reveal from '../components/Reveal';
 import ErrorMessage from '../components/ErrorMessage';
 
 const SCAN_MESSAGES = [
@@ -76,6 +77,7 @@ export default function BreachCheckerPage() {
         </button>
       </form>
       <ErrorMessage message={error} />
+
       {loading && (
         <div className="scan-display">
           <div className="scan-line">
@@ -84,25 +86,42 @@ export default function BreachCheckerPage() {
           </div>
         </div>
       )}
-      {result && (
-        <div className={`breach-result ${result.breached ? 'breached' : 'safe'}`}>
-          {result.breached ? (
-            <>
-              <h3 style={{ color: 'var(--color-danger)' }}>
-                ⚠ Breached — found in {result.count} site{result.count !== 1 ? 's' : ''}
-              </h3>
-              <ul>
-                {result.breaches.map((b) => (
-                  <li key={b.Name}>
-                    <strong>{b.Name}</strong> — {new Date(b.BreachDate).getFullYear()}
-                  </li>
-                ))}
-              </ul>
-            </>
-          ) : (
-            <h3 style={{ color: 'var(--color-safe)' }}>✓ No breaches found</h3>
-          )}
-        </div>
+
+      {result && !result.breached && (
+        <Reveal>
+          <div className="breach-result safe" style={{ textAlign: 'center', padding: '2rem 1.5rem' }}>
+            <div className="breach-result-safe-icon">✓</div>
+            <div className="breach-result-safe-title">You&apos;re in the clear</div>
+            <p className="breach-result-safe-sub">
+              No breaches found for this email address in the HaveIBeenPwned database.
+            </p>
+          </div>
+        </Reveal>
+      )}
+
+      {result && result.breached && (
+        <Reveal>
+          <div className="breach-result breached">
+            <div style={{ marginBottom: '0.5rem' }}>
+              <div className="breach-result-threat-count">{result.count}</div>
+              <div className="breach-result-threat-label">
+                breach{result.count !== 1 ? 'es' : ''} found
+              </div>
+            </div>
+            <p style={{ color: 'var(--color-muted)', fontSize: '0.88rem', marginBottom: '0.25rem' }}>
+              Your email was exposed in the following data breaches:
+            </p>
+            <ul className="breach-breach-list">
+              {result.breaches.map((b) => (
+                <li key={b.Name} className="breach-breach-item">
+                  <span className="breach-breach-dot" />
+                  <span className="breach-breach-name">{b.Name}</span>
+                  <span className="breach-breach-year">{new Date(b.BreachDate).getFullYear()}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Reveal>
       )}
     </main>
   );

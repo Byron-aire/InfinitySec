@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import CommandPalette from './components/CommandPalette';
+import CustomCursor from './components/CustomCursor';
 import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -45,6 +46,7 @@ export default function App() {
 
   return (
     <>
+      <CustomCursor />
       <Navbar onOpenPalette={() => setCmdOpen(true)} />
       <CommandPalette open={cmdOpen} onClose={() => setCmdOpen(false)} />
       <div style={{ flex: 1 }}>

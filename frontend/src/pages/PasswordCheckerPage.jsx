@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { checkPasswordStrength } from '../utils/passwordStrength';
 import api from '../utils/api';
+import Reveal from '../components/Reveal';
 
 function CircularGauge({ score, color }) {
   const r = 56, cx = 70, cy = 70;
@@ -85,6 +86,7 @@ export default function PasswordCheckerPage() {
         }}
       />
       {result && (
+        <Reveal>
         <div className="strength-result">
           <div className="gauge-wrapper">
             <CircularGauge score={result.score} color={result.color} />
@@ -101,6 +103,7 @@ export default function PasswordCheckerPage() {
             {saved ? 'Saved!' : 'Save to History'}
           </button>
         </div>
+        </Reveal>
       )}
     </main>
   );

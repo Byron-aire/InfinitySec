@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
+import Reveal from '../components/Reveal';
 import Spinner from '../components/Spinner';
 import ErrorMessage from '../components/ErrorMessage';
 
@@ -9,6 +11,17 @@ const TYPE_LABELS = {
   breach:    'Breach Check',
   generated: 'Generated',
 };
+
+const TOOLS = [
+  { path: '/checker',     icon: '🔑', label: 'Password Checker' },
+  { path: '/breach',      icon: '🛡',  label: 'Breach Checker' },
+  { path: '/generator',   icon: '⚡',  label: 'Generator' },
+  { path: '/barrier',     icon: '🔒',  label: 'The Barrier' },
+  { path: '/ssl',         icon: '🌐',  label: 'SSL Checker' },
+  { path: '/convergence', icon: '🔍',  label: 'Convergence' },
+  { path: '/voidwatch',   icon: '👁',  label: 'Void Watch' },
+  { path: '/sessions',    icon: '💻',  label: 'Sessions' },
+];
 
 function useCountUp(target, active) {
   const [value, setValue] = useState(0);
@@ -43,7 +56,6 @@ export default function DashboardPage() {
         setError('Failed to load history');
       } finally {
         setLoading(false);
-        // Slight delay so numbers animate in after cards appear
         setTimeout(() => setAnimating(true), 150);
       }
     };
@@ -92,47 +104,65 @@ export default function DashboardPage() {
         <Spinner />
       ) : (
         <>
-          <div className="stat-cards">
-            <div className="stat-card">
-              <span className="stat-value">{strengthCount}</span>
-              <span className="stat-label">Strength Checks</span>
+          <Reveal>
+            <div className="stat-cards">
+              <div className="stat-card stat-card--strength">
+                <span className="stat-value">{strengthCount}</span>
+                <span className="stat-label">Strength Checks</span>
+              </div>
+              <div className="stat-card stat-card--breach">
+                <span className="stat-value">{breachCount}</span>
+                <span className="stat-label">Breach Checks</span>
+              </div>
+              <div className="stat-card stat-card--generated">
+                <span className="stat-value">{generatedCount}</span>
+                <span className="stat-label">Passwords Generated</span>
+              </div>
             </div>
-            <div className="stat-card">
-              <span className="stat-value">{breachCount}</span>
-              <span className="stat-label">Breach Checks</span>
-            </div>
-            <div className="stat-card">
-              <span className="stat-value">{generatedCount}</span>
-              <span className="stat-label">Passwords Generated</span>
-            </div>
-          </div>
+          </Reveal>
 
-          <h3>Recent Activity</h3>
-          {history.length === 0 ? (
-            <p className="muted">No activity yet. Try checking a password!</p>
-          ) : (
-            <ul className="history-list">
-              {history.slice(0, 5).map((entry) => (
-                <li key={entry._id} className="history-item">
-                  <div>
-                    <span className={`badge badge-${entry.type}`}>{TYPE_LABELS[entry.type]}</span>
-                    <span className="muted">{new Date(entry.createdAt).toLocaleDateString()}</span>
-                  </div>
-                  <button className="btn-danger-sm" onClick={() => handleDelete(entry._id)}>
-                    Delete
-                  </button>
-                </li>
+          <Reveal delay={80}>
+            <h3>Tools</h3>
+            <div className="tools-grid">
+              {TOOLS.map((t) => (
+                <Link key={t.path} to={t.path} className="tool-chip">
+                  <span className="tool-chip-icon">{t.icon}</span>
+                  {t.label}
+                </Link>
               ))}
-            </ul>
-          )}
+            </div>
+          </Reveal>
 
-          <div className="danger-zone">
-            <h3>Danger Zone</h3>
-            <p className="muted">Permanently delete your account and all associated data.</p>
-            <button className="btn-danger-sm" onClick={handleDeleteAccount} disabled={deleting}>
-              {deleting ? 'Deleting...' : 'Delete Account'}
-            </button>
-          </div>
+          <Reveal delay={140}>
+            <h3>Recent Activity</h3>
+            {history.length === 0 ? (
+              <p className="muted">No activity yet. Try checking a password!</p>
+            ) : (
+              <ul className="history-list">
+                {history.slice(0, 5).map((entry) => (
+                  <li key={entry._id} className="history-item">
+                    <div>
+                      <span className={`badge badge-${entry.type}`}>{TYPE_LABELS[entry.type]}</span>
+                      <span className="muted">{new Date(entry.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <button className="btn-danger-sm" onClick={() => handleDelete(entry._id)}>
+                      Delete
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Reveal>
+
+          <Reveal delay={200}>
+            <div className="danger-zone">
+              <h3>Danger Zone</h3>
+              <p className="muted">Permanently delete your account and all associated data.</p>
+              <button className="btn-danger-sm" onClick={handleDeleteAccount} disabled={deleting}>
+                {deleting ? 'Deleting...' : 'Delete Account'}
+              </button>
+            </div>
+          </Reveal>
         </>
       )}
     </main>

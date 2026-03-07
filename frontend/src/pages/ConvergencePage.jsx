@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import api from '../utils/api';
+import Reveal from '../components/Reveal';
 import ErrorMessage from '../components/ErrorMessage';
 
 const SCAN_MESSAGES = [
@@ -91,6 +92,7 @@ export default function ConvergencePage() {
       {error && <ErrorMessage message={error} />}
 
       {result && (
+        <Reveal>
         <div className={`convergence-result ${result.safe ? 'convergence-result--safe' : 'convergence-result--threat'}`}>
           <div className="convergence-result-header">
             <span
@@ -125,6 +127,7 @@ export default function ConvergencePage() {
             </div>
           )}
         </div>
+        </Reveal>
       )}
     </main>
   );
