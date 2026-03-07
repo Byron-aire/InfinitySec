@@ -11,6 +11,7 @@ const tipsRoutes    = require('./routes/tips');
 const sslRoutes          = require('./routes/ssl');
 const convergenceRoutes  = require('./routes/convergence');
 const voidWatchRoutes    = require('./routes/voidWatch');
+const newsRoutes         = require('./routes/news');
 
 require('./jobs/digestCron');
 
@@ -35,6 +36,7 @@ app.use('/api/tips',    tipsRoutes);
 app.use('/api/ssl',          sslRoutes);
 app.use('/api/convergence', convergenceRoutes);
 app.use('/api/voidwatch',   voidWatchRoutes);
+app.use('/api/news',        newsRoutes);
 
 const PORT = process.env.PORT || 5001;
 
