@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import api from '../utils/api';
 import Reveal from '../components/Reveal';
 import ErrorMessage from '../components/ErrorMessage';
+import TrustBadge from '../components/TrustBadge';
 
 const SCAN_MESSAGES = [
   'Initialising breach database connection...',
@@ -62,6 +63,7 @@ export default function BreachCheckerPage() {
   return (
     <main className="page checker-page">
       <h2>Data Breach Checker</h2>
+      <TrustBadge badges={['Server-side only', 'Email never stored', 'Powered by HaveIBeenPwned']} />
       <p className="muted">
         Check if your email has been exposed in a known data breach via HaveIBeenPwned.
       </p>
@@ -91,6 +93,7 @@ export default function BreachCheckerPage() {
         <Reveal>
           <div className="breach-result safe" style={{ textAlign: 'center', padding: '2rem 1.5rem' }}>
             <div className="breach-result-safe-icon">✓</div>
+            <div className="threat-verdict threat-verdict--safe">CLEAR</div>
             <div className="breach-result-safe-title">You&apos;re in the clear</div>
             <p className="breach-result-safe-sub">
               No breaches found for this email address in the HaveIBeenPwned database.
@@ -102,6 +105,7 @@ export default function BreachCheckerPage() {
       {result && result.breached && (
         <Reveal>
           <div className="breach-result breached">
+            <div className="threat-verdict threat-verdict--danger">EXPOSED</div>
             <div style={{ marginBottom: '0.5rem' }}>
               <div className="breach-result-threat-count">{result.count}</div>
               <div className="breach-result-threat-label">

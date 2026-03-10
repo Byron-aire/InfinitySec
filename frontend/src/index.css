@@ -2090,4 +2090,111 @@ input:focus {
     flex-direction: column;
     gap: 0.2rem;
   }
+
+  /* Security score — stack on mobile */
+  .security-score-inner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .security-score-factors {
+    align-items: center;
+  }
 }
+
+/* ─── Security Score card ────────────────────────────────────── */
+.security-score-card {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  backdrop-filter: blur(12px);
+  margin-bottom: 1.5rem;
+}
+
+.security-score-inner {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.security-score-gauge {
+  flex-shrink: 0;
+}
+
+.security-score-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.security-score-grade {
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.3rem;
+}
+
+.security-score-desc {
+  color: var(--color-muted);
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.security-score-factors {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.security-factor-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+}
+
+.security-factor-label {
+  flex: 1;
+}
+
+.security-factor-pts {
+  font-size: 0.75rem;
+  font-weight: 600;
+  min-width: 2.5rem;
+  text-align: right;
+}
+
+/* ─── Trust badges ───────────────────────────────────────────── */
+.trust-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.6rem 0 1.25rem;
+}
+
+.trust-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.22rem 0.6rem;
+  border-radius: 99px;
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  color: var(--color-accent);
+  white-space: nowrap;
+}
+
+/* ─── Threat-level verdict ───────────────────────────────────── */
+.threat-verdict {
+  font-size: 1.75rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.threat-verdict--safe   { color: var(--color-safe); }
+.threat-verdict--danger { color: var(--color-danger); text-shadow: 0 0 20px rgba(239, 68, 68, 0.4); }
+.threat-verdict--warn   { color: var(--color-fair);  }

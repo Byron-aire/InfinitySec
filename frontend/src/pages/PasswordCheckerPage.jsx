@@ -3,6 +3,7 @@ import { checkPasswordStrength } from '../utils/passwordStrength';
 import api from '../utils/api';
 import Reveal from '../components/Reveal';
 import Spinner from '../components/Spinner';
+import TrustBadge from '../components/TrustBadge';
 
 function CircularGauge({ score, color }) {
   const r = 56, cx = 70, cy = 70;
@@ -86,6 +87,7 @@ export default function PasswordCheckerPage() {
   return (
     <main className="page checker-page">
       <h2>Password Strength Checker</h2>
+      <TrustBadge badges={['Client-side only', 'Never transmitted', 'Zero server contact']} />
       <p className="muted">
         Your password is never sent anywhere — analysis runs entirely in your browser.
       </p>

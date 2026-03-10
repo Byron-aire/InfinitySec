@@ -3,6 +3,7 @@ import api from '../utils/api';
 import Reveal from '../components/Reveal';
 import Spinner from '../components/Spinner';
 import ErrorMessage from '../components/ErrorMessage';
+import TrustBadge from '../components/TrustBadge';
 
 function formatDate(dateStr) {
   if (!dateStr) return '—';
@@ -73,9 +74,18 @@ export default function SSLCheckerPage() {
         : 'var(--color-danger)'
     : null;
 
+  const sslVerdict = result
+    ? !result.valid || result.daysRemaining <= 7
+      ? { word: 'CRITICAL', cls: 'threat-verdict--danger' }
+      : result.daysRemaining <= 30
+        ? { word: 'EXPIRING', cls: 'threat-verdict--warn' }
+        : { word: 'SECURE',   cls: 'threat-verdict--safe' }
+    : null;
+
   return (
     <main className="page ssl-page">
       <h2>SSL Checker</h2>
+      <TrustBadge badges={['Server-side lookup', 'Domain only', 'No data stored']} />
       <p className="muted" style={{ marginBottom: '1.5rem' }}>
         Inspect the SSL/TLS certificate for any domain — expiry date, issuer, and validity status.
       </p>
@@ -107,6 +117,9 @@ export default function SSLCheckerPage() {
       {result && (
         <Reveal>
           <div className="ssl-result" style={{ borderColor: statusColor }}>
+            <div className={`threat-verdict ${sslVerdict.cls}`} style={{ marginBottom: '0.75rem' }}>
+              {sslVerdict.word}
+            </div>
             <div className="ssl-result-header">
               <span className="ssl-domain">{result.domain}</span>
               <span

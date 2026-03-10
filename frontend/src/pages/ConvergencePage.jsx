@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import api from '../utils/api';
 import Reveal from '../components/Reveal';
 import ErrorMessage from '../components/ErrorMessage';
+import TrustBadge from '../components/TrustBadge';
 
 const SCAN_MESSAGES = [
   'Resolving domain…',
@@ -59,6 +60,7 @@ export default function ConvergencePage() {
   return (
     <main className="page convergence-page">
       <h2>Convergence</h2>
+      <TrustBadge badges={['Server-side only', 'URL never logged', 'Google Safe Browsing']} />
       <p className="muted" style={{ marginBottom: '1.5rem' }}>
         Scan any URL for malware, phishing, and unwanted software using Google Safe Browsing. The URL is checked server-side — never exposed in your browser.
       </p>
@@ -95,6 +97,9 @@ export default function ConvergencePage() {
         <Reveal>
         <div className={`convergence-result ${result.safe ? 'convergence-result--safe' : 'convergence-result--threat'}`}>
           <div className="convergence-result-header">
+            <div className={`threat-verdict ${result.safe ? 'threat-verdict--safe' : 'threat-verdict--danger'}`} style={{ marginBottom: '0.5rem' }}>
+              {result.safe ? 'CLEAN' : 'THREAT DETECTED'}
+            </div>
             <span
               className="convergence-status-badge"
               style={result.safe
@@ -102,7 +107,7 @@ export default function ConvergencePage() {
                 : { background: 'rgba(239,68,68,0.1)',  color: 'var(--color-danger)', border: '1px solid rgba(239,68,68,0.35)' }
               }
             >
-              {result.safe ? 'Clean' : 'Threat Detected'}
+              {result.safe ? 'No threats found' : 'Malicious content detected'}
             </span>
             <span className="convergence-url">{result.url}</span>
           </div>

@@ -5,6 +5,7 @@ import api from '../utils/api';
 import Reveal from '../components/Reveal';
 import Spinner from '../components/Spinner';
 import ErrorMessage from '../components/ErrorMessage';
+import SecurityScore from '../components/SecurityScore';
 
 const TYPE_LABELS = {
   strength:  'Password Check',
@@ -47,20 +48,24 @@ export default function DashboardPage() {
   const [error, setError] = useState('');
   const [deleting, setDeleting] = useState(false);
   const [animating, setAnimating] = useState(false);
+  const [voidwatchEnabled, setVoidwatchEnabled] = useState(false);
 
   useEffect(() => {
-    const fetchHistory = async () => {
+    const fetchAll = async () => {
       try {
-        const { data } = await api.get('/history');
-        setHistory(data);
-      } catch {
-        setError('Failed to load history');
+        const [histRes, vwRes] = await Promise.allSettled([
+          api.get('/history'),
+          api.get('/voidwatch/status'),
+        ]);
+        if (histRes.status === 'fulfilled') setHistory(histRes.value.data);
+        else setError('Failed to load history');
+        if (vwRes.status === 'fulfilled') setVoidwatchEnabled(vwRes.value.data.enabled);
       } finally {
         setLoading(false);
         setTimeout(() => setAnimating(true), 150);
       }
     };
-    fetchHistory();
+    fetchAll();
   }, []);
 
   const handleDelete = async (id) => {
@@ -106,6 +111,10 @@ export default function DashboardPage() {
       ) : (
         <>
           <Reveal>
+            <SecurityScore history={history} voidwatchEnabled={voidwatchEnabled} />
+          </Reveal>
+
+          <Reveal delay={40}>
             <div className="stat-cards">
               <div className="stat-card stat-card--strength">
                 <span className="stat-value">{strengthCount}</span>

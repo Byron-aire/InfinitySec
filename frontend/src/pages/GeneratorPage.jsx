@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import api from '../utils/api';
 import Spinner from '../components/Spinner';
+import TrustBadge from '../components/TrustBadge';
 
 const CHARS = {
   upper:   'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
@@ -111,6 +112,7 @@ export default function GeneratorPage() {
   return (
     <main className="page generator-page">
       <h2>Password Generator</h2>
+      <TrustBadge badges={['Cryptographically secure', 'Client-side only', 'window.crypto API']} />
       <p className="muted">
         Passwords are generated using <code>window.crypto.getRandomValues()</code> — cryptographically secure.
       </p>
