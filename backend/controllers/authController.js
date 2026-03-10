@@ -1,11 +1,12 @@
 const User = require('../models/User');
 const PasswordCheck = require('../models/PasswordCheck');
 const jwt = require('jsonwebtoken');
+const { randomUUID } = require('crypto');
 const { sendMail } = require('../utils/mailer');
 
-const generateToken = (user) =>
+const generateToken = (user, jti) =>
   jwt.sign(
-    { _id: user._id, username: user.username, email: user.email, tokenVersion: user.tokenVersion },
+    { _id: user._id, username: user.username, email: user.email, tokenVersion: user.tokenVersion, jti },
     process.env.JWT_SECRET,
     { expiresIn: '7d' }
   );
@@ -21,7 +22,12 @@ const register = async (req, res) => {
       return res.status(400).json({ message: 'Username or email already in use' });
     }
     const user = await User.create({ username, email, password });
-    const token = generateToken(user);
+    const jti = randomUUID();
+    const ip = req.ip || 'unknown';
+    const userAgent = req.headers['user-agent'] || 'unknown';
+    user.sessions.push({ jti, ip, userAgent });
+    await user.save();
+    const token = generateToken(user, jti);
     res.status(201).json({ token, user: { _id: user._id, username: user.username, email: user.email } });
   } catch {
     res.status(500).json({ message: 'Server error' });
@@ -41,7 +47,8 @@ const login = async (req, res) => {
     const ip = req.ip || 'unknown';
     const userAgent = req.headers['user-agent'] || 'unknown';
     const isNewIP = user.sessions.length > 0 && user.sessions.every(s => s.ip !== ip);
-    user.sessions.push({ ip, userAgent });
+    const jti = randomUUID();
+    user.sessions.push({ jti, ip, userAgent });
     if (user.sessions.length > 10) user.sessions = user.sessions.slice(-10);
     await user.save();
     if (isNewIP) {
@@ -61,7 +68,7 @@ const login = async (req, res) => {
         ].join('\n'),
       }).catch(() => {});
     }
-    const token = generateToken(user);
+    const token = generateToken(user, jti);
     res.json({ token, user: { _id: user._id, username: user.username, email: user.email } });
   } catch {
     res.status(500).json({ message: 'Server error' });
@@ -70,7 +77,21 @@ const login = async (req, res) => {
 
 const getSessions = async (req, res) => {
   try {
-    res.json({ sessions: req.user.sessions || [] });
+    res.json({ sessions: req.user.sessions || [], currentJti: req.jti });
+  } catch {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+const revokeSession = async (req, res) => {
+  try {
+    const { jti } = req.params;
+    if (!jti) return res.status(400).json({ message: 'Session ID required' });
+    // Prevent revoking your own current session via this endpoint — use logoutAll or client logout
+    await User.findByIdAndUpdate(req.user._id, {
+      $pull: { sessions: { jti } },
+    });
+    res.json({ message: 'Session revoked' });
   } catch {
     res.status(500).json({ message: 'Server error' });
   }
@@ -150,4 +171,4 @@ const getAccountSummary = async (req, res) => {
   }
 };
 
-module.exports = { register, login, deleteAccount, exportData, getSessions, logoutAll, getAccountSummary };
+module.exports = { register, login, deleteAccount, exportData, getSessions, revokeSession, logoutAll, getAccountSummary };

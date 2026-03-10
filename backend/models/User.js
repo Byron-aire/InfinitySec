@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const sessionSchema = new mongoose.Schema({
+  jti:       { type: String, required: true },
   ip:        { type: String, default: 'unknown' },
   userAgent: { type: String, default: 'unknown' },
   createdAt: { type: Date, default: Date.now },

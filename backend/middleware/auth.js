@@ -14,7 +14,12 @@ const authMiddleware = async (req, res, next) => {
     if (decoded.tokenVersion !== undefined && decoded.tokenVersion !== user.tokenVersion) {
       return res.status(401).json({ message: 'Session revoked' });
     }
+    // If this token carries a jti, verify it still exists in the sessions array
+    if (decoded.jti && !user.sessions.some(s => s.jti === decoded.jti)) {
+      return res.status(401).json({ message: 'Session revoked' });
+    }
     req.user = user;
+    req.jti  = decoded.jti || null;
     next();
   } catch {
     return res.status(401).json({ message: 'Invalid or expired token' });
