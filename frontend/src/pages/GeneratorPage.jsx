@@ -31,6 +31,7 @@ export default function GeneratorPage() {
   const [label, setLabel] = useState('');
   const [copied, setCopied] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [savedList, setSavedList] = useState([]);
   const [loadingList, setLoadingList] = useState(true);
   const scrambleRef = useRef(null);
@@ -92,16 +93,22 @@ export default function GeneratorPage() {
   };
 
   const save = async () => {
-    await api.post('/history', {
-      type: 'generated',
-      input: null,
-      result: { password, length, options, name: label.trim() || null },
-    });
-    setSaved(true);
-    setLabel('');
-    setTimeout(() => setSaved(false), 2000);
-    const { data } = await api.get('/history');
-    setSavedList(data.filter((h) => h.type === 'generated'));
+    if (saving || saved) return;
+    setSaving(true);
+    try {
+      await api.post('/history', {
+        type: 'generated',
+        input: null,
+        result: { password, length, options, name: label.trim() || null },
+      });
+      setSaved(true);
+      setLabel('');
+      setTimeout(() => setSaved(false), 2000);
+      const { data } = await api.get('/history');
+      setSavedList(data.filter((h) => h.type === 'generated'));
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDelete = async (id) => {
@@ -163,8 +170,8 @@ export default function GeneratorPage() {
               onChange={(e) => setLabel(e.target.value)}
               maxLength={40}
             />
-            <button className="btn-primary" onClick={save} disabled={saved || !anySelected}>
-              {saved ? 'Saved!' : 'Save'}
+            <button className="btn-primary" onClick={save} disabled={saved || saving || !anySelected}>
+              {saved ? 'Saved!' : saving ? 'Saving…' : 'Save'}
             </button>
           </div>
         </div>

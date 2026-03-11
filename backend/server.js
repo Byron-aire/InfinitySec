@@ -22,8 +22,16 @@ const allowedOrigins = process.env.NODE_ENV === 'production'
   : ['http://localhost:5173'];
 
 app.use(cors({ origin: allowedOrigins }));
-app.use(helmet());
-app.use(express.json());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc:     ["'none'"],
+      frameAncestors: ["'none'"],
+      formAction:     ["'none'"],
+    },
+  },
+}));
+app.use(express.json({ limit: '10kb' }));
 
 app.get('/', (req, res) => {
   res.json({ message: 'InfinitySec API running', version: '2.0.0' });

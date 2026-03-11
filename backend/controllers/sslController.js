@@ -12,7 +12,9 @@ async function checkSSL(req, res) {
     .trim()
     .toLowerCase();
 
-  if (!clean || !/^[a-z0-9.-]+\.[a-z]{2,}$/.test(clean)) {
+  // RFC 1123 hostname validation — each label 1-63 chars, no leading/trailing hyphens, max 253 chars total
+  const DOMAIN_REGEX = /^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/;
+  if (!clean || clean.length > 253 || !DOMAIN_REGEX.test(clean)) {
     return res.status(400).json({ error: 'Enter a valid domain (e.g. example.com)' });
   }
 

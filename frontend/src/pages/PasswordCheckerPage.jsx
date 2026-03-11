@@ -53,6 +53,7 @@ export default function PasswordCheckerPage() {
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [savedList, setSavedList] = useState([]);
   const [loadingList, setLoadingList] = useState(true);
 
@@ -66,17 +67,22 @@ export default function PasswordCheckerPage() {
   }, []);
 
   const handleSave = async () => {
-    if (!isPerfect) return;
-    await api.post('/history', {
-      type: 'strength',
-      input: null,
-      result: { score: 100, label: result.label, password, name: name.trim() || 'Untitled' },
-    });
-    setSaved(true);
-    setName('');
-    const { data } = await api.get('/history');
-    setSavedList(data.filter(h => h.type === 'strength' && h.result?.password));
-    setTimeout(() => setSaved(false), 2000);
+    if (!isPerfect || saving || saved) return;
+    setSaving(true);
+    try {
+      await api.post('/history', {
+        type: 'strength',
+        input: null,
+        result: { score: 100, label: result.label, password, name: name.trim() || 'Untitled' },
+      });
+      setSaved(true);
+      setName('');
+      const { data } = await api.get('/history');
+      setSavedList(data.filter(h => h.type === 'strength' && h.result?.password));
+      setTimeout(() => setSaved(false), 2000);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDelete = async (id) => {
@@ -128,8 +134,8 @@ export default function PasswordCheckerPage() {
                     onChange={e => setName(e.target.value)}
                     maxLength={40}
                   />
-                  <button className="btn-primary" onClick={handleSave} disabled={saved}>
-                    {saved ? 'Saved!' : 'Save Password'}
+                  <button className="btn-primary" onClick={handleSave} disabled={saved || saving}>
+                    {saved ? 'Saved!' : saving ? 'Saving…' : 'Save Password'}
                   </button>
                 </div>
               </div>

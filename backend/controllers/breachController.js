@@ -1,16 +1,17 @@
 const axios = require('axios');
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// RFC 5321 max email length is 254. Local part max 64, domain max 255.
+const EMAIL_REGEX = /^[a-zA-Z0-9._%+\-]{1,64}@[a-zA-Z0-9.\-]{1,255}\.[a-zA-Z]{2,63}$/;
 
 const checkBreach = async (req, res) => {
   try {
     const { email } = req.body;
 
-    if (!email) {
+    if (!email || typeof email !== 'string') {
       return res.status(400).json({ message: 'Email is required' });
     }
 
-    if (!EMAIL_REGEX.test(email)) {
+    if (email.length > 254 || !EMAIL_REGEX.test(email)) {
       return res.status(400).json({ message: 'Invalid email format' });
     }
 
