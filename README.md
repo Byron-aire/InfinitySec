@@ -16,12 +16,12 @@ Demo login: `demo@infinitysec.io` / `Demo1234!`
 | **Breach Checker** | Checks your email against the HaveIBeenPwned database server-side. Dramatic safe/breached result states. Your email is never stored. |
 | **Password Generator** | Cryptographically secure (`crypto.getRandomValues()`), configurable length (8–64 chars), character sets, copy to clipboard, save with a custom label. |
 | **Security Learning Hub** | 56 expert tips across 6 categories (Passwords, Phishing, Privacy, AI, Network, Devices) — expandable cards, featured tip, stats bar, keyword search, category filter. Plus a live **Security Feed** tab pulling from Krebs on Security, The Hacker News, Troy Hunt, and SANS ISC — cached and refreshed hourly. |
-| **Dashboard** | Color-coded stat cards (purple/red/cyan per type), quick-access tools grid, check history, recent activity. |
+| **Dashboard** | Security Score gauge (0–100, Gojo-graded), color-coded stat cards, quick-access tools grid, check history, recent activity. |
 | **The Barrier** | 2FA readiness checklist for 27 platforms across 6 categories. Tracks which accounts have App, SMS, or Hardware key 2FA enabled. Progress saved per user. |
 | **SSL Checker** | Inspect any domain's SSL certificate — validity, days until expiry (with lifetime progress bar), issuer, and dates. Colour-coded status. |
 | **Convergence** | URL scanner backed by Google Safe Browsing API. Checks for malware, phishing, and unwanted software server-side. |
 | **Void Watch** | Weekly automated breach monitoring. Subscribes your email to a cron job that checks HaveIBeenPwned every Monday and emails you if new breaches are found. |
-| **Sessions** | View every device that has logged into your account. Panic button invalidates all active tokens instantly via `tokenVersion`. |
+| **Sessions** | View every device with an active session. Each entry is a live JWT — revoke individual devices instantly or use the panic button to sign out everywhere. |
 | **Privacy Dashboard** | Full data transparency — see exactly what's stored, download your data as JSON, manage sessions, delete your account. |
 
 ---
@@ -56,10 +56,13 @@ Demo login: `demo@infinitysec.io` / `Demo1234!`
 - Breach check emails are never stored — only the anonymised result is saved to history
 - URL scanning is server-side only — Google Safe Browsing key never exposed to the client
 - RSS news feed is fetched server-side and cached — no external calls from the browser
-- HTTP security headers via `helmet` (XSS protection, HSTS, CSP)
-- Rate limiting: 20 req / 15 min on auth routes, 30 req / hr on breach and SSL checks, 50 req / hr on URL scans
-- Session invalidation via `tokenVersion` — panic button revokes all active tokens instantly
+- HTTP security headers via `helmet` with explicit CSP on API responses
+- Frontend security headers (CSP, `X-Frame-Options: DENY`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`) applied via Vercel on all HTML responses
+- Rate limiting on every route — auth (20/15min), breach/SSL (30/hr), URL scan (50/hr), history (200/15min), tips (120/15min), news (30/15min), voidwatch (30/15min)
+- Real active session tracking via JWT `jti` (UUID) — every token is individually tracked and revocable; revoking a session kills that device immediately, not on next request
+- Session invalidation via `tokenVersion` — panic button revokes all active tokens instantly across all devices
 - Login alerts sent by email when a sign-in is detected from a new IP address
+- Input validated on all endpoints — RFC 5321-compliant email validation, RFC 1123-compliant domain validation, result object fields whitelisted per history type
 - CORS locked to the production frontend origin in deployment
 - All secrets via environment variables — never hardcoded, never logged
 
@@ -140,6 +143,7 @@ The Vite dev server proxies `/api` requests to the backend — no CORS config ne
 | DELETE | `/api/auth/account` | Yes | Delete account and all data |
 | GET | `/api/auth/export` | Yes | Export account + full history as JSON |
 | GET | `/api/auth/sessions` | Yes | List active sessions |
+| DELETE | `/api/auth/sessions/:jti` | Yes | Revoke a single session by device |
 | DELETE | `/api/auth/sessions` | Yes | Panic button — revoke all sessions |
 | GET | `/api/auth/account-summary` | Yes | Account + data summary for privacy dashboard |
 | GET | `/api/history` | Yes | Get check history |
@@ -166,8 +170,8 @@ The web app is the primary, always-accessible version. The mobile app (v3.0) is 
 |---------|--------|-----------------|
 | v1.0 | ✅ Done | Core MERN app — all 6 features, local only |
 | v1.5 | ✅ Done | Security hardening, GDPR controls, Gojo UI, deployed to Vercel + Railway + Atlas |
-| v2.0 | ✅ Live | 2FA checklist, SSL checker, URL scanner, Void Watch, session management, login alerts, privacy dashboard, design overhaul, security learning hub with live RSS feed |
-| v2.5 | 🔲 Aug–Nov 2026 | AI assistant (Claude / Six Eyes), security score, threat feed, phishing analyzer, weekly digest |
+| v2.0 | ✅ Live | 2FA checklist, SSL checker, URL scanner, Void Watch, real active session tracking (JWT jti), login alerts, privacy dashboard, security score gauge, design overhaul, security learning hub with live RSS feed |
+| v2.5 | 🔲 Aug–Nov 2026 | AI security layer — Six Eyes assistant (Claude API, streaming), Domain Strength score (multi-stage AI analysis), The Briefing (AI weekly digest email), Cursed Intel (personalised breach impact), AI anomaly detection, Passkeys / WebAuthn |
 | v3.0 | 🔲 2027 | React Native (Expo) — same backend, biometric unlock, push notifications, remote wipe |
 
 ---
