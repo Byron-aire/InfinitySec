@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
+import { useNavigate } from 'react-router-dom';
 import Spinner from '../components/Spinner';
 import ErrorMessage from '../components/ErrorMessage';
 
@@ -20,10 +21,12 @@ function downloadJSON(data, filename) {
 }
 
 export default function AccountPage() {
+  const navigate = useNavigate();
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [exporting, setExporting] = useState(false);
+  const [withdrawing, setWithdrawing] = useState(false);
 
   useEffect(() => {
     api.get('/auth/account-summary')
@@ -31,6 +34,19 @@ export default function AccountPage() {
       .catch(() => setError('Could not load account data.'))
       .finally(() => setLoading(false));
   }, []);
+
+  const handleWithdrawConsent = async () => {
+    if (!window.confirm('Withdraw AI consent? Six Eyes will be disabled until you accept again.')) return;
+    setWithdrawing(true);
+    try {
+      await api.delete('/six-eyes/consent');
+      setSummary(prev => ({ ...prev, aiConsent: { accepted: false, acceptedAt: null } }));
+    } catch {
+      setError('Failed to withdraw consent.');
+    } finally {
+      setWithdrawing(false);
+    }
+  };
 
   const handleExport = async () => {
     setExporting(true);
@@ -115,6 +131,35 @@ export default function AccountPage() {
                   }
                 </div>
               </div>
+            </div>
+          </section>
+
+          {/* AI & Data */}
+          <section className="account-section">
+            <h3 className="account-section-title">AI & Data</h3>
+            <div className="account-fields">
+              <div className="account-field">
+                <span className="account-field-label">Six Eyes consent</span>
+                <span style={{ color: summary.aiConsent?.accepted ? 'var(--color-safe)' : 'var(--color-muted)' }}>
+                  {summary.aiConsent?.accepted ? 'Granted' : 'Not given'}
+                </span>
+              </div>
+              {summary.aiConsent?.accepted && (
+                <div className="account-field">
+                  <span className="account-field-label">Consent given</span>
+                  <span>{formatDate(summary.aiConsent.acceptedAt)}</span>
+                </div>
+              )}
+            </div>
+            <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <Link to="/six-eyes/log" className="btn-secondary" style={{ fontSize: '0.85rem', padding: '0.4rem 0.9rem' }}>
+                View AI audit log
+              </Link>
+              {summary.aiConsent?.accepted && (
+                <button className="btn-danger-sm" onClick={handleWithdrawConsent} disabled={withdrawing} style={{ fontSize: '0.85rem', padding: '0.4rem 0.9rem' }}>
+                  {withdrawing ? 'Withdrawing…' : 'Withdraw AI consent'}
+                </button>
+              )}
             </div>
           </section>
 

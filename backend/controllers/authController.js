@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const PasswordCheck = require('../models/PasswordCheck');
+const AuditLog = require('../models/AuditLog');
 const jwt = require('jsonwebtoken');
 const { randomUUID } = require('crypto');
 const { sendMail } = require('../utils/mailer');
@@ -111,7 +112,10 @@ const logoutAll = async (req, res) => {
 
 const deleteAccount = async (req, res) => {
   try {
-    await PasswordCheck.deleteMany({ userId: req.user._id });
+    await Promise.all([
+      PasswordCheck.deleteMany({ userId: req.user._id }),
+      AuditLog.deleteMany({ userId: req.user._id }),
+    ]);
     await User.findByIdAndDelete(req.user._id);
     res.json({ message: 'Account deleted' });
   } catch {
@@ -121,16 +125,21 @@ const deleteAccount = async (req, res) => {
 
 const exportData = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).select('-password');
-    const history = await PasswordCheck.find({ userId: req.user._id }).sort({ createdAt: -1 });
+    const [user, history, aiLog] = await Promise.all([
+      User.findById(req.user._id).select('-password'),
+      PasswordCheck.find({ userId: req.user._id }).sort({ createdAt: -1 }),
+      AuditLog.find({ userId: req.user._id }).sort({ createdAt: -1 }).select('-userId'),
+    ]);
     res.json({
       exportedAt: new Date().toISOString(),
       account: {
-        username: user.username,
-        email: user.email,
+        username:  user.username,
+        email:     user.email,
         createdAt: user.createdAt,
+        aiConsent: user.aiConsent,
       },
       history,
+      aiAuditLog: aiLog,
     });
   } catch {
     res.status(500).json({ message: 'Server error' });
@@ -164,6 +173,10 @@ const getAccountSummary = async (req, res) => {
       monitoring: {
         enabled:      req.user.monitoring.enabled,
         subscribedAt: req.user.monitoring.subscribedAt,
+      },
+      aiConsent: {
+        accepted:   req.user.aiConsent?.accepted || false,
+        acceptedAt: req.user.aiConsent?.acceptedAt || null,
       },
     });
   } catch {

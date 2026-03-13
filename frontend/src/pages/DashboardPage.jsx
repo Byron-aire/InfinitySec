@@ -14,6 +14,7 @@ const TYPE_LABELS = {
 };
 
 const TOOLS = [
+  { path: '/six-eyes',    label: 'Six Eyes',        ai: true },
   { path: '/checker',     label: 'Password Checker' },
   { path: '/breach',      label: 'Breach Checker' },
   { path: '/generator',   label: 'Generator' },
@@ -135,7 +136,7 @@ export default function DashboardPage() {
             <h3>Tools</h3>
             <div className="tools-grid">
               {TOOLS.map((t) => (
-                <Link key={t.path} to={t.path} className="tool-chip">
+                <Link key={t.path} to={t.path} className={`tool-chip${t.ai ? ' tool-chip--ai' : ''}`}>
                   {t.label}
                 </Link>
               ))}

@@ -12,6 +12,7 @@ const sslRoutes          = require('./routes/ssl');
 const convergenceRoutes  = require('./routes/convergence');
 const voidWatchRoutes    = require('./routes/voidWatch');
 const newsRoutes         = require('./routes/news');
+const sixEyesRoutes      = require('./routes/sixEyes');
 
 require('./jobs/digestCron');
 
@@ -34,7 +35,7 @@ app.use(helmet({
 app.use(express.json({ limit: '10kb' }));
 
 app.get('/', (req, res) => {
-  res.json({ message: 'InfinitySec API running', version: '2.0.0' });
+  res.json({ message: 'InfinitySec API running', version: '2.5.0' });
 });
 
 app.use('/api/auth',    authRoutes);
@@ -45,6 +46,7 @@ app.use('/api/ssl',          sslRoutes);
 app.use('/api/convergence', convergenceRoutes);
 app.use('/api/voidwatch',   voidWatchRoutes);
 app.use('/api/news',        newsRoutes);
+app.use('/api/six-eyes',   sixEyesRoutes);
 
 const PORT = process.env.PORT || 5001;
 

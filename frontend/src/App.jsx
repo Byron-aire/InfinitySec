@@ -19,6 +19,8 @@ import ConvergencePage from './pages/ConvergencePage';
 import SessionsPage from './pages/SessionsPage';
 import VoidWatchPage from './pages/VoidWatchPage';
 import AccountPage from './pages/AccountPage';
+import SixEyesPage from './pages/SixEyesPage';
+import SixEyesLogPage from './pages/SixEyesLogPage';
 
 function NotFoundPage() {
   return (
@@ -66,6 +68,8 @@ export default function App() {
           <Route path="/sessions"   element={<SessionsPage />} />
           <Route path="/voidwatch"  element={<VoidWatchPage />} />
           <Route path="/account"    element={<AccountPage />} />
+          <Route path="/six-eyes"       element={<SixEyesPage />} />
+          <Route path="/six-eyes/log"   element={<SixEyesLogPage />} />
         </Route>
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="*" element={<NotFoundPage />} />

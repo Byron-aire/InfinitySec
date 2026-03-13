@@ -19,6 +19,11 @@ const userSchema = new mongoose.Schema({
     enabled:      { type: Boolean, default: false },
     subscribedAt: { type: Date },
   },
+  aiConsent: {
+    accepted:   { type: Boolean, default: false },
+    acceptedAt: { type: Date },
+  },
+  briefingEnabled: { type: Boolean, default: false },
 });
 
 userSchema.pre('save', async function (next) {
