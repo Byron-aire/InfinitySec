@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { Routes, Route, Link } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import CommandPalette from './components/CommandPalette';
@@ -92,6 +93,7 @@ export default function App() {
           {' '}· The S in IoT stands for Security.
         </p>
       </footer>
+      <Analytics />
     </>
   );
 }
