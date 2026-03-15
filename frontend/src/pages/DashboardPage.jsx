@@ -14,16 +14,17 @@ const TYPE_LABELS = {
 };
 
 const TOOLS = [
-  { path: '/six-eyes',    label: 'Six Eyes',        ai: true },
-  { path: '/checker',     label: 'Password Checker' },
-  { path: '/breach',      label: 'Breach Checker' },
-  { path: '/generator',   label: 'Generator' },
-  { path: '/barrier',     label: 'The Barrier' },
-  { path: '/ssl',         label: 'SSL Checker' },
-  { path: '/convergence', label: 'Convergence' },
-  { path: '/voidwatch',   label: 'Void Watch' },
-  { path: '/sessions',    label: 'Sessions' },
-  { path: '/account',     label: 'Privacy' },
+  { path: '/six-eyes',        label: 'Six Eyes',        ai: true },
+  { path: '/domain-strength', label: 'Domain Strength', ai: true },
+  { path: '/checker',         label: 'Password Checker' },
+  { path: '/breach',          label: 'Breach Checker' },
+  { path: '/generator',       label: 'Generator' },
+  { path: '/barrier',         label: 'The Barrier' },
+  { path: '/ssl',             label: 'SSL Checker' },
+  { path: '/convergence',     label: 'Convergence' },
+  { path: '/voidwatch',       label: 'Void Watch' },
+  { path: '/sessions',        label: 'Sessions' },
+  { path: '/account',         label: 'Privacy' },
 ];
 
 function useCountUp(target, active) {

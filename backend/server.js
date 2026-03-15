@@ -12,7 +12,8 @@ const sslRoutes          = require('./routes/ssl');
 const convergenceRoutes  = require('./routes/convergence');
 const voidWatchRoutes    = require('./routes/voidWatch');
 const newsRoutes         = require('./routes/news');
-const sixEyesRoutes      = require('./routes/sixEyes');
+const sixEyesRoutes          = require('./routes/sixEyes');
+const domainStrengthRoutes   = require('./routes/domainStrength');
 
 require('./jobs/digestCron');
 
@@ -46,7 +47,8 @@ app.use('/api/ssl',          sslRoutes);
 app.use('/api/convergence', convergenceRoutes);
 app.use('/api/voidwatch',   voidWatchRoutes);
 app.use('/api/news',        newsRoutes);
-app.use('/api/six-eyes',   sixEyesRoutes);
+app.use('/api/six-eyes',        sixEyesRoutes);
+app.use('/api/domain-strength', domainStrengthRoutes);
 
 const PORT = process.env.PORT || 5001;
 

@@ -13,8 +13,9 @@ const ALL_COMMANDS = [
   { id: 'dashboard',   label: 'Dashboard',            desc: 'Activity, stats, and history',                path: '/dashboard',   category: 'Account', auth: true },
   { id: 'sessions',    label: 'Sessions',             desc: 'Manage active sessions and panic button',     path: '/sessions',    category: 'Account', auth: true },
   { id: 'account',     label: 'Privacy Dashboard',    desc: 'Your data, rights, and export',               path: '/account',     category: 'Account', auth: true },
-  { id: 'six-eyes',    label: 'Six Eyes',             desc: 'AI security assistant — ask anything',        path: '/six-eyes',    category: 'AI',      auth: true },
-  { id: 'six-eyes-log',label: 'AI Audit Log',         desc: 'Review your AI interaction history',          path: '/six-eyes/log',category: 'AI',      auth: true },
+  { id: 'six-eyes',        label: 'Six Eyes',          desc: 'AI security assistant — ask anything',          path: '/six-eyes',        category: 'AI', auth: true },
+  { id: 'domain-strength', label: 'Domain Strength',  desc: 'AI-powered domain security analysis',           path: '/domain-strength', category: 'AI', auth: true },
+  { id: 'six-eyes-log',    label: 'AI Audit Log',     desc: 'Review your AI interaction history',            path: '/six-eyes/log',    category: 'AI', auth: true },
   { id: 'tips',        label: 'Security Tips',        desc: 'Passwords, phishing, privacy, AI',            path: '/tips',        category: 'Learn',   auth: false },
   { id: 'privacy',     label: 'Privacy Policy',       desc: 'GDPR policy and data practices',              path: '/privacy',     category: 'Learn',   auth: false },
 ];

@@ -22,6 +22,7 @@ import VoidWatchPage from './pages/VoidWatchPage';
 import AccountPage from './pages/AccountPage';
 import SixEyesPage from './pages/SixEyesPage';
 import SixEyesLogPage from './pages/SixEyesLogPage';
+import DomainStrengthPage from './pages/DomainStrengthPage';
 
 function NotFoundPage() {
   return (
@@ -69,8 +70,9 @@ export default function App() {
           <Route path="/sessions"   element={<SessionsPage />} />
           <Route path="/voidwatch"  element={<VoidWatchPage />} />
           <Route path="/account"    element={<AccountPage />} />
-          <Route path="/six-eyes"       element={<SixEyesPage />} />
+          <Route path="/six-eyes"         element={<SixEyesPage />} />
           <Route path="/six-eyes/log"   element={<SixEyesLogPage />} />
+          <Route path="/domain-strength" element={<DomainStrengthPage />} />
         </Route>
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="*" element={<NotFoundPage />} />
