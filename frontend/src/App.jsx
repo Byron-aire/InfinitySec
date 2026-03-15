@@ -23,6 +23,7 @@ import AccountPage from './pages/AccountPage';
 import SixEyesPage from './pages/SixEyesPage';
 import SixEyesLogPage from './pages/SixEyesLogPage';
 import DomainStrengthPage from './pages/DomainStrengthPage';
+import BriefingPage from './pages/BriefingPage';
 
 function NotFoundPage() {
   return (
@@ -73,6 +74,7 @@ export default function App() {
           <Route path="/six-eyes"         element={<SixEyesPage />} />
           <Route path="/six-eyes/log"   element={<SixEyesLogPage />} />
           <Route path="/domain-strength" element={<DomainStrengthPage />} />
+          <Route path="/briefing"        element={<BriefingPage />} />
         </Route>
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="*" element={<NotFoundPage />} />

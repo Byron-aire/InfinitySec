@@ -150,6 +150,12 @@ export default function AccountPage() {
                   <span>{formatDate(summary.aiConsent.acceptedAt)}</span>
                 </div>
               )}
+              <div className="account-field">
+                <span className="account-field-label">The Briefing</span>
+                <span style={{ color: summary.briefingEnabled ? 'var(--color-safe)' : 'var(--color-muted)' }}>
+                  {summary.briefingEnabled ? 'Subscribed' : 'Not subscribed'}
+                </span>
+              </div>
             </div>
             <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
               <Link to="/six-eyes/log" className="btn-secondary" style={{ fontSize: '0.85rem', padding: '0.4rem 0.9rem' }}>

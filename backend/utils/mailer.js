@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 
-async function sendMail({ to, subject, text }) {
+async function sendMail({ to, subject, text, html }) {
   if (!process.env.SMTP_HOST || !process.env.SMTP_USER) return;
   const transporter = nodemailer.createTransport({
     host:   process.env.SMTP_HOST,
@@ -13,6 +13,7 @@ async function sendMail({ to, subject, text }) {
     to,
     subject,
     text,
+    ...(html && { html }),
   });
 }
 

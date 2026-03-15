@@ -1182,6 +1182,137 @@ input:focus {
 
 .ssl-field span:last-child { font-size: 0.95rem; }
 
+/* ─── The Briefing ──────────────────────────────────────────── */
+.briefing-page h2 { margin-bottom: 0.5rem; color: var(--color-accent); }
+
+.briefing-card {
+  background: var(--color-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  transition: border-color var(--transition);
+}
+
+.briefing-card--active {
+  border-color: rgba(167,139,250,0.35);
+  box-shadow: 0 0 20px rgba(167,139,250,0.08);
+}
+
+.briefing-status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.briefing-status-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--color-muted);
+  margin-bottom: 0.3rem;
+}
+
+.briefing-status-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.briefing-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-muted);
+  opacity: 0.4;
+  margin-top: 0.25rem;
+  flex-shrink: 0;
+}
+
+.briefing-indicator--on {
+  background: var(--color-safe);
+  opacity: 1;
+  box-shadow: 0 0 8px var(--color-safe);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.briefing-consent-gate {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(167,139,250,0.06);
+  border: 1px solid rgba(167,139,250,0.2);
+  border-radius: var(--radius);
+}
+
+.briefing-consent-text {
+  font-size: 0.875rem;
+  color: var(--color-muted);
+  margin-bottom: 0.75rem;
+}
+
+.briefing-about {
+  margin-top: 1.5rem;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+}
+
+.briefing-about-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--color-muted);
+  margin-bottom: 1rem;
+}
+
+.briefing-about-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-bottom: 1.1rem;
+}
+
+.briefing-about-item {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+
+.briefing-about-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.briefing-about-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.2rem;
+}
+
+.briefing-about-desc {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  line-height: 1.45;
+}
+
+.briefing-about-note {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  border-top: 1px solid var(--color-border);
+  padding-top: 0.9rem;
+  line-height: 1.5;
+}
+
 /* ─── Domain Strength ───────────────────────────────────────── */
 .ds-page h2 { margin-bottom: 0.5rem; color: var(--color-accent); }
 

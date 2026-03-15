@@ -14,8 +14,10 @@ const voidWatchRoutes    = require('./routes/voidWatch');
 const newsRoutes         = require('./routes/news');
 const sixEyesRoutes          = require('./routes/sixEyes');
 const domainStrengthRoutes   = require('./routes/domainStrength');
+const briefingRoutes         = require('./routes/briefing');
 
 require('./jobs/digestCron');
+require('./jobs/briefingCron');
 
 const app = express();
 
@@ -49,6 +51,7 @@ app.use('/api/voidwatch',   voidWatchRoutes);
 app.use('/api/news',        newsRoutes);
 app.use('/api/six-eyes',        sixEyesRoutes);
 app.use('/api/domain-strength', domainStrengthRoutes);
+app.use('/api/briefing',        briefingRoutes);
 
 const PORT = process.env.PORT || 5001;
 
