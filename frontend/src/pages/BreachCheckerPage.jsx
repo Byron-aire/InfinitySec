@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import Reveal from '../components/Reveal';
 import ErrorMessage from '../components/ErrorMessage';
 import TrustBadge from '../components/TrustBadge';
+import AIDisclosure from '../components/AIDisclosure';
+import Spinner from '../components/Spinner';
 
 const SCAN_MESSAGES = [
   'Initialising breach database connection...',
@@ -13,13 +16,126 @@ const SCAN_MESSAGES = [
   'Compiling threat intelligence...',
 ];
 
+function aggregateDataClasses(breaches) {
+  const seen = new Set();
+  for (const b of breaches) {
+    for (const dc of (b.DataClasses || [])) seen.add(dc);
+  }
+  return [...seen].sort();
+}
+
+function CursedIntel({ breaches, consent }) {
+  const [impact, setImpact]       = useState(null);
+  const [loading, setLoading]     = useState(false);
+  const [error, setError]         = useState('');
+  const [analysed, setAnalysed]   = useState(false);
+
+  const dataClasses = aggregateDataClasses(breaches);
+
+  const handleAnalyse = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const { data } = await api.post('/breach/impact', {
+        dataClasses,
+        breachCount: breaches.length,
+      });
+      setImpact(data);
+      setAnalysed(true);
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Analysis failed. Please try again.';
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="cursed-intel">
+      <div className="cursed-intel-header">
+        <span className="cursed-intel-label">Cursed Intel</span>
+        <span className="cursed-intel-badge">AI</span>
+      </div>
+      <p className="cursed-intel-sub">
+        What can an attacker actually do with your exposed data?
+      </p>
+
+      {dataClasses.length > 0 && (
+        <div className="cursed-intel-classes">
+          {dataClasses.map(dc => (
+            <span key={dc} className="cursed-intel-class">{dc}</span>
+          ))}
+        </div>
+      )}
+
+      {!consent ? (
+        <p className="cursed-intel-consent-note">
+          AI analysis requires consent —{' '}
+          <Link to="/six-eyes" className="cursed-intel-consent-link">enable AI features</Link>
+        </p>
+      ) : !analysed ? (
+        <button
+          className="btn-primary cursed-intel-btn"
+          onClick={handleAnalyse}
+          disabled={loading}
+        >
+          {loading ? 'Analysing…' : 'Analyse my exposure'}
+        </button>
+      ) : null}
+
+      {loading && (
+        <div style={{ display: 'flex', justifyContent: 'center', margin: '1rem 0' }}>
+          <Spinner />
+        </div>
+      )}
+
+      {error && (
+        <p style={{ color: 'var(--color-danger)', fontSize: '0.85rem', marginTop: '0.75rem' }}>{error}</p>
+      )}
+
+      {impact && (
+        <div className="cursed-intel-result">
+          {impact.cached && (
+            <p className="cursed-intel-cached">Cached result · analysed recently</p>
+          )}
+          <p className="cursed-intel-headline">{impact.headline}</p>
+          <div className="cursed-intel-explanation">
+            {impact.explanation.split('\n\n').map((para, i) => (
+              <p key={i}>{para}</p>
+            ))}
+          </div>
+          {impact.actions?.length > 0 && (
+            <div className="cursed-intel-actions">
+              <p className="cursed-intel-actions-title">Do this now</p>
+              <ul>
+                {impact.actions.map((a, i) => (
+                  <li key={i} className="cursed-intel-action-item">{a}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          <AIDisclosure model="Claude Haiku" />
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function BreachCheckerPage() {
-  const [email, setEmail] = useState('');
-  const [result, setResult] = useState(null);
+  const [email, setEmail]     = useState('');
+  const [result, setResult]   = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError]     = useState('');
   const [scanMsg, setScanMsg] = useState('');
+  const [consent, setConsent] = useState(false);
   const scanRef = useRef(null);
+
+  // Load AI consent status on mount
+  useEffect(() => {
+    api.get('/six-eyes/log')
+      .then(({ data }) => setConsent(data.consent?.accepted || false))
+      .catch(() => setConsent(false));
+  }, []);
 
   useEffect(() => {
     if (loading) {
@@ -124,6 +240,8 @@ export default function BreachCheckerPage() {
                 </li>
               ))}
             </ul>
+
+            <CursedIntel breaches={result.breaches} consent={consent} />
           </div>
         </Reveal>
       )}
