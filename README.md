@@ -204,4 +204,10 @@ The web app is the primary, always-accessible version. The mobile app (v3.0) is 
 
 ---
 
+## License
+
+MIT — see [LICENSE](./LICENSE) for details.
+
+---
+
 *Built by Byron Gift Ochieng Makasembo · Griffith College Cork · 2026*
