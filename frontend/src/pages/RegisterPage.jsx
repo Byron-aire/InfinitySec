@@ -9,6 +9,7 @@ export default function RegisterPage() {
   const [form, setForm] = useState({ username: '', email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [verifyPrompt, setVerifyPrompt] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -26,14 +27,40 @@ export default function RegisterPage() {
     setError('');
     try {
       const { data } = await api.post('/auth/register', form);
-      login(data.token, data.user);
-      navigate('/dashboard');
+      if (data.token) {
+        // SMTP not configured — auto-verified, log in immediately
+        login(data.token, data.user);
+        navigate('/dashboard');
+      } else {
+        // Email verification required
+        setVerifyPrompt(true);
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
     } finally {
       setLoading(false);
     }
   };
+
+  if (verifyPrompt) {
+    return (
+      <main className="page auth-page">
+        <div className="auth-form" style={{ textAlign: 'center' }}>
+          <h2>Check your inbox</h2>
+          <p style={{ color: 'var(--color-muted)', margin: '1rem 0' }}>
+            We sent a verification link to <strong>{form.email}</strong>.
+            Click it to activate your account, then sign in.
+          </p>
+          <p style={{ color: 'var(--color-muted)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
+            The link expires in 24 hours.
+          </p>
+          <Link to="/login" className="btn-primary" style={{ display: 'inline-block' }}>
+            Go to Sign In
+          </Link>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="page auth-page">
@@ -42,7 +69,7 @@ export default function RegisterPage() {
         <ErrorMessage message={error} />
         <input
           type="text"
-          placeholder="Username"
+          placeholder="Username (3–30 chars, letters/numbers/_/-)"
           value={form.username}
           onChange={(e) => setForm({ ...form, username: e.target.value })}
         />
@@ -54,7 +81,7 @@ export default function RegisterPage() {
         />
         <input
           type="password"
-          placeholder="Password (min 8 characters)"
+          placeholder="Password (min 8 chars, upper + lower + number)"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />

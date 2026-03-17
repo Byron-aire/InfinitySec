@@ -140,8 +140,9 @@ async function run() {
 
   const user = await User.create({
     username: DEMO_USERNAME,
-    email: DEMO_EMAIL,
+    email:    DEMO_EMAIL,
     password: DEMO_PASSWORD,
+    emailVerified: true, // Demo account skips email verification
   });
 
   const now = new Date();

@@ -82,15 +82,17 @@ export default function DashboardPage() {
 
   const handleDeleteAccount = async () => {
     const confirmed = window.confirm(
-      'This will permanently delete your account and all your data. This cannot be undone.'
+      'This will permanently delete your account and all your data. This cannot be undone.\n\nClick OK to continue.'
     );
     if (!confirmed) return;
+    const password = window.prompt('Enter your password to confirm account deletion:');
+    if (!password) return;
     setDeleting(true);
     try {
-      await api.delete('/auth/account');
+      await api.delete('/auth/account', { data: { password } });
       logout();
-    } catch {
-      setError('Failed to delete account. Please try again.');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to delete account. Please try again.');
       setDeleting(false);
     }
   };
