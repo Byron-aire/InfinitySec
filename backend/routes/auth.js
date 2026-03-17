@@ -16,6 +16,14 @@ const {
   logoutAll,
   getAccountSummary,
 } = require('../controllers/authController');
+const {
+  registerOptions,
+  registerVerify,
+  loginOptions,
+  loginVerify,
+  listPasskeys,
+  removePasskey,
+} = require('../controllers/passkeyController');
 const authMiddleware = require('../middleware/auth');
 
 // Registration + login: 20 attempts per 15 minutes per IP
@@ -61,5 +69,13 @@ router.get('/sessions',             authMiddleware, getSessions);
 router.delete('/sessions/:jti',     authMiddleware, revokeSession);
 router.delete('/sessions',          authMiddleware, logoutAll);
 router.get('/account-summary',      authMiddleware, getAccountSummary);
+
+// Passkeys (WebAuthn)
+router.post('/passkeys/register/options', authLimiter, authMiddleware, registerOptions);
+router.post('/passkeys/register/verify',  authLimiter, authMiddleware, registerVerify);
+router.post('/passkeys/login/options',    authLimiter, loginOptions);
+router.post('/passkeys/login/verify',     authLimiter, loginVerify);
+router.get('/passkeys',                   authMiddleware, listPasskeys);
+router.delete('/passkeys/:id',            authMiddleware, removePasskey);
 
 module.exports = router;

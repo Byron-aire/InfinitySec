@@ -485,6 +485,7 @@ const exportData = async (req, res) => {
         email:     user.email,
         createdAt: user.createdAt,
         aiConsent: user.aiConsent,
+        passkeys:  (user.passkeys || []).map(pk => ({ deviceName: pk.deviceName, registeredAt: pk.registeredAt })),
       },
       history,
       aiAuditLog: aiLog,

@@ -4,6 +4,15 @@ const bcrypt = require('bcryptjs');
 const MAX_LOGIN_ATTEMPTS = 5;
 const LOCK_TIME = 15 * 60 * 1000; // 15 minutes
 
+const passkeySchema = new mongoose.Schema({
+  credentialID:        { type: String, required: true },  // base64url
+  credentialPublicKey: { type: String, required: true },  // base64 of Buffer
+  counter:             { type: Number, default: 0 },
+  transports:          { type: [String], default: [] },
+  deviceName:          { type: String, default: 'Passkey' },
+  registeredAt:        { type: Date, default: Date.now },
+}, { _id: true });
+
 const sessionSchema = new mongoose.Schema({
   jti:       { type: String, required: true },
   ip:        { type: String, default: 'unknown' },
@@ -41,6 +50,10 @@ const userSchema = new mongoose.Schema({
     acceptedAt: { type: Date },
   },
   briefingEnabled: { type: Boolean, default: false },
+
+  // Passkeys (WebAuthn)
+  passkeys:         { type: [passkeySchema], default: [] },
+  currentChallenge: { type: String },  // ephemeral — cleared after verification
 });
 
 // Virtual: is the account currently locked?

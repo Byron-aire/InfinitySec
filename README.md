@@ -28,6 +28,7 @@ Demo login: `demo@infinitysec.io` / `Demo1234!`
 | **Domain Strength** | Multi-stage AI domain security analysis — SSL certificate, HTTP security headers, RDAP registration data, and Google Safe Browsing combined into a Claude-synthesised score (0–100), grade (A–F), findings, and recommendations. 24hr cache. |
 | **The Briefing** | Weekly AI security digest emailed every Monday — personalised breach status, synthesis of the week's top security headlines, and a concrete action item. Powered by Claude Haiku. |
 | **Cursed Intel** | AI-powered personalised breach impact analysis. Given your breach history, Claude analyses the exposed data types, estimates real-world risk, and recommends targeted remediation steps. |
+| **Passkeys** | Register Face ID, Touch ID, or a hardware security key as a passwordless sign-in method. Manage passkeys (add / remove) from the Privacy Dashboard. Powered by WebAuthn via SimpleWebAuthn. |
 
 ---
 
@@ -184,6 +185,12 @@ The Vite dev server proxies `/api` requests to the backend — no CORS config ne
 | POST | `/api/six-eyes/chat` | Yes | Stream Claude AI response (SSE, 15/hr) |
 | GET | `/api/six-eyes/log` | Yes | View AI audit log (last 100 entries) |
 | POST | `/api/domain-strength/check` | Yes | Multi-stage domain analysis — SSL + headers + RDAP + Safe Browsing → Claude score (10/hr) |
+| POST | `/api/auth/passkeys/register/options` | Yes | Generate WebAuthn registration options |
+| POST | `/api/auth/passkeys/register/verify` | Yes | Verify attestation and save passkey |
+| POST | `/api/auth/passkeys/login/options` | No | Generate WebAuthn authentication options |
+| POST | `/api/auth/passkeys/login/verify` | No | Verify assertion and issue JWT |
+| GET | `/api/auth/passkeys` | Yes | List registered passkeys |
+| DELETE | `/api/auth/passkeys/:id` | Yes | Remove a passkey |
 | GET | `/api/health` | No | Server health check |
 
 Protected routes require `Authorization: Bearer <token>`.
@@ -199,7 +206,7 @@ The web app is the primary, always-accessible version. The mobile app (v3.0) is 
 | v1.0 | ✅ Done | Core MERN app — all 6 features, local only |
 | v1.5 | ✅ Done | Security hardening, GDPR controls, Gojo UI, deployed to Vercel + Railway + Atlas |
 | v2.0 | ✅ Live | 2FA checklist, SSL checker, URL scanner, Void Watch, real active session tracking (JWT jti), login alerts, privacy dashboard, security score gauge, design overhaul, security learning hub with live RSS feed |
-| v2.5 | 🔶 In Progress | AI security layer — **Six Eyes** ✅, **Domain Strength** ✅, **The Briefing** ✅, **Cursed Intel** ✅, full auth hardening ✅ (email verification, password reset, account lockout, HTTPS/HSTS, structured logging); Passkeys / WebAuthn pending |
+| v2.5 | ✅ Done | AI security layer — **Six Eyes** ✅, **Domain Strength** ✅, **The Briefing** ✅, **Cursed Intel** ✅, **Passkeys / WebAuthn** ✅, full auth hardening ✅ (email verification, password reset, account lockout, HTTPS/HSTS, structured logging) |
 | v3.0 | 🔲 2027 | React Native (Expo) — same backend, biometric unlock, push notifications, remote wipe |
 
 ---

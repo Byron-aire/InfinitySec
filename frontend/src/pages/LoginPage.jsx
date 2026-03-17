@@ -12,6 +12,7 @@ export default function LoginPage() {
   const [unverified, setUnverified] = useState(false);
   const [resendLoading, setResendLoading] = useState(false);
   const [resendDone, setResendDone] = useState(false);
+  const [passkeyLoading, setPasskeyLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -39,6 +40,31 @@ export default function LoginPage() {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePasskeyLogin = async () => {
+    if (!form.email) {
+      setError('Enter your email above, then try signing in with a passkey.');
+      return;
+    }
+    setError('');
+    setPasskeyLoading(true);
+    try {
+      const { startAuthentication } = await import('@simplewebauthn/browser');
+      const { data: options } = await api.post('/auth/passkeys/login/options', { email: form.email });
+      const authResp = await startAuthentication({ optionsJSON: options });
+      const { data } = await api.post('/auth/passkeys/login/verify', { ...authResp, email: form.email });
+      login(data.token, data.user);
+      navigate('/dashboard');
+    } catch (err) {
+      if (err?.name === 'NotAllowedError') {
+        setError('Passkey sign-in was cancelled.');
+      } else {
+        setError(err.response?.data?.message || 'Passkey sign-in failed.');
+      }
+    } finally {
+      setPasskeyLoading(false);
     }
   };
 
@@ -104,6 +130,27 @@ export default function LoginPage() {
         <button type="submit" className="btn-primary" disabled={loading}>
           {loading ? <Spinner /> : 'Sign In'}
         </button>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', margin: '0.25rem 0' }}>
+          <div style={{ flex: 1, height: '1px', background: 'var(--color-border)' }} />
+          <span style={{ color: 'var(--color-muted)', fontSize: '0.78rem' }}>or</span>
+          <div style={{ flex: 1, height: '1px', background: 'var(--color-border)' }} />
+        </div>
+
+        <button
+          type="button"
+          className="btn-secondary"
+          onClick={handlePasskeyLogin}
+          disabled={passkeyLoading}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M12 2a7 7 0 0 1 7 7c0 4.5-7 13-7 13S5 13.5 5 9a7 7 0 0 1 7-7z"/>
+            <circle cx="12" cy="9" r="2.5"/>
+          </svg>
+          {passkeyLoading ? <Spinner /> : 'Sign in with a passkey'}
+        </button>
+
         <p>
           <Link to="/forgot-password" style={{ color: 'var(--color-muted)', fontSize: '0.85rem' }}>
             Forgot your password?

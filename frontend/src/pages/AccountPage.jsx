@@ -27,12 +27,20 @@ export default function AccountPage() {
   const [error, setError] = useState('');
   const [exporting, setExporting] = useState(false);
   const [withdrawing, setWithdrawing] = useState(false);
+  const [passkeys, setPasskeys] = useState([]);
+  const [passkeyError, setPasskeyError] = useState('');
+  const [registeringPasskey, setRegisteringPasskey] = useState(false);
+  const [removingId, setRemovingId] = useState(null);
 
   useEffect(() => {
     api.get('/auth/account-summary')
       .then(({ data }) => setSummary(data))
       .catch(() => setError('Could not load account data.'))
       .finally(() => setLoading(false));
+
+    api.get('/auth/passkeys')
+      .then(({ data }) => setPasskeys(data.passkeys || []))
+      .catch(() => {});
   }, []);
 
   const handleWithdrawConsent = async () => {
@@ -45,6 +53,41 @@ export default function AccountPage() {
       setError('Failed to withdraw consent.');
     } finally {
       setWithdrawing(false);
+    }
+  };
+
+  const handleRegisterPasskey = async () => {
+    setPasskeyError('');
+    setRegisteringPasskey(true);
+    try {
+      const { startRegistration } = await import('@simplewebauthn/browser');
+      const deviceName = window.prompt('Name this passkey (e.g. MacBook, iPhone):') || 'Passkey';
+      const { data: options } = await api.post('/auth/passkeys/register/options');
+      const attResp = await startRegistration({ optionsJSON: options });
+      await api.post('/auth/passkeys/register/verify', { ...attResp, deviceName });
+      const { data } = await api.get('/auth/passkeys');
+      setPasskeys(data.passkeys || []);
+    } catch (err) {
+      if (err?.name === 'NotAllowedError') {
+        setPasskeyError('Passkey registration was cancelled.');
+      } else {
+        setPasskeyError(err.response?.data?.message || 'Passkey registration failed.');
+      }
+    } finally {
+      setRegisteringPasskey(false);
+    }
+  };
+
+  const handleRemovePasskey = async (id) => {
+    if (!window.confirm('Remove this passkey?')) return;
+    setRemovingId(id);
+    try {
+      await api.delete(`/auth/passkeys/${id}`);
+      setPasskeys(prev => prev.filter(pk => pk._id !== id));
+    } catch {
+      setPasskeyError('Failed to remove passkey.');
+    } finally {
+      setRemovingId(null);
     }
   };
 
@@ -167,6 +210,57 @@ export default function AccountPage() {
                 </button>
               )}
             </div>
+          </section>
+
+          {/* Passkeys */}
+          <section className="account-section">
+            <h3 className="account-section-title">Passkeys</h3>
+            <p style={{ color: 'var(--color-muted)', fontSize: '0.88rem', marginBottom: '1rem' }}>
+              Sign in with Face ID, Touch ID, or a hardware key — no password needed.
+            </p>
+            {passkeyError && (
+              <p style={{ color: 'var(--color-danger)', fontSize: '0.88rem', marginBottom: '0.75rem' }}>{passkeyError}</p>
+            )}
+            {passkeys.length > 0 ? (
+              <div className="account-fields" style={{ marginBottom: '0.75rem' }}>
+                {passkeys.map(pk => (
+                  <div key={pk._id} className="account-field">
+                    <span className="account-field-label" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="M12 2a7 7 0 0 1 7 7c0 4.5-7 13-7 13S5 13.5 5 9a7 7 0 0 1 7-7z"/>
+                        <circle cx="12" cy="9" r="2.5"/>
+                      </svg>
+                      {pk.deviceName}
+                    </span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <span style={{ color: 'var(--color-muted)', fontSize: '0.82rem' }}>
+                        {formatDate(pk.registeredAt)}
+                      </span>
+                      <button
+                        className="btn-danger-sm"
+                        onClick={() => handleRemovePasskey(pk._id)}
+                        disabled={removingId === pk._id}
+                        style={{ fontSize: '0.78rem', padding: '0.25rem 0.6rem' }}
+                      >
+                        {removingId === pk._id ? 'Removing…' : 'Remove'}
+                      </button>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p style={{ color: 'var(--color-muted)', fontSize: '0.88rem', marginBottom: '0.75rem' }}>
+                No passkeys registered yet.
+              </p>
+            )}
+            <button
+              className="btn-secondary"
+              onClick={handleRegisterPasskey}
+              disabled={registeringPasskey}
+              style={{ fontSize: '0.85rem', padding: '0.4rem 0.9rem' }}
+            >
+              {registeringPasskey ? 'Waiting for authenticator…' : '+ Register a new passkey'}
+            </button>
           </section>
 
           {/* What we don't store */}
