@@ -70,7 +70,23 @@ Respond with ONLY valid JSON (no markdown fences):
   return JSON.parse(jsonStr);
 }
 
+// Escape AI-generated strings before embedding in HTML to prevent XSS
+function escapeHtml(str) {
+  if (typeof str !== 'string') return '';
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function buildHtmlEmail({ breachSection, newsSection, actionSection }) {
+  const safe = {
+    breach: escapeHtml(breachSection),
+    news:   escapeHtml(newsSection),
+    action: escapeHtml(actionSection),
+  };
   const date = new Date().toLocaleDateString('en-IE', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   });
@@ -92,17 +108,17 @@ function buildHtmlEmail({ breachSection, newsSection, actionSection }) {
 
     <div style="margin-bottom:22px;">
       <p style="color:#3B82F6;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin:0 0 8px;">Breach Status</p>
-      <p style="color:#333;font-size:14px;line-height:1.65;margin:0;">${breachSection}</p>
+      <p style="color:#333;font-size:14px;line-height:1.65;margin:0;">${safe.breach}</p>
     </div>
 
     <div style="margin-bottom:22px;padding:16px;background:#f8f9ff;border-radius:6px;border-left:3px solid #3B82F6;">
       <p style="color:#3B82F6;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin:0 0 8px;">Security News</p>
-      <p style="color:#333;font-size:14px;line-height:1.65;margin:0;">${newsSection}</p>
+      <p style="color:#333;font-size:14px;line-height:1.65;margin:0;">${safe.news}</p>
     </div>
 
     <div style="margin-bottom:28px;padding:16px;background:#f6f5ff;border-radius:6px;border-left:3px solid #A78BFA;">
       <p style="color:#7C3AED;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;margin:0 0 8px;">This Week&apos;s Action</p>
-      <p style="color:#333;font-size:14px;line-height:1.65;margin:0;">${actionSection}</p>
+      <p style="color:#333;font-size:14px;line-height:1.65;margin:0;">${safe.action}</p>
     </div>
   </td></tr>
   <tr><td style="background:#f8f8f8;padding:16px 32px;border-top:1px solid #eee;">

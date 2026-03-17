@@ -1,9 +1,15 @@
 const mongoose = require('mongoose');
 const Tip = require('../models/Tip');
 
+const VALID_CATEGORIES = ['Passwords', 'Phishing', 'Privacy', 'AI', 'Network', 'Devices'];
+
 const getTips = async (req, res) => {
   try {
-    const filter = req.query.category ? { category: req.query.category } : {};
+    const { category } = req.query;
+    if (category !== undefined && !VALID_CATEGORIES.includes(category)) {
+      return res.status(400).json({ message: `Invalid category. Must be one of: ${VALID_CATEGORIES.join(', ')}` });
+    }
+    const filter = category ? { category } : {};
     const tips = await Tip.find(filter).sort({ createdAt: 1 });
     res.json(tips);
   } catch {
