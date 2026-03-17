@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const rateLimit = require('express-rate-limit');
+const logger = require('../utils/logger');
 const {
   register,
   login,
@@ -21,18 +22,30 @@ const authMiddleware = require('../middleware/auth');
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
-  message: { message: 'Too many attempts, please try again in 15 minutes' },
   standardHeaders: true,
   legacyHeaders: false,
+  message: { message: 'Too many attempts, please try again in 15 minutes' },
+  handler: (req, res, next, options) => {
+    logger.warn('rate_limit.auth', {
+      ip:   req.ip,
+      path: req.path,
+      ua:   (req.headers['user-agent'] || '').substring(0, 80),
+    });
+    res.status(options.statusCode).json(options.message);
+  },
 });
 
-// Email-sending endpoints: 5 per hour per IP (verification + password reset)
+// Email-sending endpoints: 5 per hour per IP
 const emailLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 5,
-  message: { message: 'Too many requests, please try again in an hour' },
   standardHeaders: true,
   legacyHeaders: false,
+  message: { message: 'Too many requests, please try again in an hour' },
+  handler: (req, res, next, options) => {
+    logger.warn('rate_limit.email', { ip: req.ip, path: req.path });
+    res.status(options.statusCode).json(options.message);
+  },
 });
 
 router.post('/register',            authLimiter,  register);
