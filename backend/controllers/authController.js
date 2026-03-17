@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const { randomUUID, randomBytes, createHash } = require('crypto');
 const { sendMail } = require('../utils/mailer');
 const claude = require('../utils/claudeClient');
+const logger = require('../utils/logger');
 
 const CHAT_MODEL = process.env.CLAUDE_CHAT_MODEL || 'claude-haiku-4-5-20251001';
 
@@ -232,6 +233,7 @@ const register = async (req, res) => {
     const userAgent = req.headers['user-agent'] || 'unknown';
     user.sessions.push({ jti, ip, userAgent });
     await user.save();
+    logger.info('auth.register', { ip });
     const token = generateToken(user, jti);
     return res.status(201).json({ token, user: { _id: user._id, username: user.username, email: user.email } });
   } catch {
@@ -255,6 +257,7 @@ const login = async (req, res) => {
 
     // Check account lockout BEFORE revealing credential result
     if (user?.isLocked) {
+      logger.warn('auth.login_blocked', { reason: 'account_locked', ip: req.ip });
       return res.status(403).json({
         message: 'Account temporarily locked due to too many failed sign-in attempts. Try again in 15 minutes.',
         code: 'ACCOUNT_LOCKED',
@@ -263,10 +266,12 @@ const login = async (req, res) => {
 
     if (!user || !isMatch) {
       if (user) await user.incLoginAttempts();
+      logger.warn('auth.login_failure', { reason: 'invalid_credentials', ip: req.ip });
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     if (!user.emailVerified) {
+      logger.warn('auth.login_blocked', { reason: 'email_not_verified', ip: req.ip });
       return res.status(403).json({
         message: 'Please verify your email before signing in.',
         code: 'EMAIL_NOT_VERIFIED',
@@ -292,6 +297,7 @@ const login = async (req, res) => {
     if (user.sessions.length > 10) user.sessions = user.sessions.slice(-10);
     await user.save();
 
+    logger.info('auth.login_success', { ip: req.ip });
     const token = generateToken(user, jti);
     res.json({ token, user: { _id: user._id, username: user.username, email: user.email } });
 
@@ -402,6 +408,7 @@ const resetPassword = async (req, res) => {
     user.lockUntil            = undefined;
     await user.save();
 
+    logger.info('auth.password_reset', { ip: req.ip });
     res.json({ message: 'Password reset successfully. Please sign in with your new password.' });
   } catch {
     res.status(500).json({ message: 'Server error' });
@@ -457,6 +464,7 @@ const deleteAccount = async (req, res) => {
       AuditLog.deleteMany({ userId: req.user._id }),
     ]);
     await User.findByIdAndDelete(req.user._id);
+    logger.info('auth.account_delete', { ip: req.ip });
     res.json({ message: 'Account deleted' });
   } catch {
     res.status(500).json({ message: 'Server error' });
