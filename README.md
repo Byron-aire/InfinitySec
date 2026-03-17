@@ -24,6 +24,10 @@ Demo login: `demo@infinitysec.io` / `Demo1234!`
 | **Sessions** | View every device with an active session. Each entry is a live JWT — revoke individual devices instantly or use the panic button to sign out everywhere. |
 | **Privacy Dashboard** | Full data transparency — see exactly what's stored, download your data as JSON, manage sessions, delete your account. |
 | **Six Eyes** | Streaming AI security assistant powered by Claude. Answers security questions with context from your account's security posture. Requires explicit consent — no PII is sent to the AI. Full audit trail with SHA-256 prompt hashing. |
+| **Six Eyes Log** | AI audit trail — view every Six Eyes session with token usage, model, and timestamp. Withdraw AI consent from this page. |
+| **Domain Strength** | Multi-stage AI domain security analysis — SSL certificate, HTTP security headers, RDAP registration data, and Google Safe Browsing combined into a Claude-synthesised score (0–100), grade (A–F), findings, and recommendations. 24hr cache. |
+| **The Briefing** | Weekly AI security digest emailed every Monday — personalised breach status, synthesis of the week's top security headlines, and a concrete action item. Powered by Claude Haiku. |
+| **Cursed Intel** | AI-powered personalised breach impact analysis. Given your breach history, Claude analyses the exposed data types, estimates real-world risk, and recommends targeted remediation steps. |
 
 ---
 
@@ -60,15 +64,23 @@ Demo login: `demo@infinitysec.io` / `Demo1234!`
 - RSS news feed is fetched server-side and cached — no external calls from the browser
 - HTTP security headers via `helmet` with explicit CSP on API responses
 - Frontend security headers (CSP, `X-Frame-Options: DENY`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`) applied via Vercel on all HTML responses
-- Rate limiting on every route — auth (20/15min), breach/SSL (30/hr), URL scan (50/hr), history (200/15min), tips (120/15min), news (30/15min), voidwatch (30/15min), Six Eyes chat (15/hr)
+- Email verification — registration requires a verified email before login is permitted; tokens are SHA-256 hashed (24hr expiry), raw token sent only in email
+- Password reset — SHA-256 hashed token (1hr expiry), invalidates all active sessions on success; no user enumeration (identical response whether email exists or not)
+- Account lockout — 5 consecutive failed logins triggers a 15-minute lock; counter resets on successful login
+- Timing attack prevention — `bcrypt.compare` always runs (against a dummy hash when user not found) to prevent email enumeration via response timing
+- Rate limiting on every route — auth (20/15min), email actions (5/hr), breach/SSL (30/hr), URL scan (50/hr), history (200/15min), tips (120/15min), news (30/15min), voidwatch (30/15min), Six Eyes chat (15/hr), domain strength (10/hr); global backstop at 500 req/15min per IP
 - Real active session tracking via JWT `jti` (UUID) — every token is individually tracked and revocable; revoking a session kills that device immediately, not on next request
 - Session invalidation via `tokenVersion` — panic button revokes all active tokens instantly across all devices
+- Session TTL — sessions older than 7 days are pruned automatically on every successful login
+- HTTPS enforced in production — HTTP requests redirected 301; HSTS header (`max-age=63072000; includeSubDomains; preload`) on all responses
 - Login alerts sent by email when a sign-in is detected from a new IP address
 - Input validated on all endpoints — RFC 5321-compliant email validation, RFC 1123-compliant domain validation, result object fields whitelisted per history type
 - Request body size capped at 10kb (`express.json({ limit: '10kb' })`)
 - CORS locked to the production frontend origin in deployment
+- Structured JSON logging to stderr — all auth events, rate limit hits, and errors captured; Railway aggregates stderr as searchable logs
 - All secrets via environment variables — never hardcoded, never logged
 - Six Eyes AI — explicit consent gate, no PII sent to Claude, prompt hashed with SHA-256 before audit log storage, full audit trail exportable via GDPR export
+- AI-generated email content HTML-escaped before template interpolation to prevent XSS via LLM output
 
 ---
 
@@ -105,6 +117,7 @@ JWT_SECRET=<a long random string>
 HIBP_API_KEY=<your HaveIBeenPwned API key>
 GOOGLE_SAFE_BROWSING_KEY=<your Google Safe Browsing API key>
 ANTHROPIC_API_KEY=<your Anthropic API key>
+FRONTEND_URL=http://localhost:5173
 SMTP_HOST=<smtp host>
 SMTP_PORT=587
 SMTP_USER=<smtp username>
@@ -113,7 +126,7 @@ SMTP_FROM=InfinitySec <noreply@yourdomain.com>
 CLIENT_ORIGIN=http://localhost:5173
 ```
 
-> `HIBP_API_KEY`, `GOOGLE_SAFE_BROWSING_KEY`, `ANTHROPIC_API_KEY`, and SMTP vars are optional for local dev — the features degrade gracefully without them.
+> `HIBP_API_KEY`, `GOOGLE_SAFE_BROWSING_KEY`, `ANTHROPIC_API_KEY`, `FRONTEND_URL`, and SMTP vars are optional for local dev — the features degrade gracefully without them. Without SMTP, email verification is skipped and users are auto-verified.
 
 > Port 5001 is used locally to avoid a conflict with macOS AirPlay Receiver on port 5000.
 
@@ -143,9 +156,13 @@ The Vite dev server proxies `/api` requests to the backend — no CORS config ne
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| POST | `/api/auth/register` | No | Create account |
-| POST | `/api/auth/login` | No | Login, receive JWT |
-| DELETE | `/api/auth/account` | Yes | Delete account and all data |
+| POST | `/api/auth/register` | No | Create account; issues JWT immediately if no SMTP, else sends verification email |
+| POST | `/api/auth/login` | No | Login, receive JWT; blocked if email unverified or account locked |
+| GET | `/api/auth/verify-email` | No | Validate email verification token (`?token=`) |
+| POST | `/api/auth/resend-verification` | No | Resend verification email (5/hr) |
+| POST | `/api/auth/forgot-password` | No | Send password reset email — no user enumeration (5/hr) |
+| POST | `/api/auth/reset-password` | No | Set new password via token; invalidates all sessions |
+| DELETE | `/api/auth/account` | Yes | Delete account and all data — requires password in body |
 | GET | `/api/auth/export` | Yes | Export account + full history as JSON |
 | GET | `/api/auth/sessions` | Yes | List active sessions |
 | DELETE | `/api/auth/sessions/:jti` | Yes | Revoke a single session by device |
@@ -159,13 +176,15 @@ The Vite dev server proxies `/api` requests to the backend — no CORS config ne
 | GET | `/api/tips/:id` | No | Single tip |
 | GET | `/api/news` | No | Live security news from RSS feeds (1hr cache) |
 | POST | `/api/ssl/check` | No | Inspect SSL cert for a domain |
-| POST | `/api/convergence/check` | No | Scan URL via Google Safe Browsing |
+| POST | `/api/convergence/check` | Yes | Scan URL via Google Safe Browsing |
 | GET | `/api/voidwatch/status` | Yes | Get monitoring subscription status |
 | POST | `/api/voidwatch/toggle` | Yes | Enable/disable weekly monitoring |
 | POST | `/api/six-eyes/consent` | Yes | Give consent to use AI assistant |
 | DELETE | `/api/six-eyes/consent` | Yes | Withdraw AI consent |
 | POST | `/api/six-eyes/chat` | Yes | Stream Claude AI response (SSE, 15/hr) |
 | GET | `/api/six-eyes/log` | Yes | View AI audit log (last 100 entries) |
+| POST | `/api/domain-strength/check` | Yes | Multi-stage domain analysis — SSL + headers + RDAP + Safe Browsing → Claude score (10/hr) |
+| GET | `/api/health` | No | Server health check |
 
 Protected routes require `Authorization: Bearer <token>`.
 
@@ -180,7 +199,7 @@ The web app is the primary, always-accessible version. The mobile app (v3.0) is 
 | v1.0 | ✅ Done | Core MERN app — all 6 features, local only |
 | v1.5 | ✅ Done | Security hardening, GDPR controls, Gojo UI, deployed to Vercel + Railway + Atlas |
 | v2.0 | ✅ Live | 2FA checklist, SSL checker, URL scanner, Void Watch, real active session tracking (JWT jti), login alerts, privacy dashboard, security score gauge, design overhaul, security learning hub with live RSS feed |
-| v2.5 | 🔶 In Progress | AI security layer — **Six Eyes assistant** (Claude API, streaming SSE, ✅ shipped), Domain Strength score, The Briefing (AI weekly digest), Cursed Intel, Passkeys / WebAuthn |
+| v2.5 | 🔶 In Progress | AI security layer — **Six Eyes** ✅, **Domain Strength** ✅, **The Briefing** ✅, **Cursed Intel** ✅, full auth hardening ✅ (email verification, password reset, account lockout, HTTPS/HSTS, structured logging); Passkeys / WebAuthn pending |
 | v3.0 | 🔲 2027 | React Native (Expo) — same backend, biometric unlock, push notifications, remote wipe |
 
 ---
