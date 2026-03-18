@@ -29,6 +29,9 @@ Demo login: `demo@infinitysec.io` / `Demo1234!`
 | **The Briefing** | Weekly AI security digest emailed every Monday — personalised breach status, synthesis of the week's top security headlines, and a concrete action item. Powered by Claude Haiku. |
 | **Cursed Intel** | AI-powered personalised breach impact analysis. Given your breach history, Claude analyses the exposed data types, estimates real-world risk, and recommends targeted remediation steps. |
 | **Passkeys** | Register Face ID, Touch ID, or a hardware security key as a passwordless sign-in method. Manage passkeys (add / remove) from the Privacy Dashboard. Powered by WebAuthn via SimpleWebAuthn. |
+| **Phishing Analyser** | Paste a suspicious email or SMS — or upload a screenshot. Claude analyses it for urgency language, domain spoofing, credential harvesting, and impersonation tactics. Returns a colour-coded verdict (safe / suspicious / phishing), confidence level, annotated indicators, and any suspicious links found. |
+| **Supply Chain Scanner** | Paste your `package.json`. Claude flags typosquatting, suspicious package names, deprecated or abandoned packages, and loose version pins that allow malicious updates. |
+| **MFA Fatigue Checker** | Select your 2FA method for each account type (email, banking, work, social, cloud, crypto, VPN). Claude scores your overall posture 0–100 against MFA fatigue attacks, rates your fatigue risk level, and recommends upgrades from push/SMS toward TOTP or FIDO2. |
 
 ---
 
@@ -185,6 +188,9 @@ The Vite dev server proxies `/api` requests to the backend — no CORS config ne
 | POST | `/api/six-eyes/chat` | Yes | Stream Claude AI response (SSE, 15/hr) |
 | GET | `/api/six-eyes/log` | Yes | View AI audit log (last 100 entries) |
 | POST | `/api/domain-strength/check` | Yes | Multi-stage domain analysis — SSL + headers + RDAP + Safe Browsing → Claude score (10/hr) |
+| POST | `/api/phishing/analyse` | Yes | Analyse email/SMS text or screenshot for phishing via Claude vision (10/hr, multipart) |
+| POST | `/api/supply-chain/scan` | Yes | Scan package.json for supply chain risks via Claude (10/hr) |
+| POST | `/api/mfa-fatigue/check` | Yes | Rate MFA methods against fatigue attacks via Claude (10/hr) |
 | POST | `/api/auth/passkeys/register/options` | Yes | Generate WebAuthn registration options |
 | POST | `/api/auth/passkeys/register/verify` | Yes | Verify attestation and save passkey |
 | POST | `/api/auth/passkeys/login/options` | No | Generate WebAuthn authentication options |
@@ -206,7 +212,7 @@ The web app is the primary, always-accessible version. The mobile app (v3.0) is 
 | v1.0 | ✅ Done | Core MERN app — all 6 features, local only |
 | v1.5 | ✅ Done | Security hardening, GDPR controls, Gojo UI, deployed to Vercel + Railway + Atlas |
 | v2.0 | ✅ Live | 2FA checklist, SSL checker, URL scanner, Void Watch, real active session tracking (JWT jti), login alerts, privacy dashboard, security score gauge, design overhaul, security learning hub with live RSS feed |
-| v2.5 | ✅ Done | AI security layer — **Six Eyes** ✅, **Domain Strength** ✅, **The Briefing** ✅, **Cursed Intel** ✅, **Passkeys / WebAuthn** ✅, full auth hardening ✅ (email verification, password reset, account lockout, HTTPS/HSTS, structured logging) |
+| v2.5 | ✅ Done | AI security layer — **Six Eyes** ✅, **Domain Strength** ✅, **The Briefing** ✅, **Cursed Intel** ✅, **Passkeys / WebAuthn** ✅, **Phishing Analyser** ✅, **Supply Chain Scanner** ✅, **MFA Fatigue Checker** ✅, full auth hardening ✅ |
 | v3.0 | 🔲 2027 | React Native (Expo) — same backend, biometric unlock, push notifications, remote wipe |
 
 ---
