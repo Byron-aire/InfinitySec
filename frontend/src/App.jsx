@@ -24,6 +24,9 @@ import SixEyesPage from './pages/SixEyesPage';
 import SixEyesLogPage from './pages/SixEyesLogPage';
 import DomainStrengthPage from './pages/DomainStrengthPage';
 import BriefingPage from './pages/BriefingPage';
+import PhishingAnalyserPage from './pages/PhishingAnalyserPage';
+import SupplyChainPage from './pages/SupplyChainPage';
+import MFAFatiguePage from './pages/MFAFatiguePage';
 import VerifyEmailPage from './pages/VerifyEmailPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
@@ -81,6 +84,9 @@ export default function App() {
           <Route path="/six-eyes/log"   element={<SixEyesLogPage />} />
           <Route path="/domain-strength" element={<DomainStrengthPage />} />
           <Route path="/briefing"        element={<BriefingPage />} />
+          <Route path="/phishing"        element={<PhishingAnalyserPage />} />
+          <Route path="/supply-chain"    element={<SupplyChainPage />} />
+          <Route path="/mfa-fatigue"     element={<MFAFatiguePage />} />
         </Route>
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="*" element={<NotFoundPage />} />

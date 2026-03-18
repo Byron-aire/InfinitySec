@@ -23,7 +23,10 @@ const TOOLS = [
   { path: '/ssl',             label: 'SSL Checker' },
   { path: '/convergence',     label: 'Convergence' },
   { path: '/voidwatch',       label: 'Void Watch' },
-  { path: '/briefing',        label: 'The Briefing', ai: true },
+  { path: '/briefing',        label: 'The Briefing',     ai: true },
+  { path: '/phishing',        label: 'Phishing Analyser', ai: true },
+  { path: '/supply-chain',    label: 'Supply Chain',      ai: true },
+  { path: '/mfa-fatigue',     label: 'MFA Fatigue',       ai: true },
   { path: '/sessions',        label: 'Sessions' },
   { path: '/account',         label: 'Privacy' },
 ];

@@ -17,6 +17,9 @@ const newsRoutes           = require('./routes/news');
 const sixEyesRoutes        = require('./routes/sixEyes');
 const domainStrengthRoutes = require('./routes/domainStrength');
 const briefingRoutes       = require('./routes/briefing');
+const phishingRoutes       = require('./routes/phishing');
+const supplyChainRoutes    = require('./routes/supplyChain');
+const mfaFatigueRoutes     = require('./routes/mfaFatigue');
 
 require('./jobs/digestCron');
 require('./jobs/briefingCron');
@@ -100,7 +103,7 @@ app.use('/api/auth', (req, res, next) => {
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
 app.get('/', (req, res) => {
-  res.json({ message: 'InfinitySec API running', version: '2.5.0' });
+  res.json({ message: 'InfinitySec API running', version: '2.5.1' });
 });
 
 app.use('/api/auth',            authRoutes);
@@ -114,6 +117,9 @@ app.use('/api/news',            newsRoutes);
 app.use('/api/six-eyes',        sixEyesRoutes);
 app.use('/api/domain-strength', domainStrengthRoutes);
 app.use('/api/briefing',        briefingRoutes);
+app.use('/api/phishing',        phishingRoutes);
+app.use('/api/supply-chain',    supplyChainRoutes);
+app.use('/api/mfa-fatigue',     mfaFatigueRoutes);
 
 // ─── Global error handler ─────────────────────────────────────────────────────
 // Catches any unhandled errors thrown inside route handlers.
