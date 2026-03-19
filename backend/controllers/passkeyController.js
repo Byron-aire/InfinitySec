@@ -35,7 +35,7 @@ const registerOptions = async (req, res) => {
     const options = await generateRegistrationOptions({
       rpName:      RP_NAME,
       rpID:        RP_ID,
-      userID:      Buffer.from(user._id.toString()),
+      userID:      Buffer.from(user._id.toString()).toString('base64url'),
       userName:    user.email,
       userDisplayName: user.username,
       attestationType: 'none',
