@@ -12,11 +12,10 @@ const logger = require('../utils/logger');
 const RP_NAME = process.env.RP_NAME || 'InfinitySec';
 const RP_ID   = process.env.RP_ID   || 'localhost';
 
-// In production the WebAuthn origin is the frontend (Vercel), not the Railway backend.
-// RP_ID must match the effective domain of ORIGIN — see .env.example.
-const ORIGIN = process.env.NODE_ENV === 'production'
-  ? `https://${RP_ID}`
-  : `http://localhost:5173`;
+// CLIENT_ORIGIN is already required for CORS — reuse it here so ORIGIN is always
+// correct regardless of whether NODE_ENV is set in the host environment (Railway
+// does NOT set NODE_ENV=production automatically).
+const ORIGIN  = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
 
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
