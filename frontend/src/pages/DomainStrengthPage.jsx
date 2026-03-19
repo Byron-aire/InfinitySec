@@ -314,7 +314,7 @@ export default function DomainStrengthPage() {
                   )}
                 </div>
 
-                <AIDisclosure model="Claude Sonnet" />
+                <AIDisclosure model="Anthropic Sonnet" />
               </div>
             </Reveal>
           )}

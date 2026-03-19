@@ -1,9 +1,9 @@
 const { createHash } = require('crypto');
 const AuditLog = require('../models/AuditLog');
-const claude = require('../utils/claudeClient');
+const ai = require('../utils/aiClient');
 const logger = require('../utils/logger');
 
-const ANALYSIS_MODEL = process.env.CLAUDE_ANALYSIS_MODEL || 'claude-sonnet-4-6';
+const ANALYSIS_MODEL = process.env.AI_ANALYSIS_MODEL || 'claude-sonnet-4-6';
 const MAX_INPUT = 9000; // chars — enough for a full package.json
 
 async function scan(req, res) {
@@ -80,7 +80,7 @@ Respond with ONLY valid JSON — no markdown fences, no preamble:
   let inputTokens = 0, outputTokens = 0, success = false;
 
   try {
-    const msg = await claude.messages.create({
+    const msg = await ai.messages.create({
       model: ANALYSIS_MODEL,
       max_tokens: 2048,
       messages: [{ role: 'user', content: prompt }],

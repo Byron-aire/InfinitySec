@@ -114,7 +114,7 @@ function CursedIntel({ breaches, consent }) {
               </ul>
             </div>
           )}
-          <AIDisclosure model="Claude Haiku" />
+          <AIDisclosure model="Anthropic Haiku" />
         </div>
       )}
     </div>

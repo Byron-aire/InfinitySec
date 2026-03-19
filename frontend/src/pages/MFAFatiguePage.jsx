@@ -140,7 +140,7 @@ export default function MFAFatiguePage() {
       <h2>MFA Fatigue Checker</h2>
       <TrustBadge badges={['AI-powered analysis', 'No passwords collected', 'Server-side only']} />
       <p className="muted" style={{ marginBottom: '1.5rem' }}>
-        Select your MFA method for each account type. Claude rates your setup against MFA fatigue attacks
+        Select your MFA method for each account type. AI rates your setup against MFA fatigue attacks
         and recommends upgrades to phishing-resistant authentication.
       </p>
 
@@ -275,7 +275,7 @@ export default function MFAFatiguePage() {
                   </div>
                 )}
 
-                <AIDisclosure model="Claude Sonnet" />
+                <AIDisclosure model="Anthropic Sonnet" />
               </div>
             </Reveal>
           )}

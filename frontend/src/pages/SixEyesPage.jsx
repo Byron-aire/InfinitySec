@@ -139,7 +139,7 @@ export default function SixEyesPage() {
         <h2>Six Eyes</h2>
         <Link to="/six-eyes/log" className="six-eyes-log-link muted">Audit log →</Link>
       </div>
-      <TrustBadge badges={['Claude Haiku', 'Prompts hashed, not stored', 'Consent required']} />
+      <TrustBadge badges={['Anthropic Haiku', 'Prompts hashed, not stored', 'Consent required']} />
       <p className="muted" style={{ marginBottom: '1.5rem' }}>
         Your personal AI security assistant. Ask anything about your posture, the tools, or cybersecurity in general.
       </p>

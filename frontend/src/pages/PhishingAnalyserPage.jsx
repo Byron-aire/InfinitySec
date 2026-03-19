@@ -168,7 +168,7 @@ export default function PhishingAnalyserPage() {
       <TrustBadge badges={['AI-powered detection', 'Server-side only', 'Input not stored']} />
       <p className="muted" style={{ marginBottom: '1.5rem' }}>
         Paste a suspicious email or SMS, upload a screenshot, or both.
-        Claude analyses it for phishing, smishing, and social engineering tactics.
+        AI analyses it for phishing, smishing, and social engineering tactics.
       </p>
 
       {!consent ? (
@@ -344,7 +344,7 @@ export default function PhishingAnalyserPage() {
                   </div>
                 )}
 
-                <AIDisclosure model="Claude Sonnet" />
+                <AIDisclosure model="Anthropic Sonnet" />
               </div>
             </Reveal>
           )}

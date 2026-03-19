@@ -5,10 +5,10 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { randomUUID, randomBytes, createHash } = require('crypto');
 const { sendMail } = require('../utils/mailer');
-const claude = require('../utils/claudeClient');
+const ai = require('../utils/aiClient');
 const logger = require('../utils/logger');
 
-const CHAT_MODEL = process.env.CLAUDE_CHAT_MODEL || 'claude-haiku-4-5-20251001';
+const CHAT_MODEL = process.env.AI_CHAT_MODEL || 'claude-haiku-4-5-20251001';
 
 // Used for constant-time comparison when the user is not found
 // Prevents timing attacks that reveal whether an email is registered
@@ -143,7 +143,7 @@ Be conservative — only flag as anomalous if there is a concrete, observable re
 Respond with ONLY valid JSON (no markdown fences):
 { "anomalous": <bool>, "confidence": <"low"|"medium"|"high">, "reasoning": <1-2 sentences> }`;
 
-    const msg = await claude.messages.create({
+    const msg = await ai.messages.create({
       model:      CHAT_MODEL,
       max_tokens: 200,
       messages:   [{ role: 'user', content: prompt }],

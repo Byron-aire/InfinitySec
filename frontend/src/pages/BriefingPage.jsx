@@ -40,7 +40,7 @@ export default function BriefingPage() {
   return (
     <main className="page briefing-page">
       <h2>The Briefing</h2>
-      <TrustBadge badges={['AI-generated digest', 'Claude Haiku', 'Every Monday 08:30']} />
+      <TrustBadge badges={['AI-generated digest', 'Anthropic Haiku', 'Every Monday 08:30']} />
       <p className="muted" style={{ marginBottom: '1.5rem' }}>
         A personalised weekly security email — breach status, top security news, and one concrete action —
         written by AI and delivered every Monday morning.
@@ -71,7 +71,7 @@ export default function BriefingPage() {
               {noConsent ? (
                 <div className="briefing-consent-gate">
                   <p className="briefing-consent-text">
-                    The Briefing uses Claude to generate your digest. AI consent is required.
+                    The Briefing uses AI to generate your digest. AI consent is required.
                   </p>
                   <Link to="/six-eyes" className="btn-primary" style={{ fontSize: '0.875rem', padding: '0.5rem 1.1rem' }}>
                     Enable AI features →

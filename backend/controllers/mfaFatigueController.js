@@ -1,9 +1,9 @@
 const { createHash } = require('crypto');
 const AuditLog = require('../models/AuditLog');
-const claude = require('../utils/claudeClient');
+const ai = require('../utils/aiClient');
 const logger = require('../utils/logger');
 
-const ANALYSIS_MODEL = process.env.CLAUDE_ANALYSIS_MODEL || 'claude-sonnet-4-6';
+const ANALYSIS_MODEL = process.env.AI_ANALYSIS_MODEL || 'claude-sonnet-4-6';
 
 const VALID_METHODS = ['hardware-key', 'totp', 'push', 'sms', 'email-otp', 'none'];
 const VALID_ACCOUNT_TYPES = ['email', 'banking', 'work', 'social', 'cloud', 'crypto', 'vpn', 'other'];
@@ -113,7 +113,7 @@ Respond with ONLY valid JSON — no markdown fences, no preamble:
   let inputTokens = 0, outputTokens = 0, success = false;
 
   try {
-    const msg = await claude.messages.create({
+    const msg = await ai.messages.create({
       model: ANALYSIS_MODEL,
       max_tokens: 1024,
       messages: [{ role: 'user', content: prompt }],

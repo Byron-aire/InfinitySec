@@ -1,11 +1,11 @@
 const { createHash } = require('crypto');
 const AuditLog = require('../models/AuditLog');
-const claude = require('../utils/claudeClient');
+const ai = require('../utils/aiClient');
 const logger = require('../utils/logger');
 
-const ANALYSIS_MODEL = process.env.CLAUDE_ANALYSIS_MODEL || 'claude-sonnet-4-6';
+const ANALYSIS_MODEL = process.env.AI_ANALYSIS_MODEL || 'claude-sonnet-4-6';
 const MAX_TEXT = 8000; // chars
-const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB — Claude's vision limit
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB — vision size limit
 
 const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
@@ -73,7 +73,7 @@ async function analyse(req, res) {
     }
   }
 
-  // Build the user message content array for Claude
+  // Build the user message content array
   const userContent = [];
 
   if (imageFile) {
@@ -105,7 +105,7 @@ async function analyse(req, res) {
   let inputTokens = 0, outputTokens = 0, success = false;
 
   try {
-    const msg = await claude.messages.create({
+    const msg = await ai.messages.create({
       model: ANALYSIS_MODEL,
       max_tokens: 1024,
       system: SYSTEM_PROMPT,

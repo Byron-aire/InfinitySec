@@ -2,10 +2,10 @@ const { createHash } = require('crypto');
 const User = require('../models/User');
 const AuditLog = require('../models/AuditLog');
 const PasswordCheck = require('../models/PasswordCheck');
-const claude = require('../utils/claudeClient');
+const ai = require('../utils/aiClient');
 const { buildSixEyesSystemPrompt } = require('../utils/promptBuilder');
 
-const CHAT_MODEL = process.env.CLAUDE_CHAT_MODEL || 'claude-haiku-4-5-20251001';
+const CHAT_MODEL = process.env.AI_CHAT_MODEL || 'claude-haiku-4-5-20251001';
 const MAX_HISTORY = 6; // max prior messages sent for context (3 exchanges)
 
 const giveConsent = async (req, res) => {
@@ -83,7 +83,7 @@ const chat = async (req, res) => {
   let inputTokens = 0, outputTokens = 0, success = false;
 
   try {
-    const stream = claude.messages.stream({
+    const stream = ai.messages.stream({
       model: CHAT_MODEL,
       max_tokens: 1024,
       system: systemPrompt,

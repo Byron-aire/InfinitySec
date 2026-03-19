@@ -109,7 +109,7 @@ export default function SupplyChainPage() {
       <h2>Supply Chain Scanner</h2>
       <TrustBadge badges={['AI-powered analysis', 'Server-side only', 'Input not stored']} />
       <p className="muted" style={{ marginBottom: '1.5rem' }}>
-        Paste your <code style={{ color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>package.json</code> — Claude flags typosquatting,
+        Paste your <code style={{ color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>package.json</code> — AI flags typosquatting,
         suspicious packages, version pinning risks, and deprecated dependencies.
       </p>
 
@@ -218,7 +218,7 @@ export default function SupplyChainPage() {
                   </div>
                 )}
 
-                <AIDisclosure model="Claude Sonnet" />
+                <AIDisclosure model="Anthropic Sonnet" />
               </div>
             </Reveal>
           )}

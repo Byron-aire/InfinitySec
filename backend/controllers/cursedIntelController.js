@@ -1,8 +1,8 @@
 const { createHash } = require('crypto');
 const AuditLog = require('../models/AuditLog');
-const claude = require('../utils/claudeClient');
+const ai = require('../utils/aiClient');
 
-const CHAT_MODEL = process.env.CLAUDE_CHAT_MODEL || 'claude-haiku-4-5-20251001';
+const CHAT_MODEL = process.env.AI_CHAT_MODEL || 'claude-haiku-4-5-20251001';
 const CACHE_TTL = 60 * 60 * 1000; // 1 hour
 
 // In-memory cache keyed on sorted dataClasses hash
@@ -67,7 +67,7 @@ Respond with ONLY valid JSON (no markdown fences, no explanation outside the JSO
   let assessment;
 
   try {
-    const msg = await claude.messages.create({
+    const msg = await ai.messages.create({
       model: CHAT_MODEL,
       max_tokens: 800,
       messages: [{ role: 'user', content: prompt }],

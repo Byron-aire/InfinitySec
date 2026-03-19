@@ -2,9 +2,9 @@ const { createHash } = require('crypto');
 const axios = require('axios');
 const sslChecker = require('ssl-checker');
 const AuditLog = require('../models/AuditLog');
-const claude = require('../utils/claudeClient');
+const ai = require('../utils/aiClient');
 
-const ANALYSIS_MODEL = process.env.CLAUDE_ANALYSIS_MODEL || 'claude-sonnet-4-6';
+const ANALYSIS_MODEL = process.env.AI_ANALYSIS_MODEL || 'claude-sonnet-4-6';
 const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
 // In-memory cache: domain → { data, expiresAt }
@@ -181,7 +181,7 @@ Respond with ONLY valid JSON — no markdown fences, no preamble:
   let assessment;
 
   try {
-    const msg = await claude.messages.create({
+    const msg = await ai.messages.create({
       model: ANALYSIS_MODEL,
       max_tokens: 1024,
       messages: [{ role: 'user', content: prompt }],
@@ -191,7 +191,7 @@ Respond with ONLY valid JSON — no markdown fences, no preamble:
     outputTokens = msg.usage?.output_tokens || 0;
 
     const raw = msg.content[0]?.text?.trim() || '';
-    // Strip markdown code fences if Claude wraps in them
+    // Strip markdown code fences if AI wraps in them
     const jsonStr = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim();
     assessment = JSON.parse(jsonStr);
     success = true;

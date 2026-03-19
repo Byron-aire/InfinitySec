@@ -13,22 +13,25 @@ const TYPE_LABELS = {
   generated: 'Generated',
 };
 
+const AI_TOOLS = [
+  { path: '/six-eyes',        label: 'Six Eyes' },
+  { path: '/domain-strength', label: 'Domain Strength' },
+  { path: '/briefing',        label: 'The Briefing' },
+  { path: '/phishing',        label: 'Phishing Analyser' },
+  { path: '/supply-chain',    label: 'Supply Chain' },
+  { path: '/mfa-fatigue',     label: 'MFA Fatigue' },
+];
+
 const TOOLS = [
-  { path: '/six-eyes',        label: 'Six Eyes',        ai: true },
-  { path: '/domain-strength', label: 'Domain Strength', ai: true },
-  { path: '/checker',         label: 'Password Checker' },
-  { path: '/breach',          label: 'Breach Checker' },
-  { path: '/generator',       label: 'Generator' },
-  { path: '/barrier',         label: 'The Barrier' },
-  { path: '/ssl',             label: 'SSL Checker' },
-  { path: '/convergence',     label: 'Convergence' },
-  { path: '/voidwatch',       label: 'Void Watch' },
-  { path: '/briefing',        label: 'The Briefing',     ai: true },
-  { path: '/phishing',        label: 'Phishing Analyser', ai: true },
-  { path: '/supply-chain',    label: 'Supply Chain',      ai: true },
-  { path: '/mfa-fatigue',     label: 'MFA Fatigue',       ai: true },
-  { path: '/sessions',        label: 'Sessions' },
-  { path: '/account',         label: 'Privacy' },
+  { path: '/checker',    label: 'Password Checker' },
+  { path: '/breach',     label: 'Breach Checker' },
+  { path: '/generator',  label: 'Generator' },
+  { path: '/barrier',    label: 'The Barrier' },
+  { path: '/ssl',        label: 'SSL Checker' },
+  { path: '/convergence',label: 'Convergence' },
+  { path: '/voidwatch',  label: 'Void Watch' },
+  { path: '/sessions',   label: 'Sessions' },
+  { path: '/account',    label: 'Privacy' },
 ];
 
 function useCountUp(target, active) {
@@ -140,10 +143,18 @@ export default function DashboardPage() {
           </Reveal>
 
           <Reveal delay={80}>
-            <h3>Tools</h3>
+            <h3>AI Tools</h3>
+            <div className="tools-grid">
+              {AI_TOOLS.map((t) => (
+                <Link key={t.path} to={t.path} className="tool-chip tool-chip--ai">
+                  {t.label}
+                </Link>
+              ))}
+            </div>
+            <h3 style={{ marginTop: '1.5rem' }}>Tools</h3>
             <div className="tools-grid">
               {TOOLS.map((t) => (
-                <Link key={t.path} to={t.path} className={`tool-chip${t.ai ? ' tool-chip--ai' : ''}`}>
+                <Link key={t.path} to={t.path} className="tool-chip">
                   {t.label}
                 </Link>
               ))}
