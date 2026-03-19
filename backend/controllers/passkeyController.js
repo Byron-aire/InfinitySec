@@ -92,19 +92,23 @@ const registerVerify = async (req, res) => {
       return res.status(400).json({ message: 'Passkey verification failed.' });
     }
 
-    const { credential } = verification.registrationInfo;
+    // v9: credentialID/credentialPublicKey/counter are direct fields on registrationInfo
+    const { credentialID, credentialPublicKey, counter } = verification.registrationInfo;
+
+    // Store as base64url so it matches what the browser returns in assertionResponse.id
+    const credIDBase64url = Buffer.from(credentialID).toString('base64url');
 
     // Reject duplicate credential IDs
-    const isDuplicate = user.passkeys.some(pk => pk.credentialID === credential.id);
+    const isDuplicate = user.passkeys.some(pk => pk.credentialID === credIDBase64url);
     if (isDuplicate) {
       await user.save();
       return res.status(400).json({ message: 'This passkey is already registered.' });
     }
 
     user.passkeys.push({
-      credentialID:        credential.id,
-      credentialPublicKey: Buffer.from(credential.publicKey).toString('base64'),
-      counter:             credential.counter,
+      credentialID:        credIDBase64url,
+      credentialPublicKey: Buffer.from(credentialPublicKey).toString('base64'),
+      counter,
       transports:          attestationResponse.response?.transports || [],
       deviceName:          (typeof deviceName === 'string' && deviceName.trim()) ? deviceName.trim().substring(0, 50) : 'Passkey',
     });
@@ -181,11 +185,12 @@ const loginVerify = async (req, res) => {
         expectedChallenge,
         expectedOrigin:    ORIGIN,
         expectedRPID:      RP_ID,
-        credential: {
-          id:         passkey.credentialID,
-          publicKey:  Buffer.from(passkey.credentialPublicKey, 'base64'),
-          counter:    passkey.counter,
-          transports: passkey.transports,
+        // v9: parameter is 'authenticator' with Uint8Array fields
+        authenticator: {
+          credentialID:        Buffer.from(passkey.credentialID, 'base64url'),
+          credentialPublicKey: Buffer.from(passkey.credentialPublicKey, 'base64'),
+          counter:             passkey.counter,
+          transports:          passkey.transports,
         },
       });
     } catch (err) {
