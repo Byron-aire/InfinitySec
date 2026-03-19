@@ -53,7 +53,7 @@ export default function LoginPage() {
     try {
       const { startAuthentication } = await import('@simplewebauthn/browser');
       const { data: options } = await api.post('/auth/passkeys/login/options', { email: form.email });
-      const authResp = await startAuthentication({ optionsJSON: options });
+      const authResp = await startAuthentication(options);
       const { data } = await api.post('/auth/passkeys/login/verify', { ...authResp, email: form.email });
       login(data.token, data.user);
       navigate('/dashboard');

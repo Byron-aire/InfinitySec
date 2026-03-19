@@ -63,7 +63,7 @@ export default function AccountPage() {
       const { startRegistration } = await import('@simplewebauthn/browser');
       const deviceName = window.prompt('Name this passkey (e.g. MacBook, iPhone):') || 'Passkey';
       const { data: options } = await api.post('/auth/passkeys/register/options');
-      const attResp = await startRegistration({ optionsJSON: options });
+      const attResp = await startRegistration(options);
       await api.post('/auth/passkeys/register/verify', { ...attResp, deviceName });
       const { data } = await api.get('/auth/passkeys');
       setPasskeys(data.passkeys || []);
