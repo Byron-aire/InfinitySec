@@ -10,12 +10,12 @@ const User = require('../models/User');
 const logger = require('../utils/logger');
 
 const RP_NAME = process.env.RP_NAME || 'InfinitySec';
-const RP_ID   = process.env.RP_ID   || 'localhost';
 
-// CLIENT_ORIGIN is already required for CORS — reuse it here so ORIGIN is always
-// correct regardless of whether NODE_ENV is set in the host environment (Railway
-// does NOT set NODE_ENV=production automatically).
+// Derive ORIGIN and RP_ID from CLIENT_ORIGIN so they are always correct
+// regardless of NODE_ENV or any RP_ID env var copied from a different environment.
+// CLIENT_ORIGIN is already required for CORS and is always set correctly.
 const ORIGIN  = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
+const RP_ID   = process.env.RP_ID || new URL(ORIGIN).hostname;
 
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
