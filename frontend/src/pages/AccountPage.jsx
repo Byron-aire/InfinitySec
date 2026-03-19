@@ -71,7 +71,7 @@ export default function AccountPage() {
       if (err?.name === 'NotAllowedError') {
         setPasskeyError('Passkey registration was cancelled.');
       } else {
-        setPasskeyError(err.response?.data?.message || `Passkey registration failed [${err?.name}: ${err?.message}].`);
+        setPasskeyError(err.response?.data?.message || 'Passkey registration failed.');
       }
     } finally {
       setRegisteringPasskey(false);
