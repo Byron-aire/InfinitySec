@@ -12,10 +12,10 @@ function formatDate(dateStr) {
 }
 
 const FEATURE_LABELS = {
-  'six-eyes':       'Six Eyes Chat',
+  'six-eyes':       'AI Assistant',
   'domain-strength':'Domain Strength',
-  'breach-impact':  'Cursed Intel',
-  'briefing':       'The Briefing',
+  'breach-impact':  'Breach Impact',
+  'briefing':       'Weekly Security Digest',
 };
 
 export default function SixEyesLogPage() {
@@ -35,7 +35,7 @@ export default function SixEyesLogPage() {
   }, []);
 
   const handleWithdraw = async () => {
-    if (!window.confirm('Withdraw AI consent? Six Eyes will be disabled until you accept again.')) return;
+    if (!window.confirm('Withdraw AI consent? the AI assistant will be disabled until you accept again.')) return;
     setWithdrawing(true);
     try {
       await api.delete('/six-eyes/consent');
@@ -53,7 +53,7 @@ export default function SixEyesLogPage() {
     <main className="page six-eyes-log-page">
       <div className="six-eyes-header">
         <h2>AI Audit Log</h2>
-        <Link to="/six-eyes" className="six-eyes-log-link muted">← Six Eyes</Link>
+        <Link to="/six-eyes" className="six-eyes-log-link muted">← AI Security Assistant</Link>
       </div>
       <p className="muted" style={{ marginBottom: '1.5rem' }}>
         Every AI call made on your account. Prompts are stored as SHA-256 hashes only —
@@ -114,7 +114,7 @@ export default function SixEyesLogPage() {
             <div className="danger-zone" style={{ marginTop: '2.5rem' }}>
               <h3>Withdraw AI Consent</h3>
               <p className="muted" style={{ marginBottom: '1rem' }}>
-                Disables Six Eyes and all AI features until you accept the consent again.
+                Disables the AI assistant and all AI features until you accept the consent again.
                 Your audit log is retained as part of your account data.
               </p>
               <button className="btn-danger-sm" onClick={handleWithdraw} disabled={withdrawing}>

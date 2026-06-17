@@ -9,7 +9,7 @@ async function sendMail({ to, subject, text, html }) {
     auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
   });
   await transporter.sendMail({
-    from: process.env.SMTP_FROM || 'InfinitySec <noreply@infinitysec.io>',
+    from: process.env.SMTP_FROM || 'Byronaire Security <noreply@infinitysec.io>',
     to,
     subject,
     text,

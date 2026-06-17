@@ -88,7 +88,7 @@ export default function LoginPage() {
 
         {unverified && (
           <div style={{
-            background: 'rgba(59,130,246,0.1)',
+            background: 'rgba(226,199,138,0.1)',
             border: '1px solid var(--color-accent)',
             borderRadius: '8px',
             padding: '0.85rem 1rem',

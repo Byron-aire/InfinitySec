@@ -44,7 +44,7 @@ export default function AccountPage() {
   }, []);
 
   const handleWithdrawConsent = async () => {
-    if (!window.confirm('Withdraw AI consent? Six Eyes will be disabled until you accept again.')) return;
+    if (!window.confirm('Withdraw AI consent? the AI assistant will be disabled until you accept again.')) return;
     setWithdrawing(true);
     try {
       await api.delete('/six-eyes/consent');
@@ -107,7 +107,7 @@ export default function AccountPage() {
     <main className="page account-page">
       <h2>Privacy Dashboard</h2>
       <p className="muted" style={{ marginBottom: '1.5rem' }}>
-        A full picture of everything InfinitySec holds about your account — and the tools to act on it.
+        A full picture of everything ByronaireSec holds about your account — and the tools to act on it.
       </p>
 
       {loading && (
@@ -166,7 +166,7 @@ export default function AccountPage() {
                 >
                   {summary.monitoring.enabled ? 'On' : 'Off'}
                 </span>
-                <span className="account-data-label">Void Watch</span>
+                <span className="account-data-label">Breach Monitor</span>
                 <div className="account-data-breakdown">
                   {summary.monitoring.enabled
                     ? <span>Since {formatDate(summary.monitoring.subscribedAt)}</span>
@@ -182,7 +182,7 @@ export default function AccountPage() {
             <h3 className="account-section-title">AI & Data</h3>
             <div className="account-fields">
               <div className="account-field">
-                <span className="account-field-label">Six Eyes consent</span>
+                <span className="account-field-label">AI Security Assistant consent</span>
                 <span style={{ color: summary.aiConsent?.accepted ? 'var(--color-safe)' : 'var(--color-muted)' }}>
                   {summary.aiConsent?.accepted ? 'Granted' : 'Not given'}
                 </span>
@@ -194,7 +194,7 @@ export default function AccountPage() {
                 </div>
               )}
               <div className="account-field">
-                <span className="account-field-label">The Briefing</span>
+                <span className="account-field-label">Weekly Security Digest</span>
                 <span style={{ color: summary.briefingEnabled ? 'var(--color-safe)' : 'var(--color-muted)' }}>
                   {summary.briefingEnabled ? 'Subscribed' : 'Not subscribed'}
                 </span>

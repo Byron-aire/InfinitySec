@@ -59,7 +59,7 @@ export default function ConvergencePage() {
 
   return (
     <main className="page convergence-page">
-      <h2>Convergence</h2>
+      <h2>URL Scanner</h2>
       <TrustBadge badges={['Server-side only', 'URL never logged', 'Google Safe Browsing']} />
       <p className="muted" style={{ marginBottom: '1.5rem' }}>
         Scan any URL for malware, phishing, and unwanted software using Google Safe Browsing. The URL is checked server-side — never exposed in your browser.
@@ -104,7 +104,7 @@ export default function ConvergencePage() {
               className="convergence-status-badge"
               style={result.safe
                 ? { background: 'rgba(34,197,94,0.1)',  color: 'var(--color-safe)',   border: '1px solid rgba(34,197,94,0.35)' }
-                : { background: 'rgba(239,68,68,0.1)',  color: 'var(--color-danger)', border: '1px solid rgba(239,68,68,0.35)' }
+                : { background: 'rgba(226,48,72,0.1)',  color: 'var(--color-danger)', border: '1px solid rgba(226,48,72,0.35)' }
               }
             >
               {result.safe ? 'No threats found' : 'Malicious content detected'}

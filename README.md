@@ -1,4 +1,4 @@
-# InfinitySec
+# Byronaire Security
 
 > A personal cybersecurity toolkit — check passwords, scan for breaches, inspect SSL certs, scan URLs for threats, monitor your email weekly, and stay sharp with live security news and expert tips.
 
@@ -16,18 +16,18 @@ Demo login: `demo@infinitysec.io` / `Demo1234!`
 | **Breach Checker** | Checks your email against the HaveIBeenPwned database server-side. Dramatic safe/breached result states. Your email is never stored. |
 | **Password Generator** | Cryptographically secure (`crypto.getRandomValues()`), configurable length (8–64 chars), character sets, copy to clipboard, save with a custom label. |
 | **Security Learning Hub** | 56 expert tips across 6 categories (Passwords, Phishing, Privacy, AI, Network, Devices) — expandable cards, featured tip, stats bar, keyword search, category filter. Plus a live **Security Feed** tab pulling from Krebs on Security, The Hacker News, Troy Hunt, and SANS ISC — cached and refreshed hourly. |
-| **Dashboard** | Security Score gauge (0–100, Gojo-graded), color-coded stat cards, quick-access tools grid, check history, recent activity. |
-| **The Barrier** | 2FA readiness checklist for 27 platforms across 6 categories. Tracks which accounts have App, SMS, or Hardware key 2FA enabled. Progress saved per user. |
+| **Dashboard** | Security Score gauge (0–100, tiered grades), color-coded stat cards, quick-access tools grid, check history, recent activity. |
+| **Two-Factor Tracker** | 2FA readiness checklist for 27 platforms across 6 categories. Tracks which accounts have App, SMS, or Hardware key 2FA enabled. Progress saved per user. |
 | **SSL Checker** | Inspect any domain's SSL certificate — validity, days until expiry (with lifetime progress bar), issuer, and dates. Colour-coded status. |
-| **Convergence** | URL scanner backed by Google Safe Browsing API. Checks for malware, phishing, and unwanted software server-side. |
-| **Void Watch** | Weekly automated breach monitoring. Subscribes your email to a cron job that checks HaveIBeenPwned every Monday and emails you if new breaches are found. |
+| **URL Scanner** | URL scanner backed by Google Safe Browsing API. Checks for malware, phishing, and unwanted software server-side. |
+| **Breach Monitor** | Weekly automated breach monitoring. Subscribes your email to a cron job that checks HaveIBeenPwned every Monday and emails you if new breaches are found. |
 | **Sessions** | View every device with an active session. Each entry is a live JWT — revoke individual devices instantly or use the panic button to sign out everywhere. |
 | **Privacy Dashboard** | Full data transparency — see exactly what's stored, download your data as JSON, manage sessions, delete your account. |
-| **Six Eyes** | Streaming AI security assistant powered by Claude. Answers security questions with context from your account's security posture. Requires explicit consent — no PII is sent to the AI. Full audit trail with SHA-256 prompt hashing. |
-| **Six Eyes Log** | AI audit trail — view every Six Eyes session with token usage, model, and timestamp. Withdraw AI consent from this page. |
+| **AI Security Assistant** | Streaming AI security assistant powered by Claude. Answers security questions with context from your account's security posture. Requires explicit consent — no PII is sent to the AI. Full audit trail with SHA-256 prompt hashing. |
+| **AI Activity Log** | AI audit trail — view every AI Assistant session with token usage, model, and timestamp. Withdraw AI consent from this page. |
 | **Domain Strength** | Multi-stage AI domain security analysis — SSL certificate, HTTP security headers, RDAP registration data, and Google Safe Browsing combined into a Claude-synthesised score (0–100), grade (A–F), findings, and recommendations. 24hr cache. |
-| **The Briefing** | Weekly AI security digest emailed every Monday — personalised breach status, synthesis of the week's top security headlines, and a concrete action item. Powered by Claude Haiku. |
-| **Cursed Intel** | AI-powered personalised breach impact analysis. Given your breach history, Claude analyses the exposed data types, estimates real-world risk, and recommends targeted remediation steps. |
+| **Weekly Security Digest** | Weekly AI security digest emailed every Monday — personalised breach status, synthesis of the week's top security headlines, and a concrete action item. Powered by Claude Haiku. |
+| **Breach Impact** | AI-powered personalised breach impact analysis. Given your breach history, Claude analyses the exposed data types, estimates real-world risk, and recommends targeted remediation steps. |
 | **Passkeys** | Register Face ID, Touch ID, or a hardware security key as a passwordless sign-in method. Manage passkeys (add / remove) from the Privacy Dashboard. Powered by WebAuthn via SimpleWebAuthn. |
 | **Phishing Analyser** | Paste a suspicious email or SMS — or upload a screenshot. Claude analyses it for urgency language, domain spoofing, credential harvesting, and impersonation tactics. Returns a colour-coded verdict (safe / suspicious / phishing), confidence level, annotated indicators, and any suspicious links found. |
 | **Supply Chain Scanner** | Paste your `package.json`. Claude flags typosquatting, suspicious package names, deprecated or abandoned packages, and loose version pins that allow malicious updates. |
@@ -72,7 +72,7 @@ Demo login: `demo@infinitysec.io` / `Demo1234!`
 - Password reset — SHA-256 hashed token (1hr expiry), invalidates all active sessions on success; no user enumeration (identical response whether email exists or not)
 - Account lockout — 5 consecutive failed logins triggers a 15-minute lock; counter resets on successful login
 - Timing attack prevention — `bcrypt.compare` always runs (against a dummy hash when user not found) to prevent email enumeration via response timing
-- Rate limiting on every route — auth (20/15min), email actions (5/hr), breach/SSL (30/hr), URL scan (50/hr), history (200/15min), tips (120/15min), news (30/15min), voidwatch (30/15min), Six Eyes chat (15/hr), domain strength (10/hr); global backstop at 500 req/15min per IP
+- Rate limiting on every route — auth (20/15min), email actions (5/hr), breach/SSL (30/hr), URL scan (50/hr), history (200/15min), tips (120/15min), news (30/15min), voidwatch (30/15min), AI Assistant chat (15/hr), domain strength (10/hr); global backstop at 500 req/15min per IP
 - Real active session tracking via JWT `jti` (UUID) — every token is individually tracked and revocable; revoking a session kills that device immediately, not on next request
 - Session invalidation via `tokenVersion` — panic button revokes all active tokens instantly across all devices
 - Session TTL — sessions older than 7 days are pruned automatically on every successful login
@@ -83,7 +83,7 @@ Demo login: `demo@infinitysec.io` / `Demo1234!`
 - CORS locked to the production frontend origin in deployment
 - Structured JSON logging to stderr — all auth events, rate limit hits, and errors captured; Railway aggregates stderr as searchable logs
 - All secrets via environment variables — never hardcoded, never logged
-- Six Eyes AI — explicit consent gate, no PII sent to Claude, prompt hashed with SHA-256 before audit log storage, full audit trail exportable via GDPR export
+- AI Security Assistant — explicit consent gate, no PII sent to Claude, prompt hashed with SHA-256 before audit log storage, full audit trail exportable via GDPR export
 - AI-generated email content HTML-escaped before template interpolation to prevent XSS via LLM output
 
 ---
@@ -112,25 +112,11 @@ cd ../frontend && npm install
 cp backend/.env.example backend/.env
 ```
 
-Fill in `backend/.env`:
+Then fill in `backend/.env` — every variable is documented in
+[`backend/.env.example`](backend/.env.example). At minimum set `MONGODB_URI` and a
+strong `JWT_SECRET` (`openssl rand -base64 32`).
 
-```
-PORT=5001
-MONGODB_URI=mongodb://localhost:27017/infinitysec
-JWT_SECRET=<a long random string>
-HIBP_API_KEY=<your HaveIBeenPwned API key>
-GOOGLE_SAFE_BROWSING_KEY=<your Google Safe Browsing API key>
-ANTHROPIC_API_KEY=<your Anthropic API key>
-FRONTEND_URL=http://localhost:5173
-SMTP_HOST=<smtp host>
-SMTP_PORT=587
-SMTP_USER=<smtp username>
-SMTP_PASS=<smtp password or app password>
-SMTP_FROM=InfinitySec <noreply@yourdomain.com>
-CLIENT_ORIGIN=http://localhost:5173
-```
-
-> `HIBP_API_KEY`, `GOOGLE_SAFE_BROWSING_KEY`, `ANTHROPIC_API_KEY`, `FRONTEND_URL`, and SMTP vars are optional for local dev — the features degrade gracefully without them. Without SMTP, email verification is skipped and users are auto-verified.
+> `HIBP_API_KEY`, `GOOGLE_SAFE_BROWSING_KEY`, `ANTHROPIC_API_KEY`, `FRONTEND_URL`, and SMTP vars are optional for local dev — the features degrade gracefully without them (the server logs a warning for each on startup). Without SMTP, email verification is skipped and users are auto-verified.
 
 > Port 5001 is used locally to avoid a conflict with macOS AirPlay Receiver on port 5000.
 
@@ -210,9 +196,9 @@ The web app is the primary, always-accessible version. The mobile app (v3.0) is 
 | Version | Status | What's included |
 |---------|--------|-----------------|
 | v1.0 | ✅ Done | Core MERN app — all 6 features, local only |
-| v1.5 | ✅ Done | Security hardening, GDPR controls, Gojo UI, deployed to Vercel + Railway + Atlas |
-| v2.0 | ✅ Live | 2FA checklist, SSL checker, URL scanner, Void Watch, real active session tracking (JWT jti), login alerts, privacy dashboard, security score gauge, design overhaul, security learning hub with live RSS feed |
-| v2.5 | ✅ Done | AI security layer — **Six Eyes** ✅, **Domain Strength** ✅, **The Briefing** ✅, **Cursed Intel** ✅, **Passkeys / WebAuthn** ✅, **Phishing Analyser** ✅, **Supply Chain Scanner** ✅, **MFA Fatigue Checker** ✅, full auth hardening ✅ |
+| v1.5 | ✅ Done | Security hardening, GDPR controls, crimson UI, deployed to Vercel + Railway + Atlas |
+| v2.0 | ✅ Live | 2FA checklist, SSL checker, URL scanner, Breach Monitor, real active session tracking (JWT jti), login alerts, privacy dashboard, security score gauge, design overhaul, security learning hub with live RSS feed |
+| v2.5 | ✅ Done | AI security layer — **AI Security Assistant** ✅, **Domain Strength** ✅, **Weekly Security Digest** ✅, **Breach Impact** ✅, **Passkeys / WebAuthn** ✅, **Phishing Analyser** ✅, **Supply Chain Scanner** ✅, **MFA Fatigue Checker** ✅, full auth hardening ✅ |
 | v3.0 | 🔲 2027 | React Native (Expo) — same backend, biometric unlock, push notifications, remote wipe |
 
 ---

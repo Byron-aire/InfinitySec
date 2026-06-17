@@ -20,7 +20,7 @@ const checkBreach = async (req, res) => {
       {
         headers: {
           'hibp-api-key': process.env.HIBP_API_KEY,
-          'user-agent': 'InfinitySec-App',
+          'user-agent': 'ByronaireSecurity-App',
         },
       }
     );

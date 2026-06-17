@@ -15,10 +15,10 @@ const RISK_CONFIG = {
 };
 
 const SEVERITY_STYLES = {
-  critical: { bg: 'rgba(239,68,68,0.12)', color: 'var(--color-danger)',  border: 'rgba(239,68,68,0.3)' },
-  high:     { bg: 'rgba(249,115,22,0.12)', color: 'var(--color-fair)',   border: 'rgba(249,115,22,0.3)' },
-  medium:   { bg: 'rgba(59,130,246,0.12)', color: 'var(--color-accent)', border: 'rgba(59,130,246,0.3)' },
-  low:      { bg: 'rgba(34,211,238,0.10)', color: 'var(--color-cyan)',   border: 'rgba(34,211,238,0.3)' },
+  critical: { bg: 'rgba(226,48,72,0.12)', color: 'var(--color-danger)',  border: 'rgba(226,48,72,0.3)' },
+  high:     { bg: 'rgba(224,168,62,0.12)', color: 'var(--color-fair)',   border: 'rgba(224,168,62,0.3)' },
+  medium:   { bg: 'rgba(226,199,138,0.12)', color: 'var(--color-gold)', border: 'rgba(226,199,138,0.3)' },
+  low:      { bg: 'rgba(52,185,122,0.10)', color: 'var(--color-safe)',   border: 'rgba(52,185,122,0.3)' },
   info:     { bg: 'rgba(107,114,128,0.1)', color: 'var(--color-muted)',  border: 'rgba(107,114,128,0.25)' },
 };
 

@@ -3,12 +3,19 @@ const axios = require('axios');
 const sslChecker = require('ssl-checker');
 const AuditLog = require('../models/AuditLog');
 const ai = require('../utils/aiClient');
+const { assertPublicHost } = require('../lib/ssrfGuard');
 
 const ANALYSIS_MODEL = process.env.AI_ANALYSIS_MODEL || 'claude-sonnet-4-6';
 const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
 // In-memory cache: domain → { data, expiresAt }
 const cache = new Map();
+
+// Self-cleaning sweep — drop expired entries so the Map can't grow unbounded.
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, val] of cache) if (val.expiresAt <= now) cache.delete(key);
+}, 10 * 60 * 1000).unref();
 
 const DOMAIN_REGEX = /^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/;
 
@@ -24,7 +31,7 @@ async function gatherSecurityHeaders(domain) {
       timeout: 8000,
       maxRedirects: 5,
       validateStatus: () => true,
-      headers: { 'User-Agent': 'InfinitySec-DomainAnalyser/2.5' },
+      headers: { 'User-Agent': 'ByronaireSecurity-DomainAnalyser/2.5' },
     });
     const h = response.headers;
     return {
@@ -90,6 +97,114 @@ async function gatherSafeBrowsing(domain) {
   }
 }
 
+// Normalise + validate a domain from user input. Returns cleaned string or null.
+function cleanDomain(domain) {
+  if (!domain || typeof domain !== 'string') return null;
+  const clean = domain
+    .replace(/^https?:\/\//i, '')
+    .replace(/\/.*$/, '')
+    .trim()
+    .toLowerCase();
+  if (!clean || clean.length > 253 || !DOMAIN_REGEX.test(clean)) return null;
+  return clean;
+}
+
+function gradeFromScore(score) {
+  if (score >= 90) return 'A';
+  if (score >= 75) return 'B';
+  if (score >= 60) return 'C';
+  if (score >= 45) return 'D';
+  return 'F';
+}
+
+// Deterministic quick scan — SSL + Safe Browsing + headers, no AI. Instant, no consent needed.
+async function quickScan(req, res) {
+  const clean = cleanDomain(req.body.domain);
+  if (!clean) {
+    return res.status(400).json({ message: 'Enter a valid domain (e.g. example.com)' });
+  }
+
+  // SSRF guard — block internal/private targets before any outbound connection.
+  try {
+    await assertPublicHost(clean);
+  } catch {
+    return res.status(400).json({ message: 'That host is not allowed.' });
+  }
+
+  const [ssl, headers, safeBrowsing] = await Promise.all([
+    sslChecker(clean, { method: 'GET', port: 443 }).catch(() => null),
+    gatherSecurityHeaders(clean),
+    gatherSafeBrowsing(clean),
+  ]);
+
+  const findings = [];
+  let score = 0;
+
+  // SSL — up to 30
+  if (ssl && ssl.valid) {
+    if (ssl.daysRemaining > 30) {
+      score += 30;
+    } else {
+      score += 20;
+      findings.push({ title: `SSL certificate expires in ${ssl.daysRemaining} days`, severity: 'high', detail: 'Renew soon to avoid an outage and browser warnings.' });
+    }
+  } else {
+    findings.push({ title: 'SSL certificate invalid or unavailable', severity: 'critical', detail: 'No valid HTTPS certificate was found for this domain.' });
+  }
+
+  // Security headers — up to 40
+  if (headers) {
+    if (headers.hsts) score += 10; else findings.push({ title: 'Missing HSTS header', severity: 'medium', detail: 'Strict-Transport-Security forces HTTPS and blocks downgrade attacks.' });
+    if (headers.csp) score += 10; else findings.push({ title: 'Missing Content-Security-Policy', severity: 'medium', detail: 'CSP is the primary defence against cross-site scripting.' });
+    if (headers.xFrameOptions) score += 8; else findings.push({ title: 'Missing X-Frame-Options', severity: 'low', detail: 'Without it the site can be framed for clickjacking.' });
+    if (headers.xContentTypeOptions) score += 6;
+    if (headers.referrerPolicy) score += 3;
+    if (headers.permissionsPolicy) score += 3;
+    if (headers.serverHeader) findings.push({ title: `Server header leaks technology (${headers.serverHeader})`, severity: 'low', detail: 'Hide or genericise the Server header to reduce fingerprinting.' });
+  } else {
+    findings.push({ title: 'Could not read security headers', severity: 'info', detail: 'The site did not respond to an HTTPS request in time.' });
+  }
+
+  // Domain age not checked in quick mode — award neutral credit
+  score += 5;
+
+  // Safe Browsing — up to 20
+  if (safeBrowsing) {
+    if (safeBrowsing.safe) {
+      score += 20;
+    } else {
+      findings.push({ title: 'Flagged by Google Safe Browsing', severity: 'critical', detail: `Threats detected: ${safeBrowsing.threats.join(', ')}. Do not visit.` });
+    }
+  } else {
+    score += 10;
+    findings.push({ title: 'Safe Browsing check unavailable', severity: 'info', detail: 'Could not reach Google Safe Browsing for this domain.' });
+  }
+
+  score = Math.min(100, score);
+  findings.sort((a, b) => {
+    const order = { critical: 0, high: 1, medium: 2, low: 3, info: 4 };
+    return order[a.severity] - order[b.severity];
+  });
+
+  res.json({
+    domain: clean,
+    mode: 'quick',
+    score,
+    grade: gradeFromScore(score),
+    summary: safeBrowsing && !safeBrowsing.safe
+      ? 'This domain is flagged as malicious — avoid it.'
+      : `Quick scan complete — ${findings.length} item${findings.length === 1 ? '' : 's'} noted. Run a deep scan for AI analysis and domain-age signals.`,
+    signals: {
+      domain: clean,
+      ssl: ssl ? { valid: ssl.valid, daysRemaining: ssl.daysRemaining, issuer: ssl.issuer, validFrom: ssl.validFrom, validTo: ssl.validTo } : null,
+      securityHeaders: headers,
+      safeBrowsing,
+    },
+    findings,
+    recommendations: [],
+  });
+}
+
 async function analyse(req, res) {
   if (!req.user.aiConsent?.accepted) {
     return res.status(403).json({ message: 'AI consent required' });
@@ -98,19 +213,16 @@ async function analyse(req, res) {
     return res.status(503).json({ message: 'AI features not configured on this server' });
   }
 
-  const { domain } = req.body;
-  if (!domain || typeof domain !== 'string') {
-    return res.status(400).json({ message: 'Domain is required' });
+  const clean = cleanDomain(req.body.domain);
+  if (!clean) {
+    return res.status(400).json({ message: 'Enter a valid domain (e.g. example.com)' });
   }
 
-  const clean = domain
-    .replace(/^https?:\/\//i, '')
-    .replace(/\/.*$/, '')
-    .trim()
-    .toLowerCase();
-
-  if (!clean || clean.length > 253 || !DOMAIN_REGEX.test(clean)) {
-    return res.status(400).json({ message: 'Enter a valid domain (e.g. example.com)' });
+  // SSRF guard — block internal/private targets before any outbound connection.
+  try {
+    await assertPublicHost(clean);
+  } catch {
+    return res.status(400).json({ message: 'That host is not allowed.' });
   }
 
   // Cache hit
@@ -137,7 +249,7 @@ async function analyse(req, res) {
     safeBrowsing,
   };
 
-  const prompt = `You are a domain security analyst for InfinitySec, a personal cybersecurity toolkit.
+  const prompt = `You are a domain security analyst for Byronaire Security, a personal cybersecurity toolkit.
 
 Analyse the signals below for domain "${clean}" and produce a structured security assessment.
 
@@ -216,4 +328,4 @@ Respond with ONLY valid JSON — no markdown fences, no preamble:
   res.json(payload);
 }
 
-module.exports = { analyse };
+module.exports = { analyse, quickScan };

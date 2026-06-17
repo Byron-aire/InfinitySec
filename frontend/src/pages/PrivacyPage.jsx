@@ -14,9 +14,9 @@ export default function PrivacyPage() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
 
         <section>
-          <h3 style={{ marginBottom: '0.75rem' }}>What InfinitySec is</h3>
+          <h3 style={{ marginBottom: '0.75rem' }}>What ByronaireSec is</h3>
           <p className="muted">
-            InfinitySec is a personal cybersecurity toolkit. It helps you check password strength,
+            ByronaireSec is a personal cybersecurity toolkit. It helps you check password strength,
             detect data breaches, generate secure passwords, and learn security best practices.
             It is not a password manager — we do not store your passwords.
           </p>
@@ -50,7 +50,7 @@ export default function PrivacyPage() {
           <ul style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }} className="muted">
             <li>The password you type into the strength checker</li>
             <li>The email address you submit for breach checking</li>
-            <li>Any payment information (InfinitySec is free)</li>
+            <li>Any payment information (ByronaireSec is free)</li>
             <li>Your IP address or location</li>
             <li>Any third-party tracking cookies or analytics</li>
           </ul>

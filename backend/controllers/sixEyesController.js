@@ -105,7 +105,7 @@ const chat = async (req, res) => {
     success = true;
     res.write('data: [DONE]\n\n');
   } catch {
-    res.write(`data: ${JSON.stringify({ error: 'Six Eyes encountered an error. Please try again.' })}\n\n`);
+    res.write(`data: ${JSON.stringify({ error: 'The assistant encountered an error. Please try again.' })}\n\n`);
   } finally {
     res.end();
     // Fire-and-forget audit log — never blocks the response

@@ -53,7 +53,7 @@ function CursedIntel({ breaches, consent }) {
   return (
     <div className="cursed-intel">
       <div className="cursed-intel-header">
-        <span className="cursed-intel-label">Cursed Intel</span>
+        <span className="cursed-intel-label">Breach Impact</span>
         <span className="cursed-intel-badge">AI</span>
       </div>
       <p className="cursed-intel-sub">

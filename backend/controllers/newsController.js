@@ -2,29 +2,29 @@ const Parser = require('rss-parser');
 
 const parser = new Parser({
   timeout: 8000,
-  headers: { 'User-Agent': 'InfinitySec/2.0 RSS Reader' },
+  headers: { 'User-Agent': 'ByronaireSecurity/2.0 RSS Reader' },
 });
 
 const FEEDS = [
   {
     url:    'https://krebsonsecurity.com/feed/',
     source: 'Krebs on Security',
-    color:  '#3B82F6',
+    color:  '#e2c78a',
   },
   {
     url:    'https://thehackernews.com/feeds/posts/default',
     source: 'The Hacker News',
-    color:  '#EF4444',
+    color:  '#e23048',
   },
   {
     url:    'https://www.troyhunt.com/rss/',
     source: 'Troy Hunt',
-    color:  '#A78BFA',
+    color:  '#34b97a',
   },
   {
     url:    'https://isc.sans.edu/rssfeed_full.xml',
     source: 'SANS ISC',
-    color:  '#22D3EE',
+    color:  '#e0a83e',
   },
 ];
 

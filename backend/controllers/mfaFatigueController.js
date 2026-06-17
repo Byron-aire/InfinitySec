@@ -54,7 +54,7 @@ async function check(req, res) {
     `- ${a.label} (${a.type}): ${METHOD_LABELS[a.method]}`
   ).join('\n');
 
-  const prompt = `You are an MFA security analyst for InfinitySec, a personal cybersecurity toolkit.
+  const prompt = `You are an MFA security analyst for Byronaire Security, a personal cybersecurity toolkit.
 
 A user has submitted their multi-factor authentication setup across their key accounts. Analyse each account's MFA method for vulnerability to MFA fatigue attacks and related weaknesses.
 

@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const logger = require('../utils/logger');
 
-const RP_NAME = process.env.RP_NAME || 'InfinitySec';
+const RP_NAME = process.env.RP_NAME || 'Byronaire Security';
 
 // Derive ORIGIN and RP_ID from CLIENT_ORIGIN so they are always correct
 // regardless of NODE_ENV or any RP_ID env var copied from a different environment.

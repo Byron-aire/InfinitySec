@@ -41,8 +41,8 @@ const CATEGORIES = ['Email', 'Social', 'Finance', 'Work', 'Gaming', 'Shopping'];
 
 const METHOD_STYLE = {
   App:      { background: 'rgba(34,197,94,0.12)',   color: 'var(--color-safe)' },
-  SMS:      { background: 'rgba(249,115,22,0.12)',  color: 'var(--color-fair)' },
-  Hardware: { background: 'rgba(167,139,250,0.12)', color: 'var(--color-blue)' },
+  SMS:      { background: 'rgba(224,168,62,0.12)',  color: 'var(--color-fair)' },
+  Hardware: { background: 'rgba(226,199,138,0.12)', color: 'var(--color-blue)' },
 };
 
 const STORAGE_KEY = (id) => `barrier_${id}`;
@@ -84,7 +84,7 @@ export default function TwoFAPage() {
 
   return (
     <main className="page barrier-page">
-      <h2>The Barrier</h2>
+      <h2>Two-Factor Tracker</h2>
       <p className="muted" style={{ marginBottom: '1.5rem' }}>
         Track which of your accounts have two-factor authentication enabled. Check off each one as you secure it.
       </p>

@@ -7,7 +7,13 @@ import Reveal from '../components/Reveal';
 import Spinner from '../components/Spinner';
 import ErrorMessage from '../components/ErrorMessage';
 
-const LOADING_STAGES = [
+const QUICK_STAGES = [
+  'Verifying SSL certificate…',
+  'Checking threat databases…',
+  'Inspecting security headers…',
+];
+
+const DEEP_STAGES = [
   'Verifying SSL certificate…',
   'Checking threat databases…',
   'Inspecting security headers…',
@@ -24,10 +30,10 @@ const GRADE_COLORS = {
 };
 
 const SEVERITY_STYLES = {
-  critical: { bg: 'rgba(239,68,68,0.12)', color: 'var(--color-danger)',  border: 'rgba(239,68,68,0.3)' },
-  high:     { bg: 'rgba(249,115,22,0.12)', color: 'var(--color-fair)',   border: 'rgba(249,115,22,0.3)' },
-  medium:   { bg: 'rgba(59,130,246,0.12)', color: 'var(--color-accent)', border: 'rgba(59,130,246,0.3)' },
-  low:      { bg: 'rgba(34,211,238,0.10)', color: 'var(--color-cyan)',   border: 'rgba(34,211,238,0.3)' },
+  critical: { bg: 'rgba(226,48,72,0.12)', color: 'var(--color-danger)',  border: 'rgba(226,48,72,0.3)' },
+  high:     { bg: 'rgba(224,168,62,0.12)', color: 'var(--color-fair)',   border: 'rgba(224,168,62,0.3)' },
+  medium:   { bg: 'rgba(226,199,138,0.12)', color: 'var(--color-gold)', border: 'rgba(226,199,138,0.3)' },
+  low:      { bg: 'rgba(52,185,122,0.10)', color: 'var(--color-safe)',   border: 'rgba(52,185,122,0.3)' },
   info:     { bg: 'rgba(107,114,128,0.1)', color: 'var(--color-muted)',  border: 'rgba(107,114,128,0.25)' },
 };
 
@@ -90,6 +96,7 @@ function HeadersTable({ headers }) {
 export default function DomainStrengthPage() {
   const [consent, setConsent]               = useState(null);
   const [consentLoading, setConsentLoading] = useState(false);
+  const [mode, setMode]                     = useState('quick'); // 'quick' (no AI) | 'deep' (AI)
   const [domain, setDomain]                 = useState('');
   const [loading, setLoading]               = useState(false);
   const [stageIdx, setStageIdx]             = useState(0);
@@ -97,6 +104,8 @@ export default function DomainStrengthPage() {
   const [error, setError]                   = useState('');
   const [showSignals, setShowSignals]       = useState(false);
   const stageTimer = useRef(null);
+
+  const STAGES = mode === 'deep' ? DEEP_STAGES : QUICK_STAGES;
 
   // Load consent status (reuse six-eyes log endpoint)
   useEffect(() => {
@@ -121,9 +130,9 @@ export default function DomainStrengthPage() {
     setStageIdx(0);
     let idx = 0;
     stageTimer.current = setInterval(() => {
-      idx = Math.min(idx + 1, LOADING_STAGES.length - 1);
+      idx = Math.min(idx + 1, STAGES.length - 1);
       setStageIdx(idx);
-    }, 1800);
+    }, mode === 'deep' ? 1800 : 700);
   };
 
   const stopStages = () => {
@@ -140,12 +149,14 @@ export default function DomainStrengthPage() {
     setShowSignals(false);
     startStages();
 
+    const endpoint = mode === 'deep' ? '/domain-strength/check' : '/domain-strength/quick';
+
     try {
-      const { data } = await api.post('/domain-strength/check', { domain: clean });
+      const { data } = await api.post(endpoint, { domain: clean });
       setResult(data);
     } catch (err) {
-      const msg = err.response?.data?.message || err.response?.data?.error || 'Analysis failed. Please try again.';
-      if (err.response?.status === 403) {
+      const msg = err.response?.data?.message || err.response?.data?.error || 'Scan failed. Please try again.';
+      if (err.response?.status === 403 && mode === 'deep') {
         setConsent(false);
       } else {
         setError(msg);
@@ -156,29 +167,44 @@ export default function DomainStrengthPage() {
     }
   };
 
-  if (consent === null) {
-    return (
-      <main className="page ds-page">
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '3rem' }}>
-          <Spinner />
-        </div>
-      </main>
-    );
-  }
+  // Quick scan needs no consent; only gate the deep (AI) mode once consent status is known.
+  const needsConsentGate = mode === 'deep' && consent === false;
 
   return (
     <main className="page ds-page">
-      <h2>Domain Strength</h2>
-      <TrustBadge badges={['AI-powered analysis', 'Server-side only', 'Results cached 24hr']} />
-      <p className="muted" style={{ marginBottom: '1.5rem' }}>
-        Multi-stage domain security analysis — SSL, security headers, threat intelligence, and domain age,
-        synthesised by AI into a single score.
+      <h2>Domain Inspector</h2>
+      <TrustBadge badges={['SSL · headers · Safe Browsing', 'Server-side only', 'Quick or AI deep scan']} />
+      <p className="muted" style={{ marginBottom: '1.25rem' }}>
+        Inspect any domain. <strong>Quick scan</strong> runs SSL, security headers, and Google Safe
+        Browsing instantly. <strong>Deep scan</strong> adds domain-age intelligence and an AI-synthesised
+        score, grade, and recommendations.
       </p>
 
-      {!consent ? (
+      <div className="ds-mode-tabs" role="tablist">
+        <button
+          role="tab"
+          aria-selected={mode === 'quick'}
+          className={`ds-mode-tab${mode === 'quick' ? ' ds-mode-tab--active' : ''}`}
+          onClick={() => { setMode('quick'); setResult(null); setError(''); }}
+        >
+          Quick scan
+          <span className="ds-mode-sub">SSL · headers · threats · instant</span>
+        </button>
+        <button
+          role="tab"
+          aria-selected={mode === 'deep'}
+          className={`ds-mode-tab${mode === 'deep' ? ' ds-mode-tab--active' : ''}`}
+          onClick={() => { setMode('deep'); setResult(null); setError(''); }}
+        >
+          Deep scan
+          <span className="ds-mode-sub">+ domain age · AI score · AI</span>
+        </button>
+      </div>
+
+      {needsConsentGate ? (
         <AIConsentModal
           onAccept={handleAccept}
-          onDecline={() => window.history.back()}
+          onDecline={() => setMode('quick')}
           loading={consentLoading}
         />
       ) : (
@@ -196,14 +222,14 @@ export default function DomainStrengthPage() {
               disabled={loading}
             />
             <button className="btn-primary" type="submit" disabled={loading || !domain.trim()}>
-              {loading ? 'Analysing…' : 'Analyse'}
+              {loading ? (mode === 'deep' ? 'Analysing…' : 'Scanning…') : (mode === 'deep' ? 'Deep scan' : 'Quick scan')}
             </button>
           </form>
 
           {loading && (
             <div className="ds-loading">
               <Spinner />
-              <p className="ds-loading-stage">{LOADING_STAGES[stageIdx]}</p>
+              <p className="ds-loading-stage">{STAGES[stageIdx]}</p>
             </div>
           )}
 
@@ -239,14 +265,27 @@ export default function DomainStrengthPage() {
                   </ul>
                 </div>
 
-                <div className="ds-section">
-                  <h4 className="ds-section-title">Recommendations</h4>
-                  <ul className="ds-recommendations">
-                    {(result.recommendations || []).map((r, i) => (
-                      <li key={i} className="ds-rec-item">{r}</li>
-                    ))}
-                  </ul>
-                </div>
+                {result.recommendations?.length > 0 && (
+                  <div className="ds-section">
+                    <h4 className="ds-section-title">Recommendations</h4>
+                    <ul className="ds-recommendations">
+                      {result.recommendations.map((r, i) => (
+                        <li key={i} className="ds-rec-item">{r}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {result.mode === 'quick' && (
+                  <div className="ds-section">
+                    <p className="muted" style={{ fontSize: '0.85rem' }}>
+                      Want domain-age signals, an AI-synthesised score, and tailored recommendations?{' '}
+                      <button type="button" className="ds-signals-toggle" onClick={() => { setMode('deep'); setResult(null); }}>
+                        Run a deep scan →
+                      </button>
+                    </p>
+                  </div>
+                )}
 
                 <div className="ds-section">
                   <button
@@ -314,7 +353,7 @@ export default function DomainStrengthPage() {
                   )}
                 </div>
 
-                <AIDisclosure model="Anthropic Sonnet" />
+                {result.mode !== 'quick' && <AIDisclosure model="Anthropic Sonnet" />}
               </div>
             </Reveal>
           )}

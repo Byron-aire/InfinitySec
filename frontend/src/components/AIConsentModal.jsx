@@ -6,7 +6,7 @@ export default function AIConsentModal({ onAccept, onDecline, loading }) {
         <h3>Before you continue</h3>
       </div>
       <p className="consent-card-intro">
-        Six Eyes uses the Anthropic AI API to generate responses. Here is exactly what that means for your data:
+        AI Security Assistant uses the Anthropic AI API to generate responses. Here is exactly what that means for your data:
       </p>
       <ul className="consent-list">
         <li>

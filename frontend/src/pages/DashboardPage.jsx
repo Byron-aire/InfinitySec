@@ -14,9 +14,9 @@ const TYPE_LABELS = {
 };
 
 const AI_TOOLS = [
-  { path: '/six-eyes',        label: 'Six Eyes' },
-  { path: '/domain-strength', label: 'Domain Strength' },
-  { path: '/briefing',        label: 'The Briefing' },
+  { path: '/six-eyes',        label: 'AI Security Assistant' },
+  { path: '/domain-strength', label: 'Domain Inspector' },
+  { path: '/briefing',        label: 'Weekly Security Digest' },
   { path: '/phishing',        label: 'Phishing Analyser' },
   { path: '/supply-chain',    label: 'Supply Chain' },
   { path: '/mfa-fatigue',     label: 'MFA Fatigue' },
@@ -26,10 +26,8 @@ const TOOLS = [
   { path: '/checker',    label: 'Password Checker' },
   { path: '/breach',     label: 'Breach Checker' },
   { path: '/generator',  label: 'Generator' },
-  { path: '/barrier',    label: 'The Barrier' },
-  { path: '/ssl',        label: 'SSL Checker' },
-  { path: '/convergence',label: 'Convergence' },
-  { path: '/voidwatch',  label: 'Void Watch' },
+  { path: '/barrier',    label: 'Two-Factor Tracker' },
+  { path: '/voidwatch',  label: 'Breach Monitor' },
   { path: '/sessions',   label: 'Sessions' },
   { path: '/account',    label: 'Privacy' },
 ];

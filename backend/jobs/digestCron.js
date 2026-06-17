@@ -19,7 +19,7 @@ async function checkEmailBreaches(email) {
   try {
     const { data } = await axios.get(
       `https://haveibeenpwned.com/api/v3/breachedaccount/${encodeURIComponent(email)}`,
-      { headers: { 'hibp-api-key': process.env.HIBP_API_KEY, 'user-agent': 'InfinitySec-App' } }
+      { headers: { 'hibp-api-key': process.env.HIBP_API_KEY, 'user-agent': 'ByronaireSecurity-App' } }
     );
     return data;
   } catch (err) {
@@ -31,11 +31,11 @@ async function checkEmailBreaches(email) {
 async function sendAlertEmail(transporter, email, breaches) {
   const breachList = breaches.map(b => `• ${b.Name} (${b.BreachDate})`).join('\n');
   await transporter.sendMail({
-    from:    process.env.SMTP_FROM || 'InfinitySec <noreply@infinitysec.io>',
+    from:    process.env.SMTP_FROM || 'Byronaire Security <noreply@infinitysec.io>',
     to:      email,
-    subject: `InfinitySec Void Watch — ${breaches.length} breach${breaches.length > 1 ? 'es' : ''} found`,
+    subject: `Byronaire Security Breach Monitor — ${breaches.length} breach${breaches.length > 1 ? 'es' : ''} found`,
     text: [
-      `Your weekly InfinitySec security scan is complete.`,
+      `Your weekly Byronaire Security security scan is complete.`,
       ``,
       `Your email (${email}) was found in ${breaches.length} known data breach${breaches.length > 1 ? 'es' : ''}:`,
       ``,
@@ -43,7 +43,7 @@ async function sendAlertEmail(transporter, email, breaches) {
       ``,
       `We recommend changing your password on any affected services and enabling 2FA where possible.`,
       ``,
-      `— InfinitySec`,
+      `— Byronaire Security`,
     ].join('\n'),
   });
 }

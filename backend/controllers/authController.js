@@ -55,11 +55,11 @@ async function sendVerificationEmail(user, rawToken) {
   const link = appUrl(`/verify-email?token=${rawToken}`);
   await sendMail({
     to:      user.email,
-    subject: 'Verify your InfinitySec email',
+    subject: 'Verify your Byronaire Security email',
     text: [
       `Hi ${user.username},`,
       '',
-      'Please verify your email address to activate your InfinitySec account.',
+      'Please verify your email address to activate your Byronaire Security account.',
       '',
       `Verification link: ${link}`,
       '',
@@ -67,7 +67,7 @@ async function sendVerificationEmail(user, rawToken) {
       '',
       'If you did not create an account, you can safely ignore this email.',
       '',
-      '— InfinitySec',
+      '— Byronaire Security',
     ].join('\n'),
   });
 }
@@ -76,17 +76,17 @@ async function sendPasswordResetEmail(user, rawToken) {
   const link = appUrl(`/reset-password?token=${rawToken}`);
   await sendMail({
     to:      user.email,
-    subject: 'Reset your InfinitySec password',
+    subject: 'Reset your Byronaire Security password',
     text: [
       `Hi ${user.username},`,
       '',
-      'A password reset was requested for your InfinitySec account.',
+      'A password reset was requested for your Byronaire Security account.',
       '',
       `Reset link: ${link}`,
       '',
       'This link expires in 1 hour. If you did not request a reset, you can safely ignore this email.',
       '',
-      '— InfinitySec',
+      '— Byronaire Security',
     ].join('\n'),
   });
 }
@@ -101,9 +101,9 @@ async function detectAndAlert(user, { ip, userAgent }) {
 
   const basicEmail = () => sendMail({
     to:      user.email,
-    subject: 'New sign-in to InfinitySec',
+    subject: 'New sign-in to Byronaire Security',
     text: [
-      'A new sign-in was detected on your InfinitySec account.',
+      'A new sign-in was detected on your Byronaire Security account.',
       '',
       `IP address: ${ip}`,
       `Browser:    ${userAgent.substring(0, 100)}`,
@@ -111,7 +111,7 @@ async function detectAndAlert(user, { ip, userAgent }) {
       '',
       'If this wasn\'t you, go to /sessions and click "Sign out everywhere" immediately.',
       '',
-      '— InfinitySec',
+      '— Byronaire Security',
     ].join('\n'),
   });
 
@@ -126,7 +126,7 @@ async function detectAndAlert(user, { ip, userAgent }) {
       `${i + 1}. IP: ${s.ip} | Device: ${(s.userAgent || '').substring(0, 80)} | ${new Date(s.createdAt).toUTCString()}`
     ).join('\n');
 
-    const prompt = `You are a login security analyser for InfinitySec.
+    const prompt = `You are a login security analyser for Byronaire Security.
 
 A user just signed in from a new IP address. Analyse whether this login appears anomalous based on their session history.
 
@@ -160,9 +160,9 @@ Respond with ONLY valid JSON (no markdown fences):
   if (anomalyResult.anomalous && anomalyResult.confidence !== 'low') {
     await sendMail({
       to:      user.email,
-      subject: 'Suspicious sign-in detected — InfinitySec',
+      subject: 'Suspicious sign-in detected — Byronaire Security',
       text: [
-        'A potentially suspicious sign-in was detected on your InfinitySec account.',
+        'A potentially suspicious sign-in was detected on your Byronaire Security account.',
         '',
         `IP address: ${ip}`,
         `Browser:    ${userAgent.substring(0, 100)}`,
@@ -172,7 +172,7 @@ Respond with ONLY valid JSON (no markdown fences):
         '',
         'If this wasn\'t you, go to /sessions and click "Sign out everywhere" immediately.',
         '',
-        '— InfinitySec (AI-assisted alert · Claude Haiku · May be inaccurate)',
+        '— Byronaire Security (AI-assisted alert · Claude Haiku · May be inaccurate)',
       ].join('\n'),
     });
   } else {

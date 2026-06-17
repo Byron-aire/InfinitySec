@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Analytics } from '@vercel/analytics/react';
-import { Routes, Route, Link } from 'react-router-dom';
+import { Routes, Route, Link, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import CommandPalette from './components/CommandPalette';
 import CustomCursor from './components/CustomCursor';
@@ -15,8 +15,6 @@ import GeneratorPage from './pages/GeneratorPage';
 import TipsPage from './pages/TipsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import TwoFAPage from './pages/TwoFAPage';
-import SSLCheckerPage from './pages/SSLCheckerPage';
-import ConvergencePage from './pages/ConvergencePage';
 import SessionsPage from './pages/SessionsPage';
 import VoidWatchPage from './pages/VoidWatchPage';
 import AccountPage from './pages/AccountPage';
@@ -75,8 +73,9 @@ export default function App() {
           <Route path="/breach" element={<BreachCheckerPage />} />
           <Route path="/generator" element={<GeneratorPage />} />
           <Route path="/barrier" element={<TwoFAPage />} />
-          <Route path="/ssl" element={<SSLCheckerPage />} />
-          <Route path="/convergence" element={<ConvergencePage />} />
+          {/* SSL Checker + URL Scanner merged into Domain Inspector — redirect legacy links */}
+          <Route path="/ssl" element={<Navigate to="/domain-strength" replace />} />
+          <Route path="/convergence" element={<Navigate to="/domain-strength" replace />} />
           <Route path="/sessions"   element={<SessionsPage />} />
           <Route path="/voidwatch"  element={<VoidWatchPage />} />
           <Route path="/account"    element={<AccountPage />} />
@@ -104,7 +103,7 @@ export default function App() {
         zIndex: 99,
       }}>
         <p style={{ color: 'var(--color-muted)', fontSize: '0.8rem' }}>
-          © 2026 InfinitySec ·{' '}
+          © 2026 ByronaireSec ·{' '}
           <Link to="/privacy" style={{ color: 'var(--color-muted)' }}>Privacy Policy</Link>
           {' '}· The S in IoT stands for Security.
         </p>

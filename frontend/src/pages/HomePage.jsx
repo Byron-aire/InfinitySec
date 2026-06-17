@@ -2,12 +2,12 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-const FULL_TEXT = 'Your infinite barrier against the digital world — become untouchable.';
+const FULL_TEXT = 'Your personal cybersecurity toolkit — check, scan, and harden everything in one place.';
 
 const AI_FEATURES = [
-  { path: '/six-eyes',        title: 'Six Eyes',            desc: 'Streaming AI security assistant. Answers questions with context from your security posture.' },
-  { path: '/domain-strength', title: 'Domain Strength',     desc: 'AI-synthesised domain analysis — SSL, headers, RDAP, Safe Browsing → score 0–100 with grade.' },
-  { path: '/briefing',        title: 'The Briefing',        desc: 'Weekly AI security digest emailed every Monday — personalised breach status and top headlines.' },
+  { path: '/six-eyes',        title: 'AI Security Assistant',            desc: 'Streaming AI security assistant. Answers questions with context from your security posture.' },
+  { path: '/domain-strength', title: 'Domain Inspector',    desc: 'Quick scan (SSL, headers, Safe Browsing) or AI deep scan — score 0–100 with grade and fixes.' },
+  { path: '/briefing',        title: 'Weekly Security Digest',        desc: 'Weekly AI security digest emailed every Monday — personalised breach status and top headlines.' },
   { path: '/phishing',        title: 'Phishing Analyser',   desc: 'Paste or screenshot a suspicious email or SMS. AI identifies phishing tactics and flags links.' },
   { path: '/supply-chain',    title: 'Supply Chain Scanner',desc: 'Paste your package.json. AI flags typosquatting, abandoned packages, and risky version pins.' },
   { path: '/mfa-fatigue',     title: 'MFA Fatigue Checker', desc: 'Rate your 2FA methods against fatigue attacks. Get a 0–100 posture score and upgrade advice.' },
@@ -17,10 +17,8 @@ const FEATURES = [
   { path: '/checker',     title: 'Password Checker',   desc: 'Live strength analysis — 0–100 score, criteria breakdown. Runs entirely in your browser.' },
   { path: '/breach',      title: 'Breach Checker',     desc: 'Check your email against HaveIBeenPwned. Your email is never stored.' },
   { path: '/generator',   title: 'Password Generator', desc: 'Cryptographically secure. Configurable length, character sets, save with a custom label.' },
-  { path: '/barrier',     title: 'The Barrier — 2FA',  desc: 'Track 2FA status across 27 platforms. App beats SMS. Hardware beats everything.' },
-  { path: '/ssl',         title: 'SSL Checker',        desc: 'Inspect any domain\'s certificate — expiry, issuer, validity. Colour-coded.' },
-  { path: '/convergence', title: 'Convergence',        desc: 'Scan any URL for malware and phishing via Google Safe Browsing. Server-side only.' },
-  { path: '/voidwatch',   title: 'Void Watch',         desc: 'Weekly automated breach monitoring. Get emailed if your data surfaces anywhere.' },
+  { path: '/barrier',     title: 'Two-Factor Tracker',  desc: 'Track 2FA status across 27 platforms. App beats SMS. Hardware beats everything.' },
+  { path: '/voidwatch',   title: 'Breach Monitor',         desc: 'Weekly automated breach monitoring. Get emailed if your data surfaces anywhere.' },
   { path: '/tips',        title: 'Security Tips',      desc: '56 expert tips across Passwords, Phishing, Privacy, AI, Network, and Devices. Live RSS feed.' },
 ];
 
@@ -59,7 +57,7 @@ export default function HomePage() {
         <div className="hero-orb hero-orb-1" ref={orb1Ref} />
         <div className="hero-orb hero-orb-2" ref={orb2Ref} />
 
-        <h1>InfinitySec</h1>
+        <h1>ByronaireSec</h1>
         <p className="hero-sub">
           {displayed}
           {!done && <span className="hero-cursor">|</span>}

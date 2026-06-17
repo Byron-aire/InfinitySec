@@ -1,10 +1,14 @@
 require('dotenv').config();
+const { validateEnv } = require('./lib/env');
+validateEnv(); // fail fast on bad config, before anything else touches process.env
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
 const logger = require('./utils/logger');
+const { connectDB } = require('./lib/db');
 
 const authRoutes           = require('./routes/auth');
 const historyRoutes        = require('./routes/history');
@@ -26,6 +30,9 @@ require('./jobs/briefingCron');
 
 const app = express();
 
+// Don't advertise the framework.
+app.disable('x-powered-by');
+
 // ─── Trust Railway's reverse proxy ───────────────────────────────────────────
 // Required for rate limiters to see real client IPs instead of the proxy IP.
 // Without this, all requests appear to come from the same IP and rate limiting
@@ -34,14 +41,30 @@ app.set('trust proxy', 1);
 
 // ─── HTTPS redirect (production) ─────────────────────────────────────────────
 // Railway terminates TLS and sets x-forwarded-proto. Redirect any plain HTTP.
+// Use the configured origin host, never the client-supplied Host header (spoofable).
+const REDIRECT_HOST = (() => {
+  try { return new URL(process.env.CLIENT_ORIGIN || '').host || null; } catch { return null; }
+})();
 if (process.env.NODE_ENV === 'production') {
   app.use((req, res, next) => {
     if (!req.secure) {
-      return res.redirect(301, `https://${req.headers.host}${req.url}`);
+      const host = REDIRECT_HOST || req.headers.host;
+      return res.redirect(301, `https://${host}${req.url}`);
     }
     next();
   });
 }
+
+// ─── Probe blocking ───────────────────────────────────────────────────────────
+// Early 403 for common recon paths and User-Agent-less requests, before routing.
+const PROBE = /(^|\/)(\.env|\.git|\.aws|\.ssh|wp-login|wp-admin|wp-content|xmlrpc\.php|phpmyadmin|actuator|server-status|config\.json|\.php)(\/|$)/i;
+app.use((req, res, next) => {
+  if (req.path === '/api/health') return next();
+  if (!req.headers['user-agent'] || PROBE.test(req.path)) {
+    return res.status(403).end();
+  }
+  next();
+});
 
 // ─── CORS ─────────────────────────────────────────────────────────────────────
 const allowedOrigins = process.env.NODE_ENV === 'production'
@@ -103,7 +126,16 @@ app.use('/api/auth', (req, res, next) => {
 
 // ─── Routes ───────────────────────────────────────────────────────────────────
 app.get('/', (req, res) => {
-  res.json({ message: 'InfinitySec API running', version: '2.5.1' });
+  res.json({ message: 'Byronaire Security API running', version: '2.5.1' });
+});
+
+// Health check — for Railway / uptime monitors. No auth, no DB write.
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    uptime: Math.round(process.uptime()),
+    db: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+  });
 });
 
 app.use('/api/auth',            authRoutes);
@@ -136,14 +168,29 @@ app.use((err, req, res, next) => {
 
 // ─── Start ────────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5001;
+let server;
 
-mongoose
-  .connect(process.env.MONGODB_URI)
+connectDB(process.env.MONGODB_URI)
   .then(() => {
-    app.listen(PORT);
+    server = app.listen(PORT);
     logger.info('server.start', { port: PORT, env: process.env.NODE_ENV || 'development' });
   })
-  .catch((err) => {
-    logger.error('db.connect_failed', { message: err.message });
-    process.exit(1);
+  .catch(() => {
+    process.exit(1); // connectDB already logged the failure after retries
   });
+
+// ─── Graceful shutdown ──────────────────────────────────────────────────────────
+// Close the HTTP server (stop accepting new connections) then the DB, so in-flight
+// requests finish and Railway gets a clean exit on deploy/restart.
+let shuttingDown = false;
+function shutdown(signal) {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  logger.info('server.shutdown', { signal });
+  const done = () => mongoose.connection.close(false).then(() => process.exit(0)).catch(() => process.exit(0));
+  if (server) server.close(done); else done();
+  // Hard cap — never hang a deploy.
+  setTimeout(() => process.exit(0), 10000).unref();
+}
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));

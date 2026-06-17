@@ -38,10 +38,10 @@ function CircularGauge({ score, color }) {
         x={cx} y={cy}
         textAnchor="middle"
         dominantBaseline="central"
-        fill="#F5F5F5"
+        fill="#f7f4ee"
         fontSize="24"
         fontWeight="700"
-        fontFamily="Inter, sans-serif"
+        fontFamily="-apple-system, system-ui, sans-serif"
       >
         {score}
       </text>

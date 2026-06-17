@@ -26,7 +26,7 @@ export default function BriefingPage() {
     } catch (err) {
       const msg = err.response?.data?.message || 'Toggle failed. Please try again.';
       if (err.response?.status === 403) {
-        setError('AI consent required. Enable AI features in Six Eyes first.');
+        setError('AI consent required. Enable AI features in the AI Assistant first.');
       } else {
         setError(msg);
       }
@@ -39,7 +39,7 @@ export default function BriefingPage() {
 
   return (
     <main className="page briefing-page">
-      <h2>The Briefing</h2>
+      <h2>Weekly Security Digest</h2>
       <TrustBadge badges={['AI-generated digest', 'Anthropic Haiku', 'Every Monday 08:30']} />
       <p className="muted" style={{ marginBottom: '1.5rem' }}>
         A personalised weekly security email — breach status, top security news, and one concrete action —
@@ -71,7 +71,7 @@ export default function BriefingPage() {
               {noConsent ? (
                 <div className="briefing-consent-gate">
                   <p className="briefing-consent-text">
-                    The Briefing uses AI to generate your digest. AI consent is required.
+                    Weekly Security Digest uses AI to generate your digest. AI consent is required.
                   </p>
                   <Link to="/six-eyes" className="btn-primary" style={{ fontSize: '0.875rem', padding: '0.5rem 1.1rem' }}>
                     Enable AI features →
@@ -88,7 +88,7 @@ export default function BriefingPage() {
                     ? 'Updating…'
                     : status.enabled
                       ? 'Unsubscribe'
-                      : 'Subscribe to The Briefing'
+                      : 'Subscribe to Weekly Security Digest'
                   }
                 </button>
               )}
@@ -123,8 +123,8 @@ export default function BriefingPage() {
               </div>
               <p className="briefing-about-note">
                 Separate from{' '}
-                <Link to="/voidwatch">Void Watch</Link> — The Briefing always sends,
-                Void Watch only alerts on new breaches. You can use both independently.
+                <Link to="/voidwatch">Breach Monitor</Link> — Weekly Security Digest always sends,
+                Breach Monitor only alerts on new breaches. You can use both independently.
               </p>
             </div>
           </Reveal>

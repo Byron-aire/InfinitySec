@@ -37,7 +37,7 @@ async function scan(req, res) {
 
   const clean = packageJson.trim();
 
-  const prompt = `You are a software supply chain security analyst for InfinitySec, a personal cybersecurity toolkit.
+  const prompt = `You are a software supply chain security analyst for Byronaire Security, a personal cybersecurity toolkit.
 
 A user has submitted their package.json for security analysis. Examine every dependency listed.
 

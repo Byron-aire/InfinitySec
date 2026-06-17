@@ -14,7 +14,7 @@ const getStatus = async (req, res) => {
 const toggleBriefing = async (req, res) => {
   try {
     if (!req.user.aiConsent?.accepted) {
-      return res.status(403).json({ message: 'AI consent required to enable The Briefing' });
+      return res.status(403).json({ message: 'AI consent required to enable the Weekly Security Digest' });
     }
     const user = await User.findById(req.user._id);
     user.briefingEnabled = !user.briefingEnabled;

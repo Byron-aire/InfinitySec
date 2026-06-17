@@ -38,9 +38,9 @@ export default function VoidWatchPage() {
 
   return (
     <main className="page voidwatch-page">
-      <h2>Void Watch</h2>
+      <h2>Breach Monitor</h2>
       <p className="muted" style={{ marginBottom: '1.5rem' }}>
-        Automatic weekly breach monitoring. InfinitySec checks your email against the HaveIBeenPwned database every Monday at 8am and emails you if new breaches are found.
+        Automatic weekly breach monitoring. ByronaireSec checks your email against the HaveIBeenPwned database every Monday at 8am and emails you if new breaches are found.
       </p>
 
       {loading && (

@@ -136,7 +136,7 @@ export default function SixEyesPage() {
   return (
     <main className="page six-eyes-page">
       <div className="six-eyes-header">
-        <h2>Six Eyes</h2>
+        <h2>AI Security Assistant</h2>
         <Link to="/six-eyes/log" className="six-eyes-log-link muted">Audit log →</Link>
       </div>
       <TrustBadge badges={['Anthropic Haiku', 'Prompts hashed, not stored', 'Consent required']} />
@@ -155,7 +155,7 @@ export default function SixEyesPage() {
           <div className="six-eyes-messages">
             {messages.length === 0 && !streaming && (
               <div className="six-eyes-empty">
-                <p>Six Eyes is ready. What would you like to know?</p>
+                <p>The assistant is ready. What would you like to know?</p>
                 <div className="six-eyes-suggestions">
                   {[
                     'What should I do first to improve my security?',
@@ -173,7 +173,7 @@ export default function SixEyesPage() {
 
             {messages.map((m, i) => (
               <div key={i} className={`six-eyes-message six-eyes-message--${m.role}`}>
-                <span className="six-eyes-message-label">{m.role === 'user' ? 'You' : 'Six Eyes'}</span>
+                <span className="six-eyes-message-label">{m.role === 'user' ? 'You' : 'Assistant'}</span>
                 <p>{m.content}</p>
                 {m.role === 'ai' && i === messages.length - 1 && !streaming && (
                   <AIDisclosure />
@@ -183,7 +183,7 @@ export default function SixEyesPage() {
 
             {streaming && (
               <div className="six-eyes-message six-eyes-message--ai">
-                <span className="six-eyes-message-label">Six Eyes</span>
+                <span className="six-eyes-message-label">Assistant</span>
                 <p>
                   {currentText || <span className="six-eyes-thinking">Thinking<span className="six-eyes-dots" /></span>}
                   {currentText && <span className="six-eyes-cursor" />}
@@ -204,7 +204,7 @@ export default function SixEyesPage() {
             <textarea
               ref={inputRef}
               className="six-eyes-input"
-              placeholder="Ask Six Eyes anything about your security…"
+              placeholder="Ask the assistant anything about your security…"
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKeyDown}

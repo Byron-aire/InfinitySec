@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
 
 const GRADES = [
-  { min: 96, label: 'Special Grade', color: '#F59E0B', desc: 'Untouchable. Maximum protection.' },
-  { min: 85, label: 'Semi-Grade 1',  color: '#A78BFA', desc: 'Advanced. Nearly impenetrable.' },
-  { min: 70, label: 'Grade 1',       color: '#3B82F6', desc: 'Protected. Strong security posture.' },
-  { min: 50, label: 'Grade 2',       color: '#22C55E', desc: 'Developing. Good progress made.' },
-  { min: 25, label: 'Grade 3',       color: '#F97316', desc: 'Basic. Room to improve.' },
-  { min: 0,  label: 'Grade 4',       color: '#EF4444', desc: 'Unprotected. Take action now.' },
+  { min: 96, label: 'Maximum',   color: '#e2c78a', desc: 'Fully fortified. Maximum protection.' },
+  { min: 85, label: 'Excellent', color: '#4ade80', desc: 'Advanced. Nearly impenetrable.' },
+  { min: 70, label: 'Strong',    color: '#34b97a', desc: 'Protected. Strong security posture.' },
+  { min: 50, label: 'Moderate',  color: '#e0a83e', desc: 'Developing. Good progress made.' },
+  { min: 25, label: 'Basic',     color: '#f06a7c', desc: 'Basic. Room to improve.' },
+  { min: 0,  label: 'Exposed',   color: '#e23048', desc: 'Unprotected. Take action now.' },
 ];
 
 function getGrade(score) {
@@ -43,7 +43,7 @@ export default function SecurityScore({ history, voidwatchEnabled }) {
   }, [history, voidwatchEnabled]);
 
   const grade = getGrade(score);
-  const isSpecial = grade.label === 'Special Grade';
+  const isSpecial = grade.label === 'Maximum';
 
   const r = 60, cx = 75, cy = 75;
   const circumference = 2 * Math.PI * r;
@@ -64,13 +64,13 @@ export default function SecurityScore({ history, voidwatchEnabled }) {
               </filter>
               {isSpecial && (
                 <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#F59E0B" />
-                  <stop offset="50%" stopColor="#FCD34D" />
-                  <stop offset="100%" stopColor="#F59E0B" />
+                  <stop offset="0%" stopColor="#e2c78a" />
+                  <stop offset="50%" stopColor="#f5e4bd" />
+                  <stop offset="100%" stopColor="#e2c78a" />
                 </linearGradient>
               )}
             </defs>
-            <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(26,26,62,0.9)" strokeWidth="10" />
+            <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="10" />
             <circle
               cx={cx} cy={cy} r={r}
               fill="none"
@@ -86,14 +86,14 @@ export default function SecurityScore({ history, voidwatchEnabled }) {
             <text
               x={cx} y={cy - 6}
               textAnchor="middle" dominantBaseline="central"
-              fill="#F5F5F5" fontSize="26" fontWeight="700" fontFamily="Inter, sans-serif"
+              fill="#f7f4ee" fontSize="26" fontWeight="700" fontFamily="-apple-system, system-ui, sans-serif"
             >
               {score}
             </text>
             <text
               x={cx} y={cy + 14}
               textAnchor="middle" dominantBaseline="central"
-              fill={grade.color} fontSize="9" fontWeight="600" fontFamily="Inter, sans-serif"
+              fill={grade.color} fontSize="9" fontWeight="600" fontFamily="-apple-system, system-ui, sans-serif"
             >
               / 100
             </text>
@@ -107,7 +107,7 @@ export default function SecurityScore({ history, voidwatchEnabled }) {
           </div>
           <p className="security-score-desc">{grade.desc}</p>
           <div className="security-score-factors">
-            <FactorRow label="Void Watch active"   earned={voidwatchEnabled}                                                           points={30} />
+            <FactorRow label="Breach Monitor active"   earned={voidwatchEnabled}                                                           points={30} />
             <FactorRow label="Breach check done"   earned={history.some(h => h.type === 'breach')}                                    points={25} />
             <FactorRow label="Password saved"      earned={history.some(h => h.type === 'generated' || (h.type === 'strength' && h.result?.password))} points={20} />
             <FactorRow label="Strength check done" earned={history.some(h => h.type === 'strength')}                                  points={10} />

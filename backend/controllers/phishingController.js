@@ -9,7 +9,7 @@ const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5MB — vision size limit
 
 const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
-const SYSTEM_PROMPT = `You are a phishing and social engineering analyst for InfinitySec, a personal cybersecurity toolkit.
+const SYSTEM_PROMPT = `You are a phishing and social engineering analyst for Byronaire Security, a personal cybersecurity toolkit.
 
 Analyse the submitted content for signs of phishing, smishing, or social engineering.
 

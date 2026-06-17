@@ -8,6 +8,12 @@ const CACHE_TTL = 60 * 60 * 1000; // 1 hour
 // In-memory cache keyed on sorted dataClasses hash
 const cache = new Map();
 
+// Self-cleaning sweep — drop expired entries so the Map can't grow unbounded.
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, val] of cache) if (val.expiresAt <= now) cache.delete(key);
+}, 10 * 60 * 1000).unref();
+
 async function analyse(req, res) {
   if (!req.user.aiConsent?.accepted) {
     return res.status(403).json({ message: 'AI consent required' });
@@ -45,7 +51,7 @@ async function analyse(req, res) {
     return res.json({ ...cached.data, cached: true });
   }
 
-  const prompt = `You are a cybersecurity expert advising a user of InfinitySec, a personal security toolkit.
+  const prompt = `You are a cybersecurity expert advising a user of Byronaire Security, a personal security toolkit.
 
 This user's email appeared in ${breachCount} data breach${breachCount !== 1 ? 'es' : ''}. The following types of personal data were exposed:
 
