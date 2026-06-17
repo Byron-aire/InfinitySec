@@ -1,9 +1,9 @@
-const { createHash } = require('crypto');
 const axios = require('axios');
 const sslChecker = require('ssl-checker');
-const AuditLog = require('../models/AuditLog');
-const ai = require('../utils/aiClient');
+const logger = require('../utils/logger');
+const { requireAI, analyzeJSON } = require('../lib/aiCall');
 const { assertPublicHost } = require('../lib/ssrfGuard');
+const { cleanDomain } = require('../lib/domain');
 
 const ANALYSIS_MODEL = process.env.AI_ANALYSIS_MODEL || 'claude-sonnet-4-6';
 const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
@@ -16,8 +16,6 @@ setInterval(() => {
   const now = Date.now();
   for (const [key, val] of cache) if (val.expiresAt <= now) cache.delete(key);
 }, 10 * 60 * 1000).unref();
-
-const DOMAIN_REGEX = /^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/;
 
 // Extract registered domain (last 2 labels) for RDAP
 function getRegisteredDomain(hostname) {
@@ -95,18 +93,6 @@ async function gatherSafeBrowsing(domain) {
   } catch {
     return null;
   }
-}
-
-// Normalise + validate a domain from user input. Returns cleaned string or null.
-function cleanDomain(domain) {
-  if (!domain || typeof domain !== 'string') return null;
-  const clean = domain
-    .replace(/^https?:\/\//i, '')
-    .replace(/\/.*$/, '')
-    .trim()
-    .toLowerCase();
-  if (!clean || clean.length > 253 || !DOMAIN_REGEX.test(clean)) return null;
-  return clean;
 }
 
 function gradeFromScore(score) {
@@ -206,12 +192,7 @@ async function quickScan(req, res) {
 }
 
 async function analyse(req, res) {
-  if (!req.user.aiConsent?.accepted) {
-    return res.status(403).json({ message: 'AI consent required' });
-  }
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return res.status(503).json({ message: 'AI features not configured on this server' });
-  }
+  if (!requireAI(req, res)) return;
 
   const clean = cleanDomain(req.body.domain);
   if (!clean) {
@@ -288,37 +269,18 @@ Respond with ONLY valid JSON — no markdown fences, no preamble:
   "recommendations": [<string>]
 }`;
 
-  const promptHash = createHash('sha256').update(prompt).digest('hex');
-  let inputTokens = 0, outputTokens = 0, success = false;
   let assessment;
-
   try {
-    const msg = await ai.messages.create({
-      model: ANALYSIS_MODEL,
-      max_tokens: 1024,
-      messages: [{ role: 'user', content: prompt }],
+    assessment = await analyzeJSON({
+      userId:    req.user._id,
+      feature:   'domain-strength',
+      model:     ANALYSIS_MODEL,
+      content:   prompt,
+      maxTokens: 1024,
     });
-
-    inputTokens  = msg.usage?.input_tokens  || 0;
-    outputTokens = msg.usage?.output_tokens || 0;
-
-    const raw = msg.content[0]?.text?.trim() || '';
-    // Strip markdown code fences if AI wraps in them
-    const jsonStr = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim();
-    assessment = JSON.parse(jsonStr);
-    success = true;
-  } catch {
+  } catch (err) {
+    logger.error('domain-strength.analyse.error', { message: err.message });
     return res.status(500).json({ message: 'AI analysis failed. Please try again.' });
-  } finally {
-    AuditLog.create({
-      userId:       req.user._id,
-      feature:      'domain-strength',
-      promptHash,
-      model:        ANALYSIS_MODEL,
-      inputTokens,
-      outputTokens,
-      success,
-    }).catch(() => {});
   }
 
   const payload = { domain: clean, signals, ...assessment };

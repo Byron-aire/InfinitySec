@@ -1,18 +1,11 @@
-const { createHash } = require('crypto');
-const AuditLog = require('../models/AuditLog');
-const ai = require('../utils/aiClient');
+const { requireAI, analyzeJSON } = require('../lib/aiCall');
 const logger = require('../utils/logger');
 
 const ANALYSIS_MODEL = process.env.AI_ANALYSIS_MODEL || 'claude-sonnet-4-6';
 const MAX_INPUT = 9000; // chars — enough for a full package.json
 
 async function scan(req, res) {
-  if (!req.user.aiConsent?.accepted) {
-    return res.status(403).json({ message: 'AI consent required' });
-  }
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return res.status(503).json({ message: 'AI features not configured on this server' });
-  }
+  if (!requireAI(req, res)) return;
 
   const { packageJson } = req.body;
 
@@ -76,38 +69,19 @@ Respond with ONLY valid JSON — no markdown fences, no preamble:
   "recommendations": ["<2-4 concrete, actionable recommendations>"]
 }`;
 
-  const promptHash = createHash('sha256').update(clean).digest('hex');
-  let inputTokens = 0, outputTokens = 0, success = false;
-
   try {
-    const msg = await ai.messages.create({
-      model: ANALYSIS_MODEL,
-      max_tokens: 2048,
-      messages: [{ role: 'user', content: prompt }],
+    const assessment = await analyzeJSON({
+      userId:    req.user._id,
+      feature:   'supply-chain',
+      model:     ANALYSIS_MODEL,
+      content:   prompt,
+      hashInput: clean,
+      maxTokens: 2048,
     });
-
-    inputTokens  = msg.usage?.input_tokens  || 0;
-    outputTokens = msg.usage?.output_tokens || 0;
-
-    const raw = msg.content[0]?.text?.trim() || '';
-    const jsonStr = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim();
-    const assessment = JSON.parse(jsonStr);
-    success = true;
-
     res.json(assessment);
   } catch (err) {
     logger.error('supply-chain.scan.error', { message: err.message });
-    return res.status(500).json({ message: 'AI analysis failed. Please try again.' });
-  } finally {
-    AuditLog.create({
-      userId:       req.user._id,
-      feature:      'supply-chain',
-      promptHash,
-      model:        ANALYSIS_MODEL,
-      inputTokens,
-      outputTokens,
-      success,
-    }).catch(() => {});
+    res.status(500).json({ message: 'AI analysis failed. Please try again.' });
   }
 }
 

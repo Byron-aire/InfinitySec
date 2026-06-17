@@ -1,6 +1,6 @@
 const { createHash } = require('crypto');
-const AuditLog = require('../models/AuditLog');
-const ai = require('../utils/aiClient');
+const { requireAI, analyzeJSON } = require('../lib/aiCall');
+const logger = require('../utils/logger');
 
 const CHAT_MODEL = process.env.AI_CHAT_MODEL || 'claude-haiku-4-5-20251001';
 const CACHE_TTL = 60 * 60 * 1000; // 1 hour
@@ -15,12 +15,7 @@ setInterval(() => {
 }, 10 * 60 * 1000).unref();
 
 async function analyse(req, res) {
-  if (!req.user.aiConsent?.accepted) {
-    return res.status(403).json({ message: 'AI consent required' });
-  }
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return res.status(503).json({ message: 'AI features not configured on this server' });
-  }
+  if (!requireAI(req, res)) return;
 
   const { dataClasses, breachCount } = req.body;
 
@@ -68,36 +63,18 @@ Respond with ONLY valid JSON (no markdown fences, no explanation outside the JSO
   "actions": [<string>, <string>, <string>]
 }`;
 
-  const promptHash = createHash('sha256').update(prompt).digest('hex');
-  let inputTokens = 0, outputTokens = 0, success = false;
   let assessment;
-
   try {
-    const msg = await ai.messages.create({
-      model: CHAT_MODEL,
-      max_tokens: 800,
-      messages: [{ role: 'user', content: prompt }],
+    assessment = await analyzeJSON({
+      userId:    req.user._id,
+      feature:   'breach-impact',
+      model:     CHAT_MODEL,
+      content:   prompt,
+      maxTokens: 800,
     });
-
-    inputTokens  = msg.usage?.input_tokens  || 0;
-    outputTokens = msg.usage?.output_tokens || 0;
-
-    const raw = msg.content[0]?.text?.trim() || '';
-    const jsonStr = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim();
-    assessment = JSON.parse(jsonStr);
-    success = true;
-  } catch {
+  } catch (err) {
+    logger.error('breach-impact.analyse.error', { message: err.message });
     return res.status(500).json({ message: 'AI analysis failed. Please try again.' });
-  } finally {
-    AuditLog.create({
-      userId:       req.user._id,
-      feature:      'breach-impact',
-      promptHash,
-      model:        CHAT_MODEL,
-      inputTokens,
-      outputTokens,
-      success,
-    }).catch(() => {});
   }
 
   cache.set(cacheKey, { data: assessment, expiresAt: Date.now() + CACHE_TTL });

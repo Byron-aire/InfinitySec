@@ -1,21 +1,10 @@
 const sslChecker = require('ssl-checker');
 const { assertPublicHost } = require('../lib/ssrfGuard');
+const { cleanDomain } = require('../lib/domain');
 
 async function checkSSL(req, res) {
-  const { domain } = req.body;
-  if (!domain || typeof domain !== 'string') {
-    return res.status(400).json({ message: 'Domain is required' });
-  }
-
-  const clean = domain
-    .replace(/^https?:\/\//i, '')
-    .replace(/\/.*$/, '')
-    .trim()
-    .toLowerCase();
-
-  // RFC 1123 hostname validation — each label 1-63 chars, no leading/trailing hyphens, max 253 chars total
-  const DOMAIN_REGEX = /^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/;
-  if (!clean || clean.length > 253 || !DOMAIN_REGEX.test(clean)) {
+  const clean = cleanDomain(req.body.domain);
+  if (!clean) {
     return res.status(400).json({ message: 'Enter a valid domain (e.g. example.com)' });
   }
 

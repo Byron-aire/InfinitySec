@@ -1,6 +1,4 @@
-const { createHash } = require('crypto');
-const AuditLog = require('../models/AuditLog');
-const ai = require('../utils/aiClient');
+const { requireAI, analyzeJSON } = require('../lib/aiCall');
 const logger = require('../utils/logger');
 
 const ANALYSIS_MODEL = process.env.AI_ANALYSIS_MODEL || 'claude-sonnet-4-6';
@@ -9,12 +7,7 @@ const VALID_METHODS = ['hardware-key', 'totp', 'push', 'sms', 'email-otp', 'none
 const VALID_ACCOUNT_TYPES = ['email', 'banking', 'work', 'social', 'cloud', 'crypto', 'vpn', 'other'];
 
 async function check(req, res) {
-  if (!req.user.aiConsent?.accepted) {
-    return res.status(403).json({ message: 'AI consent required' });
-  }
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return res.status(503).json({ message: 'AI features not configured on this server' });
-  }
+  if (!requireAI(req, res)) return;
 
   const { accounts } = req.body;
 
@@ -109,38 +102,19 @@ Respond with ONLY valid JSON — no markdown fences, no preamble:
   "recommendations": ["<2-4 prioritised, actionable steps>"]
 }`;
 
-  const promptHash = createHash('sha256').update(JSON.stringify(sanitized)).digest('hex');
-  let inputTokens = 0, outputTokens = 0, success = false;
-
   try {
-    const msg = await ai.messages.create({
-      model: ANALYSIS_MODEL,
-      max_tokens: 1024,
-      messages: [{ role: 'user', content: prompt }],
+    const assessment = await analyzeJSON({
+      userId:    req.user._id,
+      feature:   'mfa-fatigue',
+      model:     ANALYSIS_MODEL,
+      content:   prompt,
+      hashInput: JSON.stringify(sanitized),
+      maxTokens: 1024,
     });
-
-    inputTokens  = msg.usage?.input_tokens  || 0;
-    outputTokens = msg.usage?.output_tokens || 0;
-
-    const raw = msg.content[0]?.text?.trim() || '';
-    const jsonStr = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim();
-    const assessment = JSON.parse(jsonStr);
-    success = true;
-
     res.json(assessment);
   } catch (err) {
     logger.error('mfa-fatigue.check.error', { message: err.message });
-    return res.status(500).json({ message: 'AI analysis failed. Please try again.' });
-  } finally {
-    AuditLog.create({
-      userId:       req.user._id,
-      feature:      'mfa-fatigue',
-      promptHash,
-      model:        ANALYSIS_MODEL,
-      inputTokens,
-      outputTokens,
-      success,
-    }).catch(() => {});
+    res.status(500).json({ message: 'AI analysis failed. Please try again.' });
   }
 }
 

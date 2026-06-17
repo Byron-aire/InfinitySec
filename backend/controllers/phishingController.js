@@ -1,6 +1,4 @@
-const { createHash } = require('crypto');
-const AuditLog = require('../models/AuditLog');
-const ai = require('../utils/aiClient');
+const { requireAI, analyzeJSON } = require('../lib/aiCall');
 const logger = require('../utils/logger');
 
 const ANALYSIS_MODEL = process.env.AI_ANALYSIS_MODEL || 'claude-sonnet-4-6';
@@ -44,12 +42,7 @@ Respond with ONLY valid JSON — no markdown fences, no preamble:
 }`;
 
 async function analyse(req, res) {
-  if (!req.user.aiConsent?.accepted) {
-    return res.status(403).json({ message: 'AI consent required' });
-  }
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return res.status(503).json({ message: 'AI features not configured on this server' });
-  }
+  if (!requireAI(req, res)) return;
 
   // req.body comes from multer (multipart) — fields are strings
   const text    = typeof req.body.text === 'string' ? req.body.text.trim() : '';
@@ -99,41 +92,23 @@ async function analyse(req, res) {
 
   userContent.push({ type: 'text', text: textInstruction });
 
-  // Hash for audit log — based on text + image presence
+  // Hash for audit log — based on text + image presence (not raw image bytes)
   const hashInput = text + (imageFile ? imageFile.originalname + imageFile.size : '');
-  const promptHash = createHash('sha256').update(hashInput).digest('hex');
-  let inputTokens = 0, outputTokens = 0, success = false;
 
   try {
-    const msg = await ai.messages.create({
-      model: ANALYSIS_MODEL,
-      max_tokens: 1024,
-      system: SYSTEM_PROMPT,
-      messages: [{ role: 'user', content: userContent }],
+    const assessment = await analyzeJSON({
+      userId:    req.user._id,
+      feature:   'phishing-analyser',
+      model:     ANALYSIS_MODEL,
+      system:    SYSTEM_PROMPT,
+      content:   userContent,
+      hashInput,
+      maxTokens: 1024,
     });
-
-    inputTokens  = msg.usage?.input_tokens  || 0;
-    outputTokens = msg.usage?.output_tokens || 0;
-
-    const raw = msg.content[0]?.text?.trim() || '';
-    const jsonStr = raw.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '').trim();
-    const assessment = JSON.parse(jsonStr);
-    success = true;
-
     res.json(assessment);
   } catch (err) {
     logger.error('phishing.analyse.error', { message: err.message });
-    return res.status(500).json({ message: 'AI analysis failed. Please try again.' });
-  } finally {
-    AuditLog.create({
-      userId:       req.user._id,
-      feature:      'phishing-analyser',
-      promptHash,
-      model:        ANALYSIS_MODEL,
-      inputTokens,
-      outputTokens,
-      success,
-    }).catch(() => {});
+    res.status(500).json({ message: 'AI analysis failed. Please try again.' });
   }
 }
 

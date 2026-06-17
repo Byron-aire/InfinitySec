@@ -71,6 +71,14 @@ userSchema.methods.comparePassword = function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
+// ─── Indexes ────────────────────────────────────────────────────────────────
+// (email + username are already unique-indexed.) The weekly crons scan for
+// subscribers — partial indexes keep those scans cheap as the user base grows.
+// NB: no TTL index here on purpose — a TTL on the User doc would delete whole
+// accounts, not just expired token fields. Token cleanup stays in the reset flow.
+userSchema.index({ 'monitoring.enabled': 1 }, { partialFilterExpression: { 'monitoring.enabled': true } });
+userSchema.index({ briefingEnabled: 1 },      { partialFilterExpression: { briefingEnabled: true } });
+
 // Increment failed login attempts; lock account after MAX_LOGIN_ATTEMPTS
 userSchema.methods.incLoginAttempts = async function () {
   // If a previous lock has expired, restart the counter
