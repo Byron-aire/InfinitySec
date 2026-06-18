@@ -24,6 +24,7 @@ const briefingRoutes       = require('./routes/briefing');
 const phishingRoutes       = require('./routes/phishing');
 const supplyChainRoutes    = require('./routes/supplyChain');
 const mfaFatigueRoutes     = require('./routes/mfaFatigue');
+const scoreRoutes          = require('./routes/score');
 
 require('./jobs/digestCron');
 require('./jobs/briefingCron');
@@ -152,6 +153,7 @@ app.use('/api/briefing',        briefingRoutes);
 app.use('/api/phishing',        phishingRoutes);
 app.use('/api/supply-chain',    supplyChainRoutes);
 app.use('/api/mfa-fatigue',     mfaFatigueRoutes);
+app.use('/api/score',           scoreRoutes);
 
 // ─── Global error handler ─────────────────────────────────────────────────────
 // Catches any unhandled errors thrown inside route handlers.
