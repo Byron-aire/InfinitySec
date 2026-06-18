@@ -3,11 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const ALL_COMMANDS = [
-  { id: 'checker',     label: 'Password Checker',   desc: 'Analyse password strength in real time',      path: '/checker',     category: 'Tools',   auth: true },
-  { id: 'breach',      label: 'Breach Checker',      desc: 'Check if your email appears in breaches',     path: '/breach',      category: 'Tools',   auth: true },
-  { id: 'generator',   label: 'Password Generator',  desc: 'Generate cryptographically secure passwords', path: '/generator',   category: 'Tools',   auth: true },
-  { id: 'barrier',     label: 'Two-Factor Tracker',   desc: 'Track 2FA across 27 platforms',               path: '/barrier',     category: 'Tools',   auth: true },
-  { id: 'voidwatch',   label: 'Breach Monitor',           desc: 'Weekly automated breach monitoring',          path: '/voidwatch',   category: 'Tools',   auth: true },
+  { id: 'checker',     label: 'Passwords',           desc: 'Check strength or generate secure passwords', path: '/checker',     category: 'Tools',   auth: true },
+  { id: 'breach',      label: 'Breach Center',       desc: 'Check, monitor, and AI breach impact',        path: '/breach',      category: 'Tools',   auth: true },
+  { id: 'barrier',     label: 'Two-Factor',          desc: 'Track 2FA + score your setup',                path: '/barrier',     category: 'Tools',   auth: true },
   { id: 'dashboard',   label: 'Dashboard',            desc: 'Activity, stats, and history',                path: '/dashboard',   category: 'Account', auth: true },
   { id: 'sessions',    label: 'Sessions',             desc: 'Manage active sessions and panic button',     path: '/sessions',    category: 'Account', auth: true },
   { id: 'account',     label: 'Privacy Dashboard',    desc: 'Your data, rights, and export',               path: '/account',     category: 'Account', auth: true },
@@ -15,9 +13,8 @@ const ALL_COMMANDS = [
   { id: 'domain-strength', label: 'Domain Inspector', desc: 'SSL, headers, threats + AI deep scan',           path: '/domain-strength', category: 'AI', auth: true },
   { id: 'briefing',          label: 'Weekly Security Digest',       desc: 'AI weekly security digest email — subscribe',    path: '/briefing',        category: 'AI', auth: true },
   { id: 'phishing',          label: 'Phishing Analyser', desc: 'Analyse suspicious emails and SMS for phishing', path: '/phishing',        category: 'AI', auth: true },
-  { id: 'supply-chain',      label: 'Supply Chain',       desc: 'Scan package.json for malicious dependencies',  path: '/supply-chain',    category: 'AI', auth: true },
-  { id: 'mfa-fatigue',       label: 'MFA Fatigue',        desc: 'Rate your 2FA methods against fatigue attacks',  path: '/mfa-fatigue',     category: 'AI', auth: true },
   { id: 'six-eyes-log',      label: 'AI Audit Log',      desc: 'Review your AI interaction history',             path: '/six-eyes/log',    category: 'AI', auth: true },
+  { id: 'supply-chain',      label: 'Supply Chain Scanner', desc: 'Dev tool — scan package.json for risks',     path: '/supply-chain',    category: 'Learn', auth: true },
   { id: 'tips',        label: 'Security Tips',        desc: 'Passwords, phishing, privacy, AI',            path: '/tips',        category: 'Learn',   auth: false },
   { id: 'privacy',     label: 'Privacy Policy',       desc: 'GDPR policy and data practices',              path: '/privacy',     category: 'Learn',   auth: false },
 ];

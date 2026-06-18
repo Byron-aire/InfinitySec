@@ -1,5 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
+import ToolTabs from '../components/ToolTabs';
+
+const TWOFA_TABS = [{ to: '/barrier', label: 'Track 2FA' }, { to: '/mfa-fatigue', label: 'Score my setup' }];
 
 const PLATFORMS = [
   // Email
@@ -84,7 +87,8 @@ export default function TwoFAPage() {
 
   return (
     <main className="page barrier-page">
-      <h2>Two-Factor Tracker</h2>
+      <h2>Two-Factor</h2>
+      <ToolTabs tabs={TWOFA_TABS} />
       <p className="muted" style={{ marginBottom: '1.5rem' }}>
         Track which of your accounts have two-factor authentication enabled. Check off each one as you secure it.
       </p>

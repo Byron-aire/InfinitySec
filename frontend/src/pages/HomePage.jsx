@@ -9,16 +9,12 @@ const AI_FEATURES = [
   { path: '/domain-strength', title: 'Domain Inspector',    desc: 'Quick scan (SSL, headers, Safe Browsing) or AI deep scan — score 0–100 with grade and fixes.' },
   { path: '/briefing',        title: 'Weekly Security Digest',        desc: 'Weekly AI security digest emailed every Monday — personalised breach status and top headlines.' },
   { path: '/phishing',        title: 'Phishing Analyser',   desc: 'Paste or screenshot a suspicious email or SMS. AI identifies phishing tactics and flags links.' },
-  { path: '/supply-chain',    title: 'Supply Chain Scanner',desc: 'Paste your package.json. AI flags typosquatting, abandoned packages, and risky version pins.' },
-  { path: '/mfa-fatigue',     title: 'MFA Fatigue Checker', desc: 'Rate your 2FA methods against fatigue attacks. Get a 0–100 posture score and upgrade advice.' },
 ];
 
 const FEATURES = [
-  { path: '/checker',     title: 'Password Checker',   desc: 'Live strength analysis — 0–100 score, criteria breakdown. Runs entirely in your browser.' },
-  { path: '/breach',      title: 'Breach Checker',     desc: 'Check your email against HaveIBeenPwned. Your email is never stored.' },
-  { path: '/generator',   title: 'Password Generator', desc: 'Cryptographically secure. Configurable length, character sets, save with a custom label.' },
-  { path: '/barrier',     title: 'Two-Factor Tracker',  desc: 'Track 2FA status across 27 platforms. App beats SMS. Hardware beats everything.' },
-  { path: '/voidwatch',   title: 'Breach Monitor',         desc: 'Weekly automated breach monitoring. Get emailed if your data surfaces anywhere.' },
+  { path: '/checker',     title: 'Passwords',          desc: 'Check strength in real time, or generate cryptographically secure passwords. Client-side only.' },
+  { path: '/breach',      title: 'Breach Center',      desc: 'Check your email against HaveIBeenPwned, enable weekly monitoring, and get an AI risk read.' },
+  { path: '/barrier',     title: 'Two-Factor',         desc: 'Track 2FA across 27 platforms and score your setup against fatigue attacks. App beats SMS.' },
   { path: '/tips',        title: 'Security Tips',      desc: '56 expert tips across Passwords, Phishing, Privacy, AI, Network, and Devices. Live RSS feed.' },
 ];
 

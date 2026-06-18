@@ -121,6 +121,57 @@ function CursedIntel({ breaches, consent }) {
   );
 }
 
+function BreachMonitor() {
+  const [status, setStatus]   = useState(null);
+  const [toggling, setToggling] = useState(false);
+  const [error, setError]     = useState('');
+
+  useEffect(() => {
+    api.get('/voidwatch/status')
+      .then(({ data }) => setStatus(data))
+      .catch(() => setError('Could not load monitoring status.'));
+  }, []);
+
+  const handleToggle = async () => {
+    setToggling(true);
+    setError('');
+    try {
+      const { data } = await api.post('/voidwatch/toggle');
+      setStatus(prev => ({ ...prev, ...data }));
+    } catch {
+      setError('Could not update monitoring. Try again.');
+    } finally {
+      setToggling(false);
+    }
+  };
+
+  return (
+    <div className="breach-monitor">
+      <div className="breach-monitor-head">
+        <div>
+          <span className="breach-monitor-title">Continuous monitoring</span>
+          <p className="breach-monitor-sub">
+            We re-check your email against HaveIBeenPwned every Monday and email you only if something new surfaces.
+          </p>
+        </div>
+        <span
+          className={`breach-monitor-pill${status?.enabled ? ' breach-monitor-pill--on' : ''}`}
+        >
+          {status?.enabled ? 'Active' : 'Off'}
+        </span>
+      </div>
+      {error && <p style={{ color: 'var(--color-danger)', fontSize: '0.85rem' }}>{error}</p>}
+      <button
+        className={status?.enabled ? 'btn-secondary' : 'btn-primary'}
+        onClick={handleToggle}
+        disabled={toggling || !status}
+      >
+        {toggling ? 'Updating…' : status?.enabled ? 'Disable weekly monitoring' : 'Enable weekly monitoring'}
+      </button>
+    </div>
+  );
+}
+
 export default function BreachCheckerPage() {
   const [email, setEmail]     = useState('');
   const [result, setResult]   = useState(null);
@@ -178,10 +229,10 @@ export default function BreachCheckerPage() {
 
   return (
     <main className="page checker-page">
-      <h2>Data Breach Checker</h2>
+      <h2>Breach Center</h2>
       <TrustBadge badges={['Server-side only', 'Email never stored', 'Powered by HaveIBeenPwned']} />
       <p className="muted">
-        Check if your email has been exposed in a known data breach via HaveIBeenPwned.
+        Check if your email has been exposed in a known data breach, turn on weekly monitoring, and get an AI read on your real-world risk — all in one place.
       </p>
       <form onSubmit={handleCheck} className="breach-form">
         <input
@@ -245,6 +296,8 @@ export default function BreachCheckerPage() {
           </div>
         </Reveal>
       )}
+
+      <BreachMonitor />
     </main>
   );
 }

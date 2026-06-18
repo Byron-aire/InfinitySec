@@ -16,7 +16,6 @@ import TipsPage from './pages/TipsPage';
 import PrivacyPage from './pages/PrivacyPage';
 import TwoFAPage from './pages/TwoFAPage';
 import SessionsPage from './pages/SessionsPage';
-import VoidWatchPage from './pages/VoidWatchPage';
 import AccountPage from './pages/AccountPage';
 import SixEyesPage from './pages/SixEyesPage';
 import SixEyesLogPage from './pages/SixEyesLogPage';
@@ -77,7 +76,8 @@ export default function App() {
           <Route path="/ssl" element={<Navigate to="/domain-strength" replace />} />
           <Route path="/convergence" element={<Navigate to="/domain-strength" replace />} />
           <Route path="/sessions"   element={<SessionsPage />} />
-          <Route path="/voidwatch"  element={<VoidWatchPage />} />
+          {/* Breach Monitor merged into Breach Center */}
+          <Route path="/voidwatch"  element={<Navigate to="/breach" replace />} />
           <Route path="/account"    element={<AccountPage />} />
           <Route path="/six-eyes"         element={<SixEyesPage />} />
           <Route path="/six-eyes/log"   element={<SixEyesLogPage />} />

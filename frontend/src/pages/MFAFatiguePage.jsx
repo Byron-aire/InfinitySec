@@ -6,6 +6,9 @@ import AIDisclosure from '../components/AIDisclosure';
 import Reveal from '../components/Reveal';
 import Spinner from '../components/Spinner';
 import ErrorMessage from '../components/ErrorMessage';
+import ToolTabs from '../components/ToolTabs';
+
+const TWOFA_TABS = [{ to: '/barrier', label: 'Track 2FA' }, { to: '/mfa-fatigue', label: 'Score my setup' }];
 
 const ACCOUNT_TYPES = [
   { value: 'email',   label: 'Email',           icon: '✉' },
@@ -137,7 +140,9 @@ export default function MFAFatiguePage() {
 
   return (
     <main className="page mfa-page">
-      <h2>MFA Fatigue Checker</h2>
+      <h2>Two-Factor</h2>
+      <ToolTabs tabs={TWOFA_TABS} />
+      <p className="muted" style={{ marginTop: '-0.5rem', marginBottom: '1rem', fontWeight: 600 }}>Fatigue-resistance score</p>
       <TrustBadge badges={['AI-powered analysis', 'No passwords collected', 'Server-side only']} />
       <p className="muted" style={{ marginBottom: '1.5rem' }}>
         Select your MFA method for each account type. AI rates your setup against MFA fatigue attacks

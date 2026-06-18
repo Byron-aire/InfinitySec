@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import api from '../utils/api';
 import Spinner from '../components/Spinner';
 import TrustBadge from '../components/TrustBadge';
+import ToolTabs from '../components/ToolTabs';
 
 const CHARS = {
   upper:   'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
@@ -118,7 +119,8 @@ export default function GeneratorPage() {
 
   return (
     <main className="page generator-page">
-      <h2>Password Generator</h2>
+      <h2>Passwords</h2>
+      <ToolTabs tabs={[{ to: '/checker', label: 'Check strength' }, { to: '/generator', label: 'Generate' }]} />
       <TrustBadge badges={['Cryptographically secure', 'Client-side only', 'window.crypto API']} />
       <p className="muted">
         Passwords are generated using <code>window.crypto.getRandomValues()</code> — cryptographically secure.

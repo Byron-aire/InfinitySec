@@ -18,16 +18,12 @@ const AI_TOOLS = [
   { path: '/domain-strength', label: 'Domain Inspector' },
   { path: '/briefing',        label: 'Weekly Security Digest' },
   { path: '/phishing',        label: 'Phishing Analyser' },
-  { path: '/supply-chain',    label: 'Supply Chain' },
-  { path: '/mfa-fatigue',     label: 'MFA Fatigue' },
 ];
 
 const TOOLS = [
-  { path: '/checker',    label: 'Password Checker' },
-  { path: '/breach',     label: 'Breach Checker' },
-  { path: '/generator',  label: 'Generator' },
-  { path: '/barrier',    label: 'Two-Factor Tracker' },
-  { path: '/voidwatch',  label: 'Breach Monitor' },
+  { path: '/checker',    label: 'Passwords' },
+  { path: '/breach',     label: 'Breach Center' },
+  { path: '/barrier',    label: 'Two-Factor' },
   { path: '/sessions',   label: 'Sessions' },
   { path: '/account',    label: 'Privacy' },
 ];

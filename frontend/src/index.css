@@ -677,6 +677,68 @@ input:focus {
 .breach-form { display: flex; gap: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
 .breach-form input { flex: 1; min-width: 200px; }
 
+/* Tool tab bar (Passwords, Two-Factor) — paired-route switcher */
+.tool-tabs {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  margin-bottom: 1.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--color-border);
+  border-radius: var(--r-pill);
+}
+.tool-tab {
+  padding: 0.4rem 1rem;
+  border-radius: var(--r-pill);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  transition: color 160ms var(--ease-soft), background 160ms var(--ease-soft);
+}
+.tool-tab:hover { color: var(--color-text); text-decoration: none; }
+.tool-tab--active {
+  color: #fff;
+  background: linear-gradient(180deg, var(--color-accent), var(--color-accent-deep));
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.22) inset, 0 8px 20px -12px rgba(var(--color-accent-rgb), 0.6);
+}
+.tool-tab--active:hover { color: #fff; }
+
+/* Breach Center — continuous monitoring block */
+.breach-monitor {
+  margin-top: 2rem;
+  padding: 1.25rem 1.4rem;
+  background: var(--color-card);
+  backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  border: 1px solid var(--color-border);
+  border-radius: var(--r-md);
+  box-shadow: 0 1px 0 var(--glass-highlight) inset;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+.breach-monitor-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.breach-monitor-title { font-weight: 600; font-size: 1rem; }
+.breach-monitor-sub { color: var(--color-muted); font-size: 0.85rem; margin-top: 0.25rem; max-width: 46ch; }
+.breach-monitor-pill {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--r-pill);
+  color: var(--color-muted);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--color-border);
+}
+.breach-monitor-pill--on {
+  color: var(--color-safe);
+  background: rgba(var(--color-safe-rgb), 0.12);
+  border-color: rgba(var(--color-safe-rgb), 0.35);
+}
+.breach-monitor button { align-self: flex-start; }
+
 .breach-result {
   margin-top: 1.25rem;
   padding: 1.25rem;
