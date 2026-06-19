@@ -41,16 +41,12 @@ app.disable('x-powered-by');
 app.set('trust proxy', 1);
 
 // ─── HTTPS redirect (production) ─────────────────────────────────────────────
-// Railway terminates TLS and sets x-forwarded-proto. Redirect any plain HTTP.
-// Use the configured origin host, never the client-supplied Host header (spoofable).
-const REDIRECT_HOST = (() => {
-  try { return new URL(process.env.CLIENT_ORIGIN || '').host || null; } catch { return null; }
-})();
+// Railway terminates TLS and sets x-forwarded-proto. Redirect any plain HTTP to
+// HTTPS on the SAME (backend) host — not CLIENT_ORIGIN, which is the frontend.
 if (process.env.NODE_ENV === 'production') {
   app.use((req, res, next) => {
     if (!req.secure) {
-      const host = REDIRECT_HOST || req.headers.host;
-      return res.redirect(301, `https://${host}${req.url}`);
+      return res.redirect(301, `https://${req.headers.host}${req.url}`);
     }
     next();
   });

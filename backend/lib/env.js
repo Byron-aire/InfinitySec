@@ -38,26 +38,19 @@ function validateEnv() {
     process.exit(1);
   }
 
-  // In production these would silently break core flows — fail instead.
-  if (isProd) {
-    if (!process.env.CLIENT_ORIGIN) {
-      logger.error('env.prod_missing_client_origin', {});
-      // eslint-disable-next-line no-console
-      console.error('FATAL: CLIENT_ORIGIN is required in production (CORS would reject the frontend).');
-      process.exit(1);
-    }
-    if (!process.env.SMTP_HOST) {
-      logger.error('env.prod_missing_smtp', {});
-      // eslint-disable-next-line no-console
-      console.error('FATAL: SMTP_HOST is required in production (email verification would be bypassed).');
-      process.exit(1);
-    }
-    if (!process.env.FRONTEND_URL && !process.env.CLIENT_ORIGIN) {
-      logger.error('env.prod_missing_frontend_url', {});
-      // eslint-disable-next-line no-console
-      console.error('FATAL: FRONTEND_URL / CLIENT_ORIGIN required in production (email links would point at localhost).');
-      process.exit(1);
-    }
+  // CORS in production is locked to CLIENT_ORIGIN, so it's genuinely required —
+  // without it the deployed frontend can't talk to the API at all.
+  if (isProd && !process.env.CLIENT_ORIGIN) {
+    logger.error('env.prod_missing_client_origin', {});
+    // eslint-disable-next-line no-console
+    console.error('FATAL: CLIENT_ORIGIN is required in production (CORS would reject the frontend).');
+    process.exit(1);
+  }
+  // SMTP / FRONTEND_URL are NOT hard-required: the app is designed to degrade
+  // gracefully without SMTP (auto-verify mode). They're surfaced as warnings
+  // below so a deploy that intentionally runs without email still boots.
+  if (isProd && !process.env.SMTP_HOST) {
+    logger.warn('env.prod_no_smtp', { note: 'email verification disabled — users auto-verify' });
   }
 
   for (const [key, feature] of Object.entries(OPTIONAL)) {
